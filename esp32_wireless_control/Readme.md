@@ -9,7 +9,7 @@ If you like this work, feel free to connect with me on [Github](https://github.c
  -- STA : The ESP32 connects to an existing wifi network specified by you, Ex: phone hotspot. (Not fully tested)
 - Integrated intervalometer which can control your camera shutter, no need to buy extra hardware. Exposures can be controlled via the webpage
 - USB port to power a Dew Heater
-- Slewing supported at different speeds. 
+- Slewing supported at different speeds.
 
 *If you would like to buy an assembled PCB, contact Ondra Gejdos in the discord server (Creator of the OGST). Alternatively, if you live in India contact me to buy the PCB.*
 
@@ -31,7 +31,7 @@ Below is list of all parts if you want to assemble it yourself.
 | -             | Female header pins    | 2 strips (40x1) | https://www.sunrom.com/p/254mm-40x1-female-straight-header-strip|
 
 ### Note:
-1. **J1** is a footprint for a 3.5mm audio socket, use this only if you cant find the correct 2.5mm part, or if your camera has a 3.5mm port. [Example](https://robu.in/product/smartelex-audio-jack-3-5mm-trrs-smd/) 
+1. **J1** is a footprint for a 3.5mm audio socket, use this only if you cant find the correct 2.5mm part, or if your camera has a 3.5mm port. [Example](https://robu.in/product/smartelex-audio-jack-3-5mm-trrs-smd/)
 2. **U6** is an optional footprint for a 6pin optocoupler in case you cant find a PC817. [MCT2E](https://projectpoint.in/datasheets/pdf/mct2e.pdf). Use only 1 of them.
 3. **J5** USB-A Receptacle can be used to power a USB dew heater, dont solder this part if you dont plan to use a dew heater with this board.
 4. **C3** is a ceramic cap connected to 3.3V-GND of the ESP32, no need to use this for now.
