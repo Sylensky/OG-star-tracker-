@@ -116,6 +116,14 @@ void IRAM_ATTR timer_interval_ISR() {
       startCapture();
       photo_control_status = ACTIVE;
       break;
+
+    case DITHER:
+      // this should never happen, but just in case
+      Serial.println("State: Dithering");
+      break;
+
+    default:
+      break;
   }
 }
 
