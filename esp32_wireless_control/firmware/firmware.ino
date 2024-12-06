@@ -150,7 +150,6 @@ void handleRoot() {
 
 void handleOn() {
     int tracking_speed = server.arg(getParamKey(STR_TRACKING_SPEED)).toInt();
-    direction = server.arg(getParamKey(STR_DIRECTION)).toInt();
     switch (tracking_speed) {
     case 0:  //sidereal rate
         tracking_rate = TRACKING_SIDEREAL;
@@ -165,6 +164,7 @@ void handleOn() {
         tracking_rate = TRACKING_SIDEREAL;
         break;
   }
+    direction = server.arg(getParamKey(STR_DIRECTION)).toInt();
     s_tracking_active = true;
     initTracking();
 }
@@ -266,6 +266,15 @@ void handleStatusRequest() {
     char status[60];
     sprintf(status, CAPTURES_REMAINING, exposure_count - exposures_taken);
     server.send(200, MIME_TYPE_TEXT, status);
+    return;
+  }
+  if (!s_tracking_active && photo_control_status == INACTIVE) {
+    server.send(200, MIME_TYPE_TEXT, IDLE);
+    return;
+  }
+
+  if (!s_tracking_active) {
+    server.send(200, MIME_TYPE_TEXT, getString(STR_IDLE, currentLanguage));
     return;
   }
 
