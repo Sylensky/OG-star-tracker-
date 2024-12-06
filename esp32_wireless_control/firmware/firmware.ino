@@ -68,6 +68,24 @@ hw_timer_t* timer_tracking = NULL;     //for tracking and slewing rate
 hw_timer_t* timer_interval = NULL;     //for intervalometer control
 hw_timer_t* timer_web_timeout = NULL;  //for webclient timeout control
 
+// Mark the current language
+Language currentLanguage = EN;
+
+void handleSetLanguage() {
+    String lang = server.arg("lang");
+    if (lang == "cn") {
+        currentLanguage = CN;
+    } else if (lang == "en") {
+        currentLanguage = EN;
+    }
+    
+    // Save the language selection to EEPROM
+    EEPROM.write(LANG_EEPROM_ADDR, currentLanguage);
+    EEPROM.commit();
+
+    server.send(200, MIME_TYPE_TEXT, "OK");
+}
+
 void IRAM_ATTR timer_web_timeout_ISR() {
   handleSlewOff();
 }
@@ -131,30 +149,30 @@ void handleRoot() {
 }
 
 void handleOn() {
-  int tracking_speed = server.arg(TRACKING_SPEED).toInt();
-  switch (tracking_speed) {
+    int tracking_speed = server.arg(getParamKey(STR_TRACKING_SPEED)).toInt();
+    direction = server.arg(getParamKey(STR_DIRECTION)).toInt();
+    switch (tracking_speed) {
     case 0:  //sidereal rate
-      tracking_rate = TRACKING_SIDEREAL;
-      break;
+        tracking_rate = TRACKING_SIDEREAL;
+        break;
     case 1:  //solar rate
-      tracking_rate = TRACKING_SOLAR;
-      break;
+        tracking_rate = TRACKING_SOLAR;
+        break;
     case 2:  //lunar rate
-      tracking_rate = TRACKING_LUNAR;
-      break;
+       tracking_rate = TRACKING_LUNAR;
+        break;
     default:
-      tracking_rate = TRACKING_SIDEREAL;
-      break;
+        tracking_rate = TRACKING_SIDEREAL;
+        break;
   }
-  direction = server.arg(DIRECTION).toInt();
-  s_tracking_active = true;
-  initTracking();
+    s_tracking_active = true;
+    initTracking();
 }
 
 void handleOff() {
-  s_tracking_active = false;
-  timerAlarmDisable(timer_tracking);
-  server.send(200, MIME_TYPE_TEXT, TRACKING_OFF);
+    s_tracking_active = false;
+    timerAlarmDisable(timer_tracking);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_TRACKING_OFF, currentLanguage));
 }
 
 void handleLeft() {
