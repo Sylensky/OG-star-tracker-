@@ -12,8 +12,8 @@ const int firmware_version = 6;
 
 // Set your Wi-Fi credentials
 const byte DNS_PORT = 53;
-const char* ssid = "OG Star Tracker";  //change to your SSID
-const char* password = "password123";  //change to your password, must be 8+ characters
+const char *ssid = "OG Star Tracker";  //change to your SSID
+const char *password = "password123";  //change to your password, must be 8+ characters
 //If you are using AP mode, you can access the website using the below URL
 const String website_name = "www.tracker.com";
 const int dither_intensity = 5;
@@ -24,9 +24,11 @@ const int dither_intensity = 5;
 //sidereal rate = 0.00416 deg/s
 //for 80Mhz APB (TIMER frequency)
 #ifdef STEPPER_0_9
-enum tracking_rate_state { TRACKING_SIDEREAL = 2659383,  //SIDEREAL (23h,56 min)
-                           TRACKING_SOLAR = 2666666,     //SOLAR (24h)
-                           TRACKING_LUNAR = 2723867 };   //LUNAR (24h, 31 min)
+enum tracking_rate_state {
+  TRACKING_SIDEREAL = 2659383,  //SIDEREAL (23h,56 min)
+  TRACKING_SOLAR = 2666666,     //SOLAR (24h)
+  TRACKING_LUNAR = 2723867
+};   //LUNAR (24h, 31 min)
 const int arcsec_per_step = 2;
 #else  //stepper 1.8 deg
 enum tracking_rate_state { TRACKING_SIDEREAL = 5318765,  //SIDEREAL (23h,56 min)
@@ -46,10 +48,12 @@ uint64_t exposure_delay = 0;
 bool s_slew_active = false, s_tracking_active = true, s_capturing = false;  //change s_tracking_active state to false if you want tracker to be OFF on power-up
 bool disable_tracking = false;
 int exposures_taken = 0;
-enum photo_control_state { ACTIVE,
-                           DELAY,
-                           DITHER,
-                           INACTIVE };
+enum photo_control_state {
+  ACTIVE,
+  DELAY,
+  DITHER,
+  INACTIVE
+};
 volatile enum photo_control_state photo_control_status = INACTIVE;
 
 float direction_left_bias = 0.5, direction_right_bias = 0.5;
@@ -64,26 +68,26 @@ int previous_direction = -1;
 
 WebServer server(80);
 DNSServer dnsServer;
-hw_timer_t* timer_tracking = NULL;     //for tracking and slewing rate
-hw_timer_t* timer_interval = NULL;     //for intervalometer control
-hw_timer_t* timer_web_timeout = NULL;  //for webclient timeout control
+hw_timer_t *timer_tracking = NULL;     //for tracking and slewing rate
+hw_timer_t *timer_interval = NULL;     //for intervalometer control
+hw_timer_t *timer_web_timeout = NULL;  //for webclient timeout control
 
 // Mark the current language
 Language currentLanguage = EN;
 
 void handleSetLanguage() {
-    String lang = server.arg("lang");
-    if (lang == "cn") {
-        currentLanguage = CN;
-    } else if (lang == "en") {
-        currentLanguage = EN;
-    }
-    
-    // Save the language selection to EEPROM
-    EEPROM.write(LANG_EEPROM_ADDR, currentLanguage);
-    EEPROM.commit();
+  String lang = server.arg("lang");
+  if (lang == "cn") {
+    currentLanguage = CN;
+  } else if (lang == "en") {
+    currentLanguage = EN;
+  }
 
-    server.send(200, MIME_TYPE_TEXT, "OK");
+  // Save the language selection to EEPROM
+  EEPROM.write(LANG_EEPROM_ADDR, currentLanguage);
+  EEPROM.commit();
+
+  server.send(200, MIME_TYPE_TEXT, "OK");
 }
 
 void IRAM_ATTR timer_web_timeout_ISR() {
@@ -139,58 +143,107 @@ void IRAM_ATTR timer_interval_ISR() {
 
 // Handle requests to the root URL ("/")
 void handleRoot() {
-  String formattedHtmlPage = String(html);
-  formattedHtmlPage.replace("%north%", (direction ? "selected" : ""));
-  formattedHtmlPage.replace("%south%", (!direction ? "selected" : ""));
-  formattedHtmlPage.replace("%dither%", (dither_enabled ? "checked" : ""));
-  formattedHtmlPage.replace("%focallen%", String(focal_length).c_str());
-  formattedHtmlPage.replace("%pixsize%", String((float)pixel_size / 100, 2).c_str());
-  server.send(200, MIME_TYPE_HTML, formattedHtmlPage);
+  Template tmpl(html_template);
+
+  // Add a logo replacement
+  tmpl.replace("LOGO", LOGO_BASE64)
+      // Add the state of the language selector before other substitutions
+      .replaceSelected("lang_en", currentLanguage == EN)
+      .replaceSelected("lang_cn", currentLanguage == CN)
+      .replace("TITLE", STR_TITLE, currentLanguage)
+      .replace("LANG_CN", STR_LANG_CN, currentLanguage)
+      .replace("TRACKING", STR_TRACKING, currentLanguage)
+      .replace("HEMISPHERE", STR_HEMISPHERE, currentLanguage)
+      .replace("NORTH", STR_NORTH, currentLanguage)
+      .replace("SOUTH", STR_SOUTH, currentLanguage)
+      .replace("TRACKING_RATE", STR_TRACKING_RATE, currentLanguage)
+      .replace("SIDEREAL", STR_SIDEREAL, currentLanguage)
+      .replace("SOLAR", STR_SOLAR, currentLanguage)
+      .replace("LUNAR", STR_LUNAR, currentLanguage)
+      .replace("SLEW_CONTROL", STR_SLEW_CONTROL, currentLanguage)
+      .replace("SPEED_MULTIPLIER", STR_SPEED_MULTIPLIER, currentLanguage)
+      .replace("CUSTOM", STR_CUSTOM, currentLanguage)
+      .replace("CUSTOM_SPEED", STR_CUSTOM_SPEED, currentLanguage)
+      .replace("SLEW_HINT", STR_SLEW_HINT, currentLanguage)
+      .replace("SLEW_LEFT", STR_SLEW_LEFT, currentLanguage)
+      .replace("SLEW_RIGHT", STR_SLEW_RIGHT, currentLanguage)
+      .replace("ABORT_SLEW", STR_ABORT_SLEW, currentLanguage)
+      .replace("PHOTO_CONTROL", STR_PHOTO_CONTROL, currentLanguage)
+      .replace("EXPOSURE_LENGTH", STR_EXPOSURE_LENGTH, currentLanguage)
+      .replace("EXPOSURE_HINT", STR_EXPOSURE_HINT, currentLanguage)
+      .replace("NUM_EXPOSURES", STR_NUM_EXPOSURES, currentLanguage)
+      .replace("NUM_EXPOSURES_HINT", STR_NUM_EXPOSURES_HINT, currentLanguage)
+      .replace("DISABLE_TRACKING", STR_DISABLE_TRACKING, currentLanguage)
+      .replace("DITHER_SETTINGS", STR_DITHER_SETTINGS, currentLanguage)
+      .replace("DITHER_ENABLE", STR_DITHER_ENABLE, currentLanguage)
+      .replace("FOCAL_LENGTH", STR_FOCAL_LENGTH, currentLanguage)
+      .replace("FOCAL_LENGTH_HINT", STR_FOCAL_LENGTH_HINT, currentLanguage)
+      .replace("PIXEL_SIZE", STR_PIXEL_SIZE, currentLanguage)
+      .replace("PIXEL_SIZE_HINT", STR_PIXEL_SIZE_HINT, currentLanguage)
+      .replace("START_CAPTURE", STR_START_CAPTURE, currentLanguage)
+      .replace("ABORT_CAPTURE", STR_ABORT_CAPTURE, currentLanguage)
+      .replace("STATUS", STR_STATUS, currentLanguage)
+      .replace("STATUS_MSG", STR_STATUS_MSG, currentLanguage)
+      .replace("FIRMWARE_VERSION", STR_FIRMWARE_VERSION, currentLanguage)
+      .replace("BTN_ON", STR_BTN_ON, currentLanguage)
+      .replace("BTN_OFF", STR_BTN_OFF, currentLanguage)
+
+          // 替换状态相关的占位符
+      .replaceSelected("north", direction == 1)
+      .replaceSelected("south", direction == 0)
+      .replaceChecked("dither", dither_enabled)
+      .replaceChecked("tracking", disable_tracking)
+      .replace("focallen", focal_length)
+      .replace("pixsize", (float) pixel_size / 100.0, 2);
+
+  server.send(200, MIME_TYPE_HTML, tmpl.toString());
 }
 
 void handleOn() {
-    int tracking_speed = server.arg(getParamKey(STR_TRACKING_SPEED)).toInt();
-    switch (tracking_speed) {
+  int tracking_speed = server.arg(getParamKey(STR_TRACKING_SPEED)).toInt();
+  switch (tracking_speed) {
     case 0:  //sidereal rate
-        tracking_rate = TRACKING_SIDEREAL;
-        break;
+      tracking_rate = TRACKING_SIDEREAL;
+      break;
     case 1:  //solar rate
-        tracking_rate = TRACKING_SOLAR;
-        break;
+      tracking_rate = TRACKING_SOLAR;
+      break;
     case 2:  //lunar rate
-       tracking_rate = TRACKING_LUNAR;
-        break;
+      tracking_rate = TRACKING_LUNAR;
+      break;
     default:
-        tracking_rate = TRACKING_SIDEREAL;
-        break;
+      tracking_rate = TRACKING_SIDEREAL;
+      break;
   }
-    direction = server.arg(getParamKey(STR_DIRECTION)).toInt();
-    s_tracking_active = true;
-    initTracking();
+  direction = server.arg(getParamKey(STR_DIRECTION)).toInt();
+  s_tracking_active = true;
+  initTracking();
 }
 
 void handleOff() {
-    s_tracking_active = false;
-    timerAlarmDisable(timer_tracking);
-    server.send(200, MIME_TYPE_TEXT, getString(STR_TRACKING_OFF, currentLanguage));
+  s_tracking_active = false;
+  timerAlarmDisable(timer_tracking);
+  server.send(200, MIME_TYPE_TEXT, getString(STR_TRACKING_OFF, currentLanguage));
 }
 
 void handleLeft() {
   if (!s_slew_active) {  //if slew is not active - needed for ipad (passes multiple touchon events)
-    slew_speed = server.arg(SPEED).toInt();
+    slew_speed = server.arg(getParamKey(STR_SPEED)).toInt();
     //limit custom slew speed to 2-400
-    slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE ? MAX_CUSTOM_SLEW_RATE : slew_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
-                                                                                                              : slew_speed;
+    slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE ? MAX_CUSTOM_SLEW_RATE : slew_speed < MIN_CUSTOM_SLEW_RATE
+                                                                            ? MIN_CUSTOM_SLEW_RATE
+                                                                            : slew_speed;
     initSlew(0);
   }
 }
 
 void handleRight() {
   if (!s_slew_active) {  //if slew is not active - needed for ipad (passes multiple touchon events)
-    slew_speed = server.arg(SPEED).toInt();
+    slew_speed = server.arg(getParamKey(STR_SPEED)).toInt();
     //limit custom slew speed to 2-400
-    slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE ? MAX_CUSTOM_SLEW_RATE : slew_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
-                                                                                                              : slew_speed;
+    slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE ? MAX_CUSTOM_SLEW_RATE : slew_speed < MIN_CUSTOM_SLEW_RATE
+                                                                            ? MIN_CUSTOM_SLEW_RATE
+                                                                            : slew_speed;
     initSlew(1);  //reverse direction
   }
 }
@@ -208,28 +261,30 @@ void handleSlewOff() {
 
 void handleStartCapture() {
   if (photo_control_status == INACTIVE) {
-    exposure_duration = server.arg(EXPOSURE).toInt();
-    exposure_count = server.arg(NUM_EXPOSURES).toInt();
-    dither_enabled = server.arg(DITHER_ENABLED).toInt();
-    focal_length = server.arg(FOCAL_LENGTH).toInt();
-    pixel_size = server.arg(PIXEL_SIZE).toInt();
-    disable_tracking = server.arg(DISABLE_TRACKING_ON_FINISH).toInt();
+    exposure_duration = server.arg(getParamKey(STR_EXPOSURE)).toInt();
+    exposure_count = server.arg(getParamKey(STR_NUM_EXPOSURES)).toInt();
+    dither_enabled = server.arg(getParamKey(STR_DITHER_ENABLED)).toInt();
+    focal_length = server.arg(getParamKey(STR_FOCAL_LENGTH)).toInt();
+    pixel_size = server.arg(getParamKey(STR_PIXEL_SIZE)).toInt();
+    disable_tracking = server.arg(getParamKey(STR_DISABLE_TRACKING)).toInt();
 
     exposures_taken = 0;
 
     if ((exposure_duration == 0 || exposure_count == 0)) {
-      server.send(200, MIME_TYPE_TEXT, INVALID_EXPOSURE_VALUES);
+      server.send(200, MIME_TYPE_TEXT, getString(STR_INVALID_EXPOSURE, currentLanguage));
       return;
     }
 
     if (dither_enabled && (focal_length == 0 || pixel_size == 0)) {
-      server.send(200, MIME_TYPE_TEXT, INVALID_DITHER_VALUES);
+      server.send(200, MIME_TYPE_TEXT, getString(STR_INVALID_DITHER, currentLanguage));
       return;
     }
 
     updateEEPROM(dither_enabled, focal_length, pixel_size);
-    arcsec_per_pixel = (((float)pixel_size / 100.0) / focal_length) * 206.265;        //div pixel size by 100 since we multiplied it by 100 in html page
-    steps_per_10pixels = (int)(((arcsec_per_pixel * 10.0) / arcsec_per_step) + 0.5);  //add 0.5 to round up float to nearest int while casting
+    arcsec_per_pixel = (((float) pixel_size / 100.0) / focal_length) *
+                       206.265;        //div pixel size by 100 since we multiplied it by 100 in html page
+    steps_per_10pixels = (int) (((arcsec_per_pixel * 10.0) / arcsec_per_step) +
+                                0.5);  //add 0.5 to round up float to nearest int while casting
     Serial.println("steps per 10px: ");
     Serial.println(steps_per_10pixels);
 
@@ -237,15 +292,15 @@ void handleStartCapture() {
     photo_control_status = ACTIVE;
     exposure_delay = ((exposure_duration - 3) * 2000);  // 3 sec delay
     initIntervalometer();
-    server.send(200, MIME_TYPE_TEXT, CAPTURE_ON);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_CAPTURE_ON, currentLanguage));
   } else {
-    server.send(200, MIME_TYPE_TEXT, CAPTURE_ALREADY_ON);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_CAPTURE_ALREADY_ON, currentLanguage));
   }
 }
 
 void handleAbortCapture() {
   if (photo_control_status == INACTIVE) {
-    server.send(200, MIME_TYPE_TEXT, CAPTURE_ALREADY_OFF);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_CAPTURE_ALREADY_OFF, currentLanguage));
     return;
   }
 
@@ -253,38 +308,23 @@ void handleAbortCapture() {
   exposure_count = 0;
   exposure_duration = 0;
   photo_control_status = INACTIVE;
-  server.send(200, MIME_TYPE_TEXT, CAPTURE_OFF);
+  server.send(200, MIME_TYPE_TEXT, getString(STR_CAPTURE_OFF, currentLanguage));
   s_capturing = false;
 }
 
 void handleStatusRequest() {
   if (s_slew_active) {
-    timerWrite(timer_web_timeout, 0);  //reset timer while slew on, prove still connected to web/app
-    server.send(200, MIME_TYPE_TEXT, SLEWING);
-  }
-  if (photo_control_status != INACTIVE) {
-    char status[60];
-    sprintf(status, CAPTURES_REMAINING, exposure_count - exposures_taken);
-    server.send(200, MIME_TYPE_TEXT, status);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_SLEWING, currentLanguage));
     return;
   }
-  if (!s_tracking_active && photo_control_status == INACTIVE) {
-    server.send(200, MIME_TYPE_TEXT, IDLE);
-    return;
-  }
-
   if (!s_tracking_active) {
     server.send(200, MIME_TYPE_TEXT, getString(STR_IDLE, currentLanguage));
     return;
   }
-
-  if (!s_tracking_active && photo_control_status == INACTIVE) {
-    server.send(200, MIME_TYPE_TEXT, IDLE);
-    return;
-  }
-
-  if (s_tracking_active) {
-    server.send(200, MIME_TYPE_TEXT, TRACKING_ON);
+  if (photo_control_status != INACTIVE) {
+    char status[60];
+    sprintf(status, getString(STR_CAPTURES_REMAINING, currentLanguage), exposure_count - exposures_taken);
+    server.send(200, MIME_TYPE_TEXT, status);
     return;
   }
 
@@ -294,7 +334,7 @@ void handleStatusRequest() {
 }
 
 void handleVersion() {
-  server.send(200, MIME_TYPE_TEXT, (String)firmware_version);
+  server.send(200, MIME_TYPE_TEXT, (String) firmware_version);
 }
 
 void writeEEPROM(int address, int value) {
@@ -353,11 +393,12 @@ void initSlew(int dir) {
   timerAttachInterrupt(timer_web_timeout, &timer_web_timeout_ISR, true);
   timerAlarmWrite(timer_web_timeout, 12000, true);  //12000 = 6 secs timeout, send status 5 sec poll (reset on poll)
   timerAlarmEnable(timer_web_timeout);
-  server.send(200, MIME_TYPE_TEXT, SLEWING);
+  server.send(200, MIME_TYPE_TEXT, getString(STR_SLEWING, currentLanguage));
   digitalWrite(AXIS1_DIR, dir);  //set slew direction
   timerAlarmDisable(timer_tracking);
   setMicrostep(8);
-  timerAlarmWrite(timer_tracking, (2 * tracking_rate) / slew_speed, true);  //2*tracking rate (16 mstep vs 8) / slew_speed = multiple of tracking rate
+  timerAlarmWrite(timer_tracking, (2 * tracking_rate) / slew_speed,
+                  true);  //2*tracking rate (16 mstep vs 8) / slew_speed = multiple of tracking rate
   timerAlarmEnable(timer_tracking);
 }
 
@@ -367,17 +408,18 @@ void initTracking() {
   timerAlarmWrite(timer_tracking, tracking_rate, true);
   if (s_tracking_active) {
     timerAlarmEnable(timer_tracking);
-    server.send(200, MIME_TYPE_TEXT, TRACKING_ON);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_TRACKING_ON, currentLanguage));
   } else {
     timerAlarmDisable(timer_tracking);
-    server.send(200, MIME_TYPE_TEXT, TRACKING_OFF);
+    server.send(200, MIME_TYPE_TEXT, getString(STR_TRACKING_OFF, currentLanguage));
   }
 }
 
 void initIntervalometer() {
   timer_interval = timerBegin(1, 40000, true);
   timerAttachInterrupt(timer_interval, &timer_interval_ISR, true);
-  timerAlarmWrite(timer_interval, (exposure_duration * 2000), true);  //2000 because prescaler cant be more than 16bit, = 1sec ISR freq
+  timerAlarmWrite(timer_interval, (exposure_duration * 2000),
+                  true);  //2000 because prescaler cant be more than 16bit, = 1sec ISR freq
   timerAlarmEnable(timer_interval);
   startCapture();
 }
@@ -453,8 +495,8 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.println("Connecting to Network in STA mode");
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
+      delay(1000);
+      Serial.print(".");
   }
 #endif
   dnsServer.setTTL(300);
@@ -471,6 +513,17 @@ void setup() {
   server.on("/abort", HTTP_GET, handleAbortCapture);
   server.on("/status", HTTP_GET, handleStatusRequest);
   server.on("/version", HTTP_GET, handleVersion);
+
+  // 从EEPROM读取语言设置
+  currentLanguage = (Language) EEPROM.read(LANG_EEPROM_ADDR);
+  if (currentLanguage >= LANG_COUNT) {
+    currentLanguage = EN;  // 如果读取到无效值，默认使用英语
+    EEPROM.write(LANG_EEPROM_ADDR, currentLanguage);
+    EEPROM.commit();
+  }
+
+  // 添加语言切换路由
+  server.on("/setlang", HTTP_GET, handleSetLanguage);
 
   // Start the server
   server.begin();
