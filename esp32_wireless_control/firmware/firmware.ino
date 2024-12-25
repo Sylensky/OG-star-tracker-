@@ -16,17 +16,11 @@
 // try to update every time there is breaking change
 const int firmware_version = 7;
 
-// Set your Wi-Fi credentials
-const byte DNS_PORT = 53;
-const char* ssid = "OG Star Tracker"; // change to your SSID
-const char* password = "password123"; // change to your password, must be 8+ characters
-// If you are using AP mode, you can access the website using the below URL
-const String website_name = "www.tracker.com";
 #define MIN_CUSTOM_SLEW_RATE 2
 
 unsigned long blink_millis = 0;
 
-WebServer server(80);
+WebServer server(WEBSERVER_PORT);
 DNSServer dnsServer;
 Languages language = EN;
 
@@ -283,7 +277,7 @@ void setup()
     intervalometer.readPresetsFromEEPROM();
 #ifdef AP
     WiFi.mode(WIFI_MODE_AP);
-    WiFi.softAP(ssid, password);
+    WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
     delay(500);
     Serial.println("Creating Wifi Network");
 
@@ -304,7 +298,7 @@ void setup()
     // ANDROID 10 WORKAROUND==================================================
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
-    WiFi.begin(ssid, password);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     Serial.println("Connecting to Network in STA mode");
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -314,7 +308,7 @@ void setup()
 #endif
     dnsServer.setTTL(300);
     dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-    dnsServer.start(DNS_PORT, website_name, WiFi.softAPIP());
+    dnsServer.start(DNS_PORT, WEBSITE_NAME, WiFi.softAPIP());
 
     server.on("/", HTTP_GET, handleRoot);
     server.on("/on", HTTP_GET, handleOn);
