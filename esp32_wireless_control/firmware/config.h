@@ -17,6 +17,14 @@
 // #define STEPPER_1_8   //uncomment this line if you have a 1.8 degree NEMA17, and comment the
 // above line
 
+#ifndef TRACKING_RATE
+// Available tracking rates:
+// TRACKING_SIDEREAL
+// TRACKING_SOLAR
+// TRACKING_LUNAR
+#define TRACKING_RATE TRACKING_SIDEREAL // default tracking rate
+#endif
+
 // Configure the wifi settings if you are not using platformio
 #ifndef WIFI_SSID
 #define WIFI_SSID "OG Star Tracker" // change to your SSID

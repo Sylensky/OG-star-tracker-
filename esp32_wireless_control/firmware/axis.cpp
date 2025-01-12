@@ -50,7 +50,7 @@ Axis::Axis(uint8_t axis, uint8_t dirPinforAxis, bool invertDirPin) : stepTimer(4
     trackingDirection = c_DIRECTION;
     dirPin = dirPinforAxis;
     invertDirectionPin = invertDirPin;
-    trackingRate = TRACKING_SIDEREAL;
+    trackingRate = TRACKING_RATE;
     switch (axisNumber)
     {
         case 1:
@@ -63,7 +63,7 @@ Axis::Axis(uint8_t axis, uint8_t dirPinforAxis, bool invertDirPin) : stepTimer(4
 
     if (DEFAULT_ENABLE_TRACKING == 1 && axisNumber == 1)
     {
-        startTracking(TRACKING_SIDEREAL, trackingDirection);
+        startTracking(trackingRate, trackingDirection);
     }
 }
 
