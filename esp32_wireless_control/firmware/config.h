@@ -33,6 +33,11 @@
 #ifndef WEBSERVER_PORT
 #define WEBSERVER_PORT 80
 #endif
+
+// try to update every time there is breaking change
+#ifndef INTERNAL_VERSION
+#define INTERNAL_VERSION 7
+#endif
 /**********************/
 
 /*****DO NOT MODIFY BELOW*****/

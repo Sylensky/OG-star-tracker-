@@ -13,9 +13,6 @@
 #include "web_languages.h"
 #include "website_strings.h"
 
-// try to update every time there is breaking change
-const int firmware_version = 7;
-
 #define MIN_CUSTOM_SLEW_RATE 2
 
 unsigned long blink_millis = 0;
@@ -257,7 +254,7 @@ void handleStatusRequest()
 
 void handleVersion()
 {
-    server.send(200, MIME_TYPE_TEXT, (String) firmware_version);
+    server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
 void setup()
