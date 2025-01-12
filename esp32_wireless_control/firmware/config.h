@@ -12,6 +12,7 @@
 #define DEFAULT_ENABLE_TRACKING 0    // set to 1 to enable tracking at startup
 #define DITHER_DISTANCE_X10_PIXELS 5 // set max distance to dither in multiple of 10 pixels
 #define MAX_CUSTOM_SLEW_RATE 400     // Set max custom slew rate to  X tracking rate
+#define MIN_CUSTOM_SLEW_RATE 2       // Set min custom slew rate to  X tracking rate
 #define STEPPER_0_9                  // uncomment this line if you have a 0.9 degree NEMA17
 // #define STEPPER_1_8   //uncomment this line if you have a 1.8 degree NEMA17, and comment the
 // above line

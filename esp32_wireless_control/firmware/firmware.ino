@@ -13,8 +13,6 @@
 #include "web_languages.h"
 #include "website_strings.h"
 
-#define MIN_CUSTOM_SLEW_RATE 2
-
 unsigned long blink_millis = 0;
 
 WebServer server(WEBSERVER_PORT);
