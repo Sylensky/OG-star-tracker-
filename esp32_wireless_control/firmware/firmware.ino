@@ -14,8 +14,6 @@
 #include "web_languages.h"
 #include "website_strings.h"
 
-unsigned long blink_millis = 0;
-
 WebServer server(WEBSERVER_PORT);
 DNSServer dnsServer;
 Languages language = EN;
@@ -294,19 +292,22 @@ void setup()
 
 void loop()
 {
-    if (ra_axis.slewActive)
+    int delay_ticks = 0;
+    for (;;)
     {
-        // blink status led if mount is in slew mode
-        if (millis() - blink_millis >= 150)
+        if (ra_axis.slewActive)
         {
+            // Blink status LED if mount is in slew mode
             digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
-            blink_millis = millis();
+            delay_ticks = 150; // Delay for 150 ms
         }
-    }
-    else
-    {
-        // turn on status led if sidereal tracking is ON
-        digitalWrite(STATUS_LED, ra_axis.trackingActive);
+        else
+        {
+            // Turn on status LED if sidereal tracking is ON
+            digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
+            delay_ticks = 1000; // Delay for 1 second
+        }
+        vTaskDelay(delay_ticks);
     }
 }
 
