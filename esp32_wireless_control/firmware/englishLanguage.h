@@ -75,7 +75,7 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
   "Pan Direction",                  //STR_PAN_DIRECTION
   "Left",                           //STR_LEFT
   "Right",                          //STR_RIGHT
-  "Enable Tracking On End",         //STR_ENABLE_TRACKING
+  "Disable Tracking On End",        //STR_ENABLE_TRACKING
   "No",                             //STR_NO
   "Yes",                            //STR_YES
   "Dither",                         //STR_DITHER
