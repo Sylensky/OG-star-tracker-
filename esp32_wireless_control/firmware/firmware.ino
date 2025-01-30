@@ -47,7 +47,7 @@ void handleRoot()
             sprintf(buffer, "<option value=\"%u\">%s</option>\n", lang,
                     languageNames[language][lang]);
         }
-        // Serial.println(buffer);
+        // print_out(buffer);
         selectString.concat(buffer);
         buffer[0] = '\0';
     }
@@ -186,7 +186,7 @@ void handleGetPresetExposureSettings()
     settings[PIXEL_SIZE] = intervalometer.currentSettings.pixelSize * 100;
     settings[FOCAL_LENGTH] = intervalometer.currentSettings.focalLength;
     serializeJson(settings, json);
-    // Serial.println(json);
+    // print_out(json);
     server.send(200, "application/json", json);
 }
 
@@ -290,11 +290,11 @@ void setup()
         print_out("Starting uart task\r\n");
     }
     if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
-        Serial.println("Starting intervalometer task");
+        print_out("Starting intervalometer task\r\n");
     if (xTaskCreate(webserverTask, "webserverTask", 4096, NULL, 1, NULL))
-        Serial.println("Starting webserver task");
+        print_out("Starting webserver task\r\n");
     if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
-        Serial.println("Starting dnsserver task");
+        print_out("Starting dnsserver task\r\n");
 }
 
 void loop()
@@ -324,19 +324,19 @@ void webserverTask(void* pvParameters)
     WiFi.mode(WIFI_MODE_AP);
     WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
     delay(500);
-    Serial.println("Creating Wifi Network");
+    print_out("Creating Wifi Network\r\n");
 
     // ANDROID 10 WORKAROUND==================================================
     // set new WiFi configurations
     WiFi.disconnect();
-    Serial.println("reconfig WiFi...");
+    print_out("reconfig WiFi...\r\n");
     /*Stop wifi to change config parameters*/
     esp_wifi_stop();
     esp_wifi_deinit();
     /*Disabling AMPDU RX is necessary for Android 10 support*/
     wifi_init_config_t my_config = WIFI_INIT_CONFIG_DEFAULT(); // We use the default config ...
     my_config.ampdu_rx_enable = 0;                             //... and modify only what we want.
-    Serial.println("WiFi: Disabled AMPDU...");
+    print_out("WiFi: Disabled AMPDU...\r\n");
     esp_wifi_init(&my_config); // set the new config = "Disable AMPDU"
     esp_wifi_start();          // Restart WiFi
     delay(500);
@@ -344,11 +344,11 @@ void webserverTask(void* pvParameters)
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    Serial.println("Connecting to Network in STA mode");
+    print_out("Connecting to Network in STA mode\r\n");
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(1000);
-        Serial.print(".");
+        print_out(".");
     }
 #endif
 
@@ -368,9 +368,9 @@ void webserverTask(void* pvParameters)
     server.begin();
 
 #ifdef AP
-    Serial.println(WiFi.softAPIP());
+    print_out(WiFi.softAPIP().toString().c_str());
 #else
-    Serial.println(WiFi.localIP());
+    print_out(WiFi.localIP().toString().c_str());
 #endif
 
     for (;;)
