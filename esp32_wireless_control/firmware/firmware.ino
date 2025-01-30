@@ -11,6 +11,7 @@
 #include "hardwaretimer.h"
 #include "index_html.h"
 #include "intervalometer.h"
+#include "uart.h"
 #include "web_languages.h"
 #include "website_strings.h"
 
@@ -18,6 +19,7 @@ WebServer server(WEBSERVER_PORT);
 DNSServer dnsServer;
 Languages language = EN;
 
+void uartTask(void* pvParameters);
 void webserverTask(void* pvParameters);
 void dnsserverTask(void* pvParameters);
 void intervalometerTask(void* pvParameters);
@@ -261,7 +263,7 @@ void handleVersion()
 void setup()
 {
     // Start the debug serial connection
-    Serial.begin(115200);
+    setup_uart(&Serial, 115200);
     EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
     uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
 
@@ -282,6 +284,11 @@ void setup()
     digitalWrite(EN12_n, LOW);
     // handleExposureSettings();
 
+    if (xTaskCreate(uartTask, "UartTask", 4096, NULL, 1, NULL))
+    {
+        print_out("\033c");
+        print_out("Starting uart task\r\n");
+    }
     if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
         Serial.println("Starting intervalometer task");
     if (xTaskCreate(webserverTask, "webserverTask", 4096, NULL, 1, NULL))
@@ -394,6 +401,15 @@ void intervalometerTask(void* pvParameters)
     {
         if (intervalometer.intervalometerActive)
             intervalometer.run();
+        vTaskDelay(1);
+    }
+}
+
+void uartTask(void* pvParameters)
+{
+    for (;;)
+    {
+        uart_task();
         vTaskDelay(1);
     }
 }
