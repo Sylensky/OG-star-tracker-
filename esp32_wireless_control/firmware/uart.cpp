@@ -16,10 +16,12 @@ SemaphoreHandle_t uart_tx_mutex;
 SemaphoreHandle_t uart_rx_mutex;
 HardwareSerial* _uart;
 
+char rec_uart_buffer[MAX_UART_LINE_LEN];
+char tra_uart_buffer[MAX_UART_LINE_LEN];
+
 void print_out(const char* format, ...)
 {
     va_list args;
-    char tra_uart_buffer[MAX_UART_LINE_LEN];
 
     va_start(args, format);
     vsnprintf(tra_uart_buffer, MAX_UART_LINE_LEN, format, args);
@@ -45,7 +47,6 @@ void uart_task()
     {
         if (xSemaphoreTake(uart_rx_mutex, 10) == pdTRUE)
         {
-            char rec_uart_buffer[MAX_UART_LINE_LEN];
             if (xQueueReceive(uartq, &rec_uart_buffer, portMAX_DELAY) == pdPASS)
                 _uart->print(rec_uart_buffer);
 
