@@ -2,6 +2,7 @@
 // #include <cstdlib>
 #include "intervalometer.h"
 #include "uart.h"
+#include <FreeRTOS.h>
 
 void intervalometer_ISA()
 {
@@ -115,7 +116,7 @@ void Intervalometer::run()
                 {
                     intervalometerTimer.start(2000, false); // 1 sec should cover day time
                                                             // exposures.
-                    delay(10);
+                    vTaskDelay(10);
                     digitalWrite(triggerPin, LOW);
                 }
                 else
