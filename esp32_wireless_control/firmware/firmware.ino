@@ -260,65 +260,7 @@ void handleVersion()
     server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
-void setup()
-{
-    // Start the debug serial connection
-    setup_uart(&Serial, 115200);
-    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
-    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
-
-    if (langNum >= LANG_COUNT)
-        language = static_cast<Languages>(0);
-    else
-        language = static_cast<Languages>(langNum);
-
-    // Initialize the pins
-    pinMode(INTERV_PIN, OUTPUT);
-    pinMode(STATUS_LED, OUTPUT);
-    pinMode(AXIS1_STEP, OUTPUT);
-    pinMode(AXIS1_DIR, OUTPUT);
-    pinMode(EN12_n, OUTPUT);
-    pinMode(MS1, OUTPUT);
-    pinMode(MS2, OUTPUT);
-    digitalWrite(AXIS1_STEP, LOW);
-    digitalWrite(EN12_n, LOW);
-    // handleExposureSettings();
-
-    if (xTaskCreate(uartTask, "UartTask", 4096, NULL, 1, NULL))
-    {
-        print_out("\033c");
-        print_out("Starting uart task\r\n");
-    }
-    if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
-        print_out("Starting intervalometer task\r\n");
-    if (xTaskCreate(webserverTask, "webserverTask", 4096, NULL, 1, NULL))
-        print_out("Starting webserver task\r\n");
-    if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
-        print_out("Starting dnsserver task\r\n");
-}
-
-void loop()
-{
-    int delay_ticks = 0;
-    for (;;)
-    {
-        if (ra_axis.slewActive)
-        {
-            // Blink status LED if mount is in slew mode
-            digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
-            delay_ticks = 150; // Delay for 150 ms
-        }
-        else
-        {
-            // Turn on status LED if sidereal tracking is ON
-            digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
-            delay_ticks = 1000; // Delay for 1 second
-        }
-        vTaskDelay(delay_ticks);
-    }
-}
-
-void webserverTask(void* pvParameters)
+void setupWireless()
 {
 #ifdef AP
     WiFi.mode(WIFI_MODE_AP);
@@ -373,6 +315,83 @@ void webserverTask(void* pvParameters)
     print_out(WiFi.localIP().toString().c_str());
 #endif
 
+    dnsServer.setTTL(300);
+    dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
+    dnsServer.start(DNS_PORT, WEBSITE_NAME, WiFi.softAPIP());
+}
+
+void setup()
+{
+    // Start the debug serial connection
+    setup_uart(&Serial, 115200);
+    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
+    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
+
+    if (langNum >= LANG_COUNT)
+        language = static_cast<Languages>(0);
+    else
+        language = static_cast<Languages>(langNum);
+
+    // Initialize the pins
+    pinMode(INTERV_PIN, OUTPUT);
+    pinMode(STATUS_LED, OUTPUT);
+    pinMode(AXIS1_STEP, OUTPUT);
+    pinMode(AXIS1_DIR, OUTPUT);
+    pinMode(EN12_n, OUTPUT);
+    pinMode(MS1, OUTPUT);
+    pinMode(MS2, OUTPUT);
+    digitalWrite(AXIS1_STEP, LOW);
+    digitalWrite(EN12_n, LOW);
+    // handleExposureSettings();
+
+    // Initialize Wifi and web server
+    setupWireless();
+
+    if (xTaskCreate(uartTask, "UartTask", 4096, NULL, 1, NULL))
+    {
+        print_out("\033c");
+        print_out("Starting uart task\r\n");
+    }
+    if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
+        print_out("Starting intervalometer task\r\n");
+    if (xTaskCreate(webserverTask, "webserverTask", 4096, NULL, 1, NULL))
+        print_out("Starting webserver task\r\n");
+    if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
+        print_out("Starting dnsserver task\r\n");
+}
+
+void loop()
+{
+    int delay_ticks = 0;
+    for (;;)
+    {
+        if (ra_axis.slewActive)
+        {
+            // Blink status LED if mount is in slew mode
+            digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
+            LedController::get_instance().set_inbuilt_color(digitalRead(STATUS_LED) ? CRGB::Red
+                                                                                    : CRGB::Black);
+            print_out("Slew toggle %d\r\n", !digitalRead(STATUS_LED));
+            delay_ticks = 150; // Delay for 150 ms
+        }
+        else
+        {
+            // LedController::get_instance().set_inbuilt_color(CRGB::Black);
+            // Turn on status LED if sidereal tracking is ON
+            digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
+            LedController::get_instance().set_inbuilt_color(ra_axis.trackingActive ? CRGB::Green
+                                                                                   : CRGB::Black);
+            print_out("Tracking toggle %d\r\n", ra_axis.trackingActive ? HIGH : LOW);
+            delay_ticks = 1000; // Delay for 1 second
+        }
+
+        // print_task_info();
+        vTaskDelay(delay_ticks);
+    }
+}
+
+void webserverTask(void* pvParameters)
+{
     for (;;)
     {
         server.handleClient();
@@ -382,10 +401,6 @@ void webserverTask(void* pvParameters)
 
 void dnsserverTask(void* pvParameters)
 {
-    dnsServer.setTTL(300);
-    dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-    dnsServer.start(DNS_PORT, WEBSITE_NAME, WiFi.softAPIP());
-
     for (;;)
     {
         dnsServer.processNextRequest();
