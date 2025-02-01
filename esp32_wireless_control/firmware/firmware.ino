@@ -352,7 +352,7 @@ void setup()
         print_out("\033c");
         print_out("Starting uart task\r\n");
     }
-    if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
+    if (xTaskCreate(intervalometerTask, "intervalometerTask", 4096, NULL, 1, NULL))
         print_out("Starting intervalometer task\r\n");
     if (xTaskCreatePinnedToCore(webserverTask, "webserverTask", 4096, NULL, 1, NULL, 0))
         print_out("Starting webserver task\r\n");
