@@ -354,7 +354,7 @@ void setup()
     }
     if (xTaskCreate(intervalometerTask, "intervalometerTask", 2048, NULL, 1, NULL))
         print_out("Starting intervalometer task\r\n");
-    if (xTaskCreate(webserverTask, "webserverTask", 4096, NULL, 1, NULL))
+    if (xTaskCreatePinnedToCore(webserverTask, "webserverTask", 4096, NULL, 1, NULL, 0))
         print_out("Starting webserver task\r\n");
     if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
         print_out("Starting dnsserver task\r\n");
