@@ -107,6 +107,24 @@ StarDatabase* handleStarDatabase(StarDatabaseType type)
     return db;
 }
 
+String getChipID()
+{
+    uint64_t chipid = ESP.getEfuseMac();
+    uint8_t baseMac[6];
+
+    // Extract each byte of the MAC address from the chipid
+    baseMac[0] = (chipid >> 40) & 0xFF;
+    baseMac[1] = (chipid >> 32) & 0xFF;
+    baseMac[2] = (chipid >> 24) & 0xFF;
+    baseMac[3] = (chipid >> 16) & 0xFF;
+    baseMac[4] = (chipid >> 8) & 0xFF;
+    baseMac[5] = chipid & 0xFF;
+
+    // Create a String object to hold the formatted ID
+    String id = String(baseMac[4], HEX) + String(baseMac[5], HEX);
+    return id;
+}
+
 // Handle requests to the root URL ("/")
 void handleRoot()
 {
@@ -735,8 +753,13 @@ void handleCatalogSearch()
 void setupWireless()
 {
 #if AP_MODE == 1
+    // Create unique SSID for each device
+    String chipID = getChipID();
+    char ssid[32];
+    sprintf(ssid, "%s#%s", WIFI_SSID, chipID.c_str());
+
     WiFi.mode(WIFI_MODE_AP);
-    print_out("Creating Wifi Network: %s", WIFI_SSID);
+    print_out("Creating Wifi Network: %s", ssid);
 
     // Configure AP with specific IP settings
     IPAddress local_IP(192, 168, 4, 1);
@@ -748,7 +771,7 @@ void setupWireless()
         print_out("Failed to configure AP IP settings");
     }
 
-    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    if (!WiFi.softAP(ssid, WIFI_PASSWORD))
     {
         print_out("Failed to start AP");
     }
@@ -775,7 +798,7 @@ void setupWireless()
     {
         print_out("Failed to reconfigure AP IP settings after workaround");
     }
-    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    if (!WiFi.softAP(ssid, WIFI_PASSWORD))
     {
         print_out("Failed to restart AP after workaround");
     }
@@ -789,6 +812,7 @@ void setupWireless()
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    print_out("Connecting to SSID: %s with password: %s", WIFI_SSID, WIFI_PASSWORD);
     print_out("Connecting to Network in STA mode");
     while (WiFi.status() != WL_CONNECTED)
     {
