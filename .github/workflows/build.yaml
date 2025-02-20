@@ -1,0 +1,34 @@
+name: OGStarTracker Build CI
+
+on:
+  workflow_run:
+    workflows: ["Formatting Check"]
+    types:
+      - completed
+    branches:
+      - main
+      - beta
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build OGStarTracker
+        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_release
+
+      - name: Upload Build Artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: |
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker*.bin

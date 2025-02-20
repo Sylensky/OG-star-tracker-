@@ -1,285 +1,525 @@
-#include <WiFi.h>
-#include <WebServer.h>
+#include <ArduinoJson.h>
 #include <DNSServer.h>
-#include <string.h>
+#include <WebServer.h>
+#include <WiFi.h>
 #include <esp_wifi.h>
+#include <freertos/FreeRTOS.h>
+#include <string.h>
+
+#include "axis.h"
 #include "config.h"
+#include "hardwaretimer.h"
+#include "index_html.h"
+#include "intervalometer.h"
+#include "uart.h"
+#include "web_languages.h"
+#include "website_strings.h"
 
-// Set your Wi-Fi credentials
-const byte DNS_PORT = 53;
-const char* ssid = "OG Star Tracker";      //change to your SSID
-const char* password = "";        //change to your password, must be 8+ characters
-//If you are using AP mode, you can access the website using the below URL
-const String website_name = "www.tracker.com";
-
-//Time b/w two rising edges should be 133.3333 ms
-//66.666x2  ms
-//sidereal rate = 0.00416 deg/s
-//for 80Mhz APB (TIMER frequency)
-#ifdef STEPPER_0_9
-const uint64_t c_SIDEREAL_PERIOD = 2666666;
-const uint32_t c_SLEW_SPEED = SLEW_SPEED;
-//const uint64_t c_SIDEREAL_PERIOD = 12500;
-#else
-const uint64_t c_SIDEREAL_PERIOD = 5333333;
-const uint32_t c_SLEW_SPEED = SLEW_SPEED / 2;
-#endif
-
-int slew_speed = 0, num_exp = 0, len_exp = 0;
-unsigned long old_millis = 0, blink_millis = 0;
-uint64_t exposure_delay = 0;
-
-//state variables
-bool s_slew_active = false, s_sidereal_active = true;  //change sidereal state to false if you want tracker to be OFF on power-up
-enum interv_states { ACTIVE,
-                     DELAY,
-                     INACTIVE };
-enum interv_states s_interv = INACTIVE;
-
-WebServer server(80);
+WebServer server(WEBSERVER_PORT);
 DNSServer dnsServer;
-hw_timer_t* timer0 = NULL;  //for sidereal rate
-hw_timer_t* timer1 = NULL;  //for intervalometer control
+Languages language = EN;
 
-void IRAM_ATTR timer0_ISR() {
-  //sidereal ISR
-  digitalWrite(AXIS1_STEP, !digitalRead(AXIS1_STEP));  //toggle step pin
-}
-
-void IRAM_ATTR timer1_ISR() {
-  //intervalometer ISR
-  if (s_interv == DELAY) {
-    timerWrite(timer1, 0);
-    digitalWrite(INTERV_PIN, HIGH);
-    s_interv = ACTIVE;
-  } else if (s_interv == ACTIVE) {
-    num_exp--;
-    if (num_exp == 0) {
-      disableIntervalometer();
-    } else {
-      timerWrite(timer1, exposure_delay);
-      digitalWrite(INTERV_PIN, LOW);
-      s_interv = DELAY;
-    }
-  }
-}
+void uartTask(void* pvParameters);
+void webserverTask(void* pvParameters);
+void dnsserverTask(void* pvParameters);
+void intervalometerTask(void* pvParameters);
 
 // Handle requests to the root URL ("/")
-void handleRoot() {
-  String html = "<!DOCTYPE html><html><head><title>OG Star Tracker Control</title><meta name='viewport' content='width=device-width, initial-scale=1'><style>body{background-color: lightcoral; text-align: center;}button{background-color: white; color: black; border: none; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;}select{font-size: 16px; padding: 5px;}input[type='number']{font-size: 16px; padding: 5px; width: 50%;}label{display: inline-block; text-align: left; margin: 10px; font-size: 20px;}#status{font-size: 24px; margin: 20px;}</style><script>function sendRequest(url) {var xhr = new XMLHttpRequest();xhr.onreadystatechange = function() {if (this.readyState == 4 && this.status == 200) {document.getElementById('status').innerHTML = this.responseText;}};xhr.open('GET', url, true);xhr.send();}setInterval(function(){sendRequest('/status');}, 20000);function sendSlewRequest(url) {var speed = document.getElementById('slew-select').value;var slewurl = url + '?speed=' + speed;sendRequest(slewurl);}function sendCaptureRequest() {var exposure = document.getElementById('exposure').value.trim();var numExposures = document.getElementById('num-exposures').value.trim();var intervalometerUrl = '/start?exposure=' + exposure + '&numExposures=' + numExposures;sendRequest(intervalometerUrl);} </script></head><body><h1>OG Star Tracker Control</h1><label>Sidereal Tracking:</label><br><button onclick=\"sendRequest('/on')\">ON</button><button onclick=\"sendRequest('/off')\">OFF</button><br><label>Slew Control:</label><br><label>Speed:</label><select id='slew-select'><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option></select><br><button onclick=\"sendSlewRequest('/left')\">&#8592;</button><button onclick=\"sendSlewRequest('/right')\">&#8594;</button><br><label>Intervalometer Control:</label><br><input type='number' id='exposure' placeholder='Exposure length (s)'><input type='number' id='num-exposures' placeholder='Number of Exposures'><br><button onclick=\"sendCaptureRequest()\">Start capture</button><button onclick=\"sendRequest('/abort')\">Abort capture</button><br><label>STATUS:</label><br><p id='status'></p></body></html>";
-  server.send(200, "text/html", html);
-}
-
-
-void handleOn() {
-  s_sidereal_active = true;
-  timerAlarmEnable(timer0);
-  server.send(200, "text/plain", "Tracking ON");
-}
-
-void handleOff() {
-  s_sidereal_active = false;
-  timerAlarmDisable(timer0);
-  server.send(200, "text/plain", "Tracking OFF");
-}
-
-void handleLeft() {
-  slew_speed = server.arg("speed").toInt();
-  if (s_slew_active == false) {
-    initSlew(c_DIRECTION);
-    s_slew_active = true;
-  }
-  old_millis = millis();
-  server.send(200, "text/plain", "Slewing");
-}
-
-void handleRight() {
-  slew_speed = server.arg("speed").toInt();
-  old_millis = millis();
-  if (s_slew_active == false) {
-    initSlew(!c_DIRECTION);  //reverse direction
-    s_slew_active = true;
-  }
-  server.send(200, "text/plain", "Slewing");
-}
-
-void handleStartCapture() {
-  if (s_interv == INACTIVE) {
-    len_exp = server.arg("exposure").toInt();
-    num_exp = server.arg("numExposures").toInt();
-    if (len_exp == 0 || num_exp == 0) {
-      server.send(200, "text/plain", "Invalid Settings");
-      return;
+void handleRoot()
+{
+    String htmlString = html_content;
+    for (int placeholder = 0; placeholder < numberOfHTMLStrings; placeholder++)
+    {
+        htmlString.replace(HTMLplaceHolders[placeholder],
+                           languageHTMLStrings[language][placeholder]);
     }
-    s_interv = ACTIVE;
-    exposure_delay = ((len_exp - 3) * 2000);  // 3 sec delay
-    initIntervalometer();
-    server.send(200, "text/plain", "Capture ON");
-  } else {
-    server.send(200, "text/plain", "Capture Already ON");
-  }
+    char buffer[100];
+    String selectString = "";
+    for (int lang = 0; lang < LANG_COUNT; lang++)
+    {
+        if (lang == language)
+        {
+            sprintf(buffer, "<option value=\"%u\" selected>%s</option>\n", lang,
+                    languageNames[language][lang]);
+        }
+        else
+        {
+            sprintf(buffer, "<option value=\"%u\">%s</option>\n", lang,
+                    languageNames[language][lang]);
+        }
+        // print_out(buffer);
+        selectString.concat(buffer);
+        buffer[0] = '\0';
+    }
+    htmlString.replace("%LANG_SELECT%", selectString);
+    server.send(200, MIME_TYPE_HTML, htmlString);
 }
 
-void handleAbortCapture() {
-  if (s_interv == INACTIVE) {
-    server.send(200, "text/plain", "Capture Already OFF");
-  } else {
-    disableIntervalometer();
-    server.send(200, "text/plain", "Capture OFF");
-  }
+void handleOn()
+{
+    int tracking_speed = server.arg(TRACKING_SPEED).toInt();
+    trackingRateS rate;
+    switch (tracking_speed)
+    {
+        case 0: // sidereal rate
+            rate = TRACKING_SIDEREAL;
+            break;
+        case 1: // solar rate
+            rate = TRACKING_SOLAR;
+            break;
+        case 2: // lunar rate
+            rate = TRACKING_LUNAR;
+            break;
+        default:
+            rate = TRACKING_SIDEREAL;
+            break;
+    }
+    int direction = server.arg(DIRECTION).toInt();
+    ra_axis.startTracking(rate, direction);
+
+    if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
+    else
+        server.send(200, MIME_TYPE_TEXT,
+                    languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
 }
 
-void handleStatusRequest() {
-  if (s_interv != INACTIVE) {
-    char status[60];
-    sprintf(status, "%d Captures Remaining...", num_exp);
-    server.send(200, "text/plain", status);
-  } else
-    server.send(204, "text/plain", "dummy");
+void handleOff()
+{
+    ra_axis.stopTracking();
+    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_OFF]);
 }
 
-void setMicrostep(int microstep) {
-  switch (microstep) {
-    case 8:
-      digitalWrite(MS1, LOW);
-      digitalWrite(MS2, LOW);
-      break;
-    case 16:
-      digitalWrite(MS1, HIGH);
-      digitalWrite(MS2, HIGH);
-      break;
-    case 32:
-      digitalWrite(MS1, HIGH);
-      digitalWrite(MS2, LOW);
-      break;
-    case 64:
-      digitalWrite(MS1, LOW);
-      digitalWrite(MS2, HIGH);
-      break;
-  }
+void handleSlewRequest()
+{
+    if (!ra_axis.slewActive)
+    { // if slew is not active - needed for ipad (passes multiple touchon events)
+        int slew_speed = server.arg(SPEED).toInt();
+        int direction = server.arg(DIRECTION).toInt();
+        // limit custom slew speed to 2-400
+        slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE   ? MAX_CUSTOM_SLEW_RATE
+                     : slew_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
+                                                         : slew_speed;
+        ra_axis.startSlew((2 * ra_axis.trackingRate) / slew_speed, direction);
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEWING]);
+    }
 }
-void initSlew(int dir) {
-  timerAlarmDisable(timer0);
-  digitalWrite(AXIS1_DIR, dir);
-  setMicrostep(8);
-  ledcSetup(0, (c_SLEW_SPEED * slew_speed), 8);
-  ledcAttachPin(AXIS1_STEP, 0);
-  ledcWrite(0, 127);  //50% duty pwm
-}
-void initSiderealTracking() {
-  digitalWrite(AXIS1_DIR, c_DIRECTION);
-  setMicrostep(16);
-  timerAlarmWrite(timer0, c_SIDEREAL_PERIOD, true);
-  if (s_sidereal_active == true)
-    timerAlarmEnable(timer0);
-  else
-    timerAlarmDisable(timer0);
-}
-void initIntervalometer() {
-  timer1 = timerBegin(1, 40000, true);
-  timerAttachInterrupt(timer1, &timer1_ISR, true);
-  timerAlarmWrite(timer1, (len_exp * 2000), true);
-  timerAlarmEnable(timer1);
-  digitalWrite(INTERV_PIN, HIGH);  // start the first capture
-}
-void disableIntervalometer() {
-  digitalWrite(INTERV_PIN, LOW);
-  timerAlarmDisable(timer1);
-  timerDetachInterrupt(timer1);
-  timerEnd(timer1);
-  num_exp = 0;
-  len_exp = 0;
-  s_interv = INACTIVE;
-}
-void setup() {
 
-  Serial.begin(115200);
+void handleSlewOff()
+{
+    if (ra_axis.slewActive)
+    { // if slew is active needed for ipad (passes multiple touchoff events)
+        ra_axis.stopSlew();
+    }
+    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEW_CANCELLED]);
+}
+
+void handleSetLanguage()
+{
+    int lang = server.arg("lang").toInt();
+    language = static_cast<Languages>(lang);
+    EEPROM.write(LANG_EEPROM_ADDR, language);
+    EEPROM.commit();
+    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_OK]);
+}
+
+void handleSetCurrent()
+{
+    if (!intervalometer.intervalometerActive)
+    {
+        // Reset the current error message
+        intervalometer.currentErrorMessage = ERR_MSG_NONE;
+
+        int modeInt = server.arg(CAPTURE_MODE).toInt();
+        if (modeInt < 0 || modeInt >= Intervalometer::Mode::MAX_MODES)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_CAPTURE_MODE;
+            return;
+        }
+        Intervalometer::Mode captureMode = static_cast<Intervalometer::Mode>(modeInt);
+        intervalometer.currentSettings.mode = captureMode;
+
+        int exposureTime = server.arg(EXPOSURE_TIME).toInt();
+        if (exposureTime <= 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_LENGTH;
+            return;
+        }
+        intervalometer.currentSettings.exposureTime = exposureTime;
+
+        int exposures = server.arg(EXPOSURES).toInt();
+        if (exposures <= 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_AMOUNT;
+            return;
+        }
+        intervalometer.currentSettings.exposures = exposures;
+
+        int preDelay = server.arg(PREDELAY).toInt();
+        if (preDelay < 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PREDELAY_TIME;
+            return;
+        }
+        else if (preDelay == 0)
+            preDelay = 5;
+        intervalometer.currentSettings.preDelay = preDelay;
+
+        int delayTime = server.arg(DELAY).toInt();
+        if (delayTime < 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DELAY_TIME;
+            return;
+        }
+        intervalometer.currentSettings.delayTime = delayTime;
+
+        int frames = server.arg(FRAMES).toInt();
+        if (frames <= 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FRAME_AMOUNT;
+            return;
+        }
+        intervalometer.currentSettings.frames = frames;
+
+        float panAngle = server.arg(PAN_ANGLE).toFloat() / 100;
+        if (panAngle < 0.0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_ANGLE;
+            return;
+        }
+        intervalometer.currentSettings.panAngle = panAngle;
+
+        int panDirection = server.arg(PAN_DIRECTION).toInt();
+        if (panDirection < 0 || panDirection > 1)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_DIRECTION;
+            return;
+        }
+        intervalometer.currentSettings.panDirection = panDirection;
+
+        int enableTracking = server.arg(ENABLE_TRACKING).toInt();
+        if (enableTracking < 0 || enableTracking > 1)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_ENABLE_TRACKING_VALUE;
+            return;
+        }
+        intervalometer.currentSettings.enableTracking = enableTracking;
+
+        int dither = server.arg(DITHER_CHOICE).toInt();
+        if (dither < 0 || dither > 1)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_CHOICE;
+            return;
+        }
+        intervalometer.currentSettings.dither = dither;
+
+        int ditherFrequency = server.arg(DITHER_FREQUENCY).toInt();
+        if (ditherFrequency <= 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_FREQUENCY;
+            return;
+        }
+        intervalometer.currentSettings.ditherFrequency = ditherFrequency;
+
+        int focalLength = server.arg(FOCAL_LENGTH).toInt();
+        if (focalLength <= 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FOCAL_LENGTH;
+            return;
+        }
+        intervalometer.currentSettings.focalLength = focalLength;
+
+        float pixelSize = server.arg(PIXEL_SIZE).toFloat() / 100;
+        if (pixelSize <= 0.0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PIXEL_SIZE;
+            return;
+        }
+        intervalometer.currentSettings.pixelSize = pixelSize;
+
+        String currentMode = server.arg(MODE);
+        if (currentMode == "save")
+        {
+            int preset = server.arg(PRESET).toInt();
+            intervalometer.saveSettingsToPreset(preset);
+            server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SAVED_PRESET]);
+        }
+        else if (currentMode == "start")
+        {
+            if ((intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_MOVIE ||
+                 intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_STILL) &&
+                !ra_axis.trackingActive)
+            {
+                server.send(200, MIME_TYPE_TEXT,
+                            languageMessageStrings[language][MSG_TRACKING_NOT_ACTIVE]);
+            }
+            else
+            {
+                intervalometer.startCapture();
+                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ON]);
+            }
+        }
+    }
+    else
+    {
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ALREADY_ON]);
+    }
+}
+
+void handleGetPresetExposureSettings()
+{
+    int preset = server.arg(PRESET).toInt();
+    intervalometer.readSettingsFromPreset(preset);
+    JsonDocument settings;
+    String json;
+    settings[MODE] = intervalometer.currentSettings.mode;
+    settings[EXPOSURES] = intervalometer.currentSettings.exposures;
+    settings[DELAY] = intervalometer.currentSettings.delayTime;
+    settings[PREDELAY] = intervalometer.currentSettings.preDelay;
+    settings[EXPOSURE_TIME] = intervalometer.currentSettings.exposureTime;
+    settings[PAN_ANGLE] = intervalometer.currentSettings.panAngle * 100;
+    settings[PAN_DIRECTION] = intervalometer.currentSettings.panDirection;
+    settings[DITHER_CHOICE] = intervalometer.currentSettings.dither;
+    settings[DITHER_FREQUENCY] = intervalometer.currentSettings.ditherFrequency;
+    settings[ENABLE_TRACKING] = intervalometer.currentSettings.enableTracking;
+    settings[FRAMES] = intervalometer.currentSettings.frames;
+    settings[PIXEL_SIZE] = intervalometer.currentSettings.pixelSize * 100;
+    settings[FOCAL_LENGTH] = intervalometer.currentSettings.focalLength;
+    serializeJson(settings, json);
+    // print_out(json);
+    server.send(200, "application/json", json);
+}
+
+void handleAbortCapture()
+{
+    if (intervalometer.intervalometerActive)
+    {
+        intervalometer.abortCapture();
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_OFF]);
+    }
+    else
+    {
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ALREADY_OFF]);
+    }
+}
+
+void handleStatusRequest()
+{
+    if (intervalometer.intervalometerActive)
+    {
+        switch (intervalometer.currentState)
+        {
+            case Intervalometer::PRE_DELAY:
+                server.send(200, MIME_TYPE_TEXT,
+                            languageMessageStrings[language][MSG_CAP_PREDELAY]);
+                break;
+            case Intervalometer::CAPTURE:
+                server.send(200, MIME_TYPE_TEXT,
+                            languageMessageStrings[language][MSG_CAP_EXPOSING]);
+                break;
+            case Intervalometer::DITHER:
+                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DITHER]);
+                break;
+            case Intervalometer::PAN:
+                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_PANNING]);
+                break;
+            case Intervalometer::DELAY:
+                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DELAY]);
+                break;
+            case Intervalometer::REWIND:
+                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_REWIND]);
+                break;
+            case Intervalometer::INACTIVE:
+            default:
+                break;
+        }
+    }
+    else if (ra_axis.slewActive)
+    {
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEWING]);
+    }
+    else if (ra_axis.trackingActive)
+    {
+        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
+    }
+    else
+    {
+        if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
+            server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_IDLE]);
+        else
+            server.send(200, MIME_TYPE_TEXT,
+                        languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
+    }
+
+    if (ra_axis.slewActive)
+    {
+        slewTimeOut.setCountValue(0); // reset timeout counter
+    }
+
+    server.send(204, MIME_TYPE_TEXT, "dummy");
+}
+
+void handleVersion()
+{
+    server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
+}
+
+void setupWireless()
+{
+#ifdef AP
+    WiFi.mode(WIFI_MODE_AP);
+    WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
+    vTaskDelay(500);
+    print_out("Creating Wifi Network");
+
+    // ANDROID 10 WORKAROUND==================================================
+    // set new WiFi configurations
+    WiFi.disconnect();
+    print_out("reconfig WiFi...");
+    /*Stop wifi to change config parameters*/
+    esp_wifi_stop();
+    esp_wifi_deinit();
+    /*Disabling AMPDU RX is necessary for Android 10 support*/
+    wifi_init_config_t my_config = WIFI_INIT_CONFIG_DEFAULT(); // We use the default config ...
+    my_config.ampdu_rx_enable = 0;                             //... and modify only what we want.
+    print_out("WiFi: Disabled AMPDU...");
+    esp_wifi_init(&my_config); // set the new config = "Disable AMPDU"
+    esp_wifi_start();          // Restart WiFi
+    vTaskDelay(500);
+    // ANDROID 10 WORKAROUND==================================================
+#else
+    WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    print_out("Connecting to Network in STA mode");
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        vTaskDelay(1000);
+        print_out(".");
+    }
+#endif
+
+    server.on("/", HTTP_GET, handleRoot);
+    server.on("/on", HTTP_GET, handleOn);
+    server.on("/off", HTTP_GET, handleOff);
+    server.on("/startslew", HTTP_GET, handleSlewRequest);
+    server.on("/stopslew", HTTP_GET, handleSlewOff);
+    server.on("/setCurrent", HTTP_GET, handleSetCurrent);
+    server.on("/readPreset", HTTP_GET, handleGetPresetExposureSettings);
+    server.on("/abort", HTTP_GET, handleAbortCapture);
+    server.on("/status", HTTP_GET, handleStatusRequest);
+    server.on("/version", HTTP_GET, handleVersion);
+    server.on("/setlang", HTTP_GET, handleSetLanguage);
+
+    // Start the server
+    server.begin();
 
 #ifdef AP
-  WiFi.mode(WIFI_MODE_AP);
-  WiFi.softAP(ssid, password);
-  delay(500);
-  Serial.println("Creating Wifi Network");
-
-  //ANDROID 10 WORKAROUND==================================================
-  //set new WiFi configurations
-  WiFi.disconnect();
-  Serial.println("reconfig WiFi...");
-  /*Stop wifi to change config parameters*/
-  esp_wifi_stop();
-  esp_wifi_deinit();
-  /*Disabling AMPDU RX is necessary for Android 10 support*/
-  wifi_init_config_t my_config = WIFI_INIT_CONFIG_DEFAULT();  //We use the default config ...
-  my_config.ampdu_rx_enable = 0;                              //... and modify only what we want.
-  Serial.println("WiFi: Disabled AMPDU...");
-  esp_wifi_init(&my_config);  //set the new config = "Disable AMPDU"
-  esp_wifi_start();           //Restart WiFi
-  delay(500);
-  //ANDROID 10 WORKAROUND==================================================
+    print_out("%s", WiFi.softAPIP().toString().c_str());
 #else
-  WiFi.mode(WIFI_MODE_STA);  // Set ESP32 in station mode
-  WiFi.begin(ssid, password);
-  Serial.println("Connecting to Network in STA mode");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
+    print_out("%s", WiFi.localIP().toString().c_str());
 #endif
-  dnsServer.setTTL(300);
-  dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-  dnsServer.start(DNS_PORT, website_name, WiFi.softAPIP());
 
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/on", HTTP_GET, handleOn);
-  server.on("/off", HTTP_GET, handleOff);
-  server.on("/left", HTTP_GET, handleLeft);
-  server.on("/right", HTTP_GET, handleRight);
-  server.on("/start", HTTP_GET, handleStartCapture);
-  server.on("/abort", HTTP_GET, handleAbortCapture);
-  server.on("/status", HTTP_GET, handleStatusRequest);
-
-  // Start the server
-  server.begin();
-
-#ifdef AP
-  Serial.println(WiFi.softAPIP());
-#else
-  Serial.println(WiFi.localIP());
-#endif
-  pinMode(INTERV_PIN, OUTPUT);
-  pinMode(STATUS_LED, OUTPUT);
-  pinMode(AXIS1_STEP, OUTPUT);
-  pinMode(AXIS1_DIR, OUTPUT);
-  pinMode(EN12_n, OUTPUT);
-  pinMode(MS1, OUTPUT);
-  pinMode(MS2, OUTPUT);
-  digitalWrite(AXIS1_STEP, LOW);
-  digitalWrite(EN12_n, LOW);
-
-  timer0 = timerBegin(0, 2, true);
-  timerAttachInterrupt(timer0, &timer0_ISR, true);
-  initSiderealTracking();
+    dnsServer.setTTL(300);
+    dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
+    dnsServer.start(DNS_PORT, WEBSITE_NAME, WiFi.softAPIP());
 }
 
-void loop() {
-  if (s_slew_active) {
-    //blink status led if mount is in slew mode
-    if (millis() - blink_millis >= 150) {
-      digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
-      blink_millis = millis();
-    }
-  } else {
-    //turn on status led if sidereal tracking is ON
-    digitalWrite(STATUS_LED, (s_sidereal_active == true));
-  }
-  if ((s_slew_active == true) && (millis() - old_millis >= 1200)) {
-    //slewing will stop if button is not pressed again within 1.2sec
-    s_slew_active = false;
-    ledcDetachPin(AXIS1_STEP);
+void setup()
+{
+    // Start the debug serial connection
+    setup_uart(&Serial, 115200);
+    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
+    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
+
+    if (langNum >= LANG_COUNT)
+        language = static_cast<Languages>(0);
+    else
+        language = static_cast<Languages>(langNum);
+
+    // Initialize the pins
+    pinMode(INTERV_PIN, OUTPUT);
+    pinMode(STATUS_LED, OUTPUT);
     pinMode(AXIS1_STEP, OUTPUT);
-    initSiderealTracking();
-  }
+    pinMode(AXIS1_DIR, OUTPUT);
+    pinMode(EN12_n, OUTPUT);
+    pinMode(MS1, OUTPUT);
+    pinMode(MS2, OUTPUT);
+    digitalWrite(AXIS1_STEP, LOW);
+    digitalWrite(EN12_n, LOW);
+    // handleExposureSettings();
 
-  server.handleClient();
-  dnsServer.processNextRequest();
+    // Initialize Wifi and web server
+    setupWireless();
+
+    if (xTaskCreate(uartTask, "UartTask", 4096, NULL, 1, NULL))
+    {
+        print_out("\033c");
+        print_out("Starting uart task");
+    }
+    if (xTaskCreate(intervalometerTask, "intervalometerTask", 4096, NULL, 1, NULL))
+        print_out("Starting intervalometer task");
+    if (xTaskCreatePinnedToCore(webserverTask, "webserverTask", 4096, NULL, 1, NULL, 0))
+        print_out("Starting webserver task");
+    if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
+        print_out("Starting dnsserver task");
+}
+
+void loop()
+{
+    int delay_ticks = 0;
+    for (;;)
+    {
+        if (ra_axis.slewActive)
+        {
+            // Blink status LED if mount is in slew mode
+            digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
+            delay_ticks = 150; // Delay for 150 ms
+        }
+        else
+        {
+            // Turn on status LED if sidereal tracking is ON
+            digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
+            delay_ticks = 1000; // Delay for 1 second
+        }
+        vTaskDelay(delay_ticks);
+    }
+}
+
+void webserverTask(void* pvParameters)
+{
+    for (;;)
+    {
+        server.handleClient();
+        vTaskDelay(1);
+    }
+}
+
+void dnsserverTask(void* pvParameters)
+{
+    for (;;)
+    {
+        dnsServer.processNextRequest();
+        vTaskDelay(1);
+    }
+}
+
+void intervalometerTask(void* pvParameters)
+{
+    intervalometer.readPresetsFromEEPROM();
+
+    for (;;)
+    {
+        if (intervalometer.intervalometerActive)
+            intervalometer.run();
+        vTaskDelay(1);
+    }
+}
+
+void uartTask(void* pvParameters)
+{
+    for (;;)
+    {
+        uart_task();
+        vTaskDelay(1);
+    }
 }

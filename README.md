@@ -5,8 +5,12 @@ up to 300mm and 2.5kg. It's also upgradable which means that you can add a anoth
 - [List of parts](https://docs.google.com/spreadsheets/d/1kcgIab0JqNLg5WMselIyCQLZJsu3P-vXLvSJgl1yHa8)
 - [Assembly video](https://www.youtube.com/watch?v=97YKJrmOWHY)
 
-I plan on selling it in future for around 150$. There is a [discord](https://discord.gg/dyFKm79gKJ) for those who are
-interested or would want to ask me a few questions. New STLs are
+## Table of Contents
+- [Old v1 of the Project](v1/README.md)
+- [Mechanics](mechanics/README.md)
+- [Firmware](esp32_wireless_control/README.md)
+
+The kit can be purchased for around 150$ on [ogstartech.com](https://www.ogstartech.com/start/). There is a [discord](https://discord.gg/dyFKm79gKJ) for those who are interested or would want to ask me a few questions. New STLs are
 on [printables](https://www.printables.com/model/348574-og-star-tracker).
 
 ## License
