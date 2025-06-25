@@ -61,6 +61,13 @@
 #define ARCSEC_PER_STEP 4.0
 #endif
 
+// Set the resolution for goto RA in arcseconds per step
+#if STEPPER_TYPE == STEPPER_0_9
+#define GOTORA_ARCSEC_PER_STEP 0.00000304831581
+#else
+#define GOTORA_ARCSEC_PER_STEP 0.00000609663162
+#endif
+
 // LEDs for intervalometer status and general purpose status led
 #define INTERV_PIN 25
 #define STATUS_LED 26

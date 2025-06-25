@@ -27,9 +27,9 @@ class Position
   public:
     int64_t arcseconds;
 
-    Position(int degrees = 0, int minutes = 0, float seconds = 0.0f);
-    float toDegrees() const;
-    static int64_t toArcseconds(int degrees, int minutes, float seconds);
+    Position(int hours = 0, int minutes = 0, float seconds = 0.0f);
+    float toHours() const;
+    static int64_t toArcseconds(int hours, int minutes, float seconds);
 };
 
 class Axis

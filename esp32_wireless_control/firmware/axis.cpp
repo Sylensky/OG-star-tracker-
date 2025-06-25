@@ -59,19 +59,19 @@ void IRAM_ATTR slewTimeOutTimer_ISR()
 HardwareTimer slewTimeOut(2000, &slewTimeOutTimer_ISR);
 
 // Position class implementation
-Position::Position(int degrees, int minutes, float seconds)
+Position::Position(int hours, int minutes, float seconds)
 {
-    arcseconds = toArcseconds(degrees, minutes, seconds);
+    arcseconds = toArcseconds(hours, minutes, seconds);
 }
 
-float Position::toDegrees() const
+float Position::toHours() const
 {
     return arcseconds / 3600.0f;
 }
 
-int64_t Position::toArcseconds(int degrees, int minutes, float seconds)
+int64_t Position::toArcseconds(int hours, int minutes, float seconds)
 {
-    return (degrees * 3600) + (minutes * 60) + static_cast<int>(seconds);
+    return (hours * 54000) + (minutes * 900) + static_cast<int>(seconds * 15);
 }
 
 Axis::Axis(uint8_t axis, uint8_t dirPinforAxis, bool invertDirPin) : stepTimer(40000000)
@@ -118,7 +118,7 @@ void Axis::stopTracking()
 void Axis::gotoTarget(uint64_t rate, const Position& current, const Position& target)
 {
     int64_t deltaArcseconds = target.arcseconds - current.arcseconds;
-    int64_t stepsToMove = deltaArcseconds / ARCSEC_PER_STEP;
+    int64_t stepsToMove = (deltaArcseconds / GOTORA_ARCSEC_PER_STEP) * 8;
     bool direction = stepsToMove > 0;
 
     resetAxisCount();
