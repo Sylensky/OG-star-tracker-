@@ -429,7 +429,7 @@ const char html_content[] = R"=====(
                 const currentHours = document.getElementById('currentHours').value;
                 const currentMinutes = document.getElementById('currentMinutes').value;
                 const currentSeconds = document.getElementById('currentSeconds').value;
-                var totalArcseconds = (currentHours * 3600) + (currentMinutes * 60) + currentSeconds;
+                var totalArcseconds = (currentHours * 54000) + (currentMinutes * 900) + (currentSeconds * 15);
                 return totalArcseconds;
             }
 
@@ -437,7 +437,7 @@ const char html_content[] = R"=====(
                 const targetHours = document.getElementById('targetHours').value;
                 const targetMinutes = document.getElementById('targetMinutes').value;
                 const targetSeconds = document.getElementById('targetSeconds').value;
-                var totalArcseconds = (targetHours * 3600) + (targetMinutes * 60) + targetSeconds;
+                var totalArcseconds = (targetHours * 54000) + (targetMinutes * 900) + (targetSeconds * 15);
                 return totalArcseconds;
             }
 
@@ -669,21 +669,21 @@ const char html_content[] = R"=====(
                     <h3>%STR_GOTO_RA_TARGET%</h3>
 
                     <h4>Hours:</h4>
-                    <input type="number" id="currentHours" placeholder="0" min="0" max="360"
+                    <input type="number" id="currentHours" placeholder="0" min="0" max="24"
                         onchange="calculateRAInput();">
-                    <input type="number" id="targetHours" placeholder="0" min="0" max="360"
+                    <input type="number" id="targetHours" placeholder="0" min="0" max="24"
                         onchange="calculateRAInput();">
 
                     <h4>Minutes:</h4>
-                    <input type="number" id="currentMinutes" placeholder="0" min="0" max="59"
+                    <input type="number" id="currentMinutes" placeholder="0" min="0" max="60"
                         onchange="calculateRAInput();">
-                    <input type="number" id="targetMinutes" placeholder="0" min="0" max="59"
+                    <input type="number" id="targetMinutes" placeholder="0" min="0" max="60"
                         onchange="calculateRAInput();">
 
                     <h4>Seconds:</h4>
-                    <input type="number" id="currentSeconds" placeholder="0" min="0" max="59"
+                    <input type="number" id="currentSeconds" placeholder="0" min="0" max="60"
                         onchange="calculateRAInput();">
-                    <input type="number" id="targetSeconds" placeholder="0" min="0" max="59"
+                    <input type="number" id="targetSeconds" placeholder="0" min="0" max="60"
                         onchange="calculateRAInput();">
                 </div>
                 <h4>%STR_GOTO_RA_HINT%</h4>
