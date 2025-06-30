@@ -16,6 +16,7 @@
 #include "uart.h"
 #include "web_languages.h"
 #include "website_strings.h"
+#include "bsc5/bsc5ra.h"
 
 SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
@@ -524,6 +525,11 @@ void setup()
     digitalWrite(EN12_n, LOW);
     // handleExposureSettings();
 
+    if (DEFAULT_ENABLE_TRACKING == 1)
+    {
+        ra_axis.startTracking(ra_axis.trackingRate, ra_axis.trackingDirection);
+    }
+
     // Initialize Wifi and web server
     setupWireless();
 
@@ -543,6 +549,11 @@ void setup()
     print_out("Initializing axis with TMC driver...");
 
     ra_axis.begin();
+
+    BSC5 bsc5(bsc5_BSC5ra_bsc5_start, bsc5_BSC5ra_bsc5_end);
+    bsc5.printHeader();
+    bsc5.printStar(0);
+
 }
 
 void loop()
