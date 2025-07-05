@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
 #include <ErriezSerialTerminal.h>
@@ -8,6 +9,8 @@
 #include <string.h>
 
 #include "axis.h"
+#include "bsc5/bsc5_notes.h"
+#include "bsc5/bsc5ra.h"
 #include "commands.h"
 #include "common_strings.h"
 #include "config.h"
@@ -16,7 +19,6 @@
 #include "uart.h"
 #include "web_languages.h"
 #include "website_strings.h"
-#include "bsc5/bsc5ra.h"
 
 SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
@@ -553,7 +555,11 @@ void setup()
     BSC5 bsc5(bsc5_BSC5ra_bsc5_start, bsc5_BSC5ra_bsc5_end);
     bsc5.printHeader();
     bsc5.printStar(0);
-
+    std::list<Note> notes = bsc5_notes.search("polaris");
+    for (auto note : notes) 
+    {
+        print_out_nonl("note: %d %s\n", note.id, note.description.c_str());
+    }
 }
 
 void loop()
