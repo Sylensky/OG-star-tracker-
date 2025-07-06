@@ -28,6 +28,8 @@ const char* chineseLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Capture: Panning",                           // MSG_CAP_PANNING
     "Capture: Delay",                             // MSG_CAP_DELAY
     "Capture: Rewind",                            // MSG_CAP_REWIND
+    "Goto RA: Panning ON",                        // MSG_GOTO_RA_PANNING_ON
+    "Goto RA: Panning OFF",                       // MSG_GOTO_RA_PANNING_OFF
     "空闲"                                        // MSG_IDLE
 };
 
@@ -88,25 +90,33 @@ const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     "Number of Frames",         // STR_FRAMES
     "nº of frames",             // STR_NO_FRAMES
     "Pan Angle",                // STR_PAN_ANGLE
-    "degrees (Ex. 3.45)",       // STR_DEGREES
+    "hours (Ex. 6)",            // STR_HOURS
     "Pan Direction",            // STR_PAN_DIRECTION
     "Left",                     // STR_LEFT
     "Right",                    // STR_RIGHT
-    "Disable Tracking On End",  // STR_ENABLE_TRACKING
-    "No",                       // STR_NO
-    "Yes",                      // STR_YES
-    "Dither",                   // STR_DITHER
-    "Dither Frequency",         // STR_DITHER_FREQ
-    "Lens focal length",        // STR_FOCAL_LENGTH
-    "单位：毫米 (例如: 135)",   // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",        // STR_PIXEL_SIZE
-    "单位：微米 (例如: 4.1)",   // STR_PIXEL_SIZE_HINT
-    "开始拍摄",                 // STR_START_CAPTURE
-    "停止拍摄",                 // STR_ABORT_CAPTURE
-    "Capture Time",             // STR_CAPTURE_TIME
-    "状态",                     // STR_STATUS
-    "就绪",                     // STR_STATUS_MSG
-    "固件版本"                  // STR_FIRMWARE_VERSION
+    "Goto RA Control",          // STR_GOTO_RA_CONTROL
+    "Goto RA Current",          // STR_GOTO_RA_CURRENT
+    "Goto RA Target",           // STR_GOTO_RA_TARGET
+    "将相机对准\n"
+    "一颗容易辨认的恒星（如天津四、牛郎星等）\n"
+    "然后输入目标坐标\n",      // STR_GOTO_RA_HINT
+    "Start Goto RA",           // STR_START_GOTO_RA
+    "Stop Goto RA",            // STR_STOP_GOTO_RA
+    "Disable Tracking On End", // STR_ENABLE_TRACKING
+    "No",                      // STR_NO
+    "Yes",                     // STR_YES
+    "Dither",                  // STR_DITHER
+    "Dither Frequency",        // STR_DITHER_FREQ
+    "Lens focal length",       // STR_FOCAL_LENGTH
+    "单位：毫米 (例如: 135)",  // STR_FOCAL_LENGTH_HINT
+    "Camera pixel size",       // STR_PIXEL_SIZE
+    "单位：微米 (例如: 4.1)",  // STR_PIXEL_SIZE_HINT
+    "开始拍摄",                // STR_START_CAPTURE
+    "停止拍摄",                // STR_ABORT_CAPTURE
+    "Capture Time",            // STR_CAPTURE_TIME
+    "状态",                    // STR_STATUS
+    "就绪",                    // STR_STATUS_MSG
+    "固件版本"                 // STR_FIRMWARE_VERSION
 };
 
 #endif

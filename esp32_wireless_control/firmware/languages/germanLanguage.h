@@ -28,6 +28,8 @@ const char* germanLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Aufnahme: Schwenken",                              // MSG_CAP_PANNING
     "Aufnahme: Verzögern",                              // MSG_CAP_DELAY
     "Aufnahme: Zurückspulen",                           // MSG_CAP_REWIND
+    "Goto RA: Panning ON",                              // MSG_GOTO_RA_PANNING_ON
+    "Goto RA: Panning OFF",                             // MSG_GOTO_RA_PANNING_OFF
     "Leerlauf",                                         // MSG_IDLE
 };
 
@@ -88,25 +90,33 @@ const char* germanLangHTMLStrings[numberOfHTMLStrings] = {
     "Anzahl der Bilder",                            // STR_FRAMES
     "nº der Bilder",                                // STR_NO_FRAMES
     "Schwenkwinkel",                                // STR_PAN_ANGLE
-    "in Grad (z.B. 3.45)",                          // STR_DEGREES
+    "in Stunden (z.B. 6)",                          // STR_HOURS
     "Schwenkrichtung",                              // STR_PAN_DIRECTION
     "Links",                                        // STR_LEFT
     "Rechts",                                       // STR_RIGHT
-    "Verfolgung am Ende Deaktivieren",              // STR_ENABLE_TRACKING
-    "Nein",                                         // STR_NO
-    "Ja",                                           // STR_YES
-    "Zittern",                                      // STR_DITHER
-    "Zitterfrequenz",                               // STR_DITHER_FREQ
-    "Brennweite des Objektivs",                     // STR_FOCAL_LENGTH
-    "in Millimetern (z.B. 135)",                    // STR_FOCAL_LENGTH_HINT
-    "Pixelgröße des Bildsensors",                   // STR_PIXEL_SIZE
-    "in Mikrometern (z.B. 4.1)",                    // STR_PIXEL_SIZE_HINT
-    "Aufnahme Starten",                             // STR_START_CAPTURE
-    "Aufnahme Abbrechen",                           // STR_ABORT_CAPTURE
-    "Aufnahmezeit",                                 // STR_CAPTURE_TIME
-    "Status",                                       // STR_STATUS
-    "Bereit",                                       // STR_STATUS_MSG
-    "Firmware Version"                              // STR_FIRMWARE_VERSION
+    "Goto RA Control",                              // STR_GOTO_RA_CONTROL
+    "Goto RA Aktuell",                              // STR_GOTO_RA_CURRENT
+    "Goto RA Ziel",                                 // STR_GOTO_RA_TARGET
+    "Richten Sie Ihre Kamera auf\n"
+    "einen markanten Stern wie Deneb, Altair...\n"
+    "und geben Sie dann die Koordinaten des Ziels ein\n", // STR_GOTO_RA_HINT
+    "Start Goto RA",                                      // STR_START_GOTO_RA
+    "Stop Goto RA",                                       // STR_STOP_GOTO_RA
+    "Verfolgung am Ende Deaktivieren",                    // STR_ENABLE_TRACKING
+    "Nein",                                               // STR_NO
+    "Ja",                                                 // STR_YES
+    "Zittern",                                            // STR_DITHER
+    "Zitterfrequenz",                                     // STR_DITHER_FREQ
+    "Brennweite des Objektivs",                           // STR_FOCAL_LENGTH
+    "in Millimetern (z.B. 135)",                          // STR_FOCAL_LENGTH_HINT
+    "Pixelgröße des Bildsensors",                         // STR_PIXEL_SIZE
+    "in Mikrometern (z.B. 4.1)",                          // STR_PIXEL_SIZE_HINT
+    "Aufnahme Starten",                                   // STR_START_CAPTURE
+    "Aufnahme Abbrechen",                                 // STR_ABORT_CAPTURE
+    "Aufnahmezeit",                                       // STR_CAPTURE_TIME
+    "Status",                                             // STR_STATUS
+    "Bereit",                                             // STR_STATUS_MSG
+    "Firmware Version"                                    // STR_FIRMWARE_VERSION
 };
 
 #endif

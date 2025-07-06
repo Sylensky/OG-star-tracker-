@@ -31,6 +31,8 @@ const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "", // MSG_CAP_PANNING
     "", // MSG_CAP_DELAY
     "", // MSG_CAP_REWIND
+    "", // MSG_GOTO_RA_PANNING_ON
+    "", // MSG_GOTO_RA_PANNING_OFF
     "", // MSG_IDLE
 };
 
@@ -91,10 +93,16 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_FRAMES
     "", // STR_NO_FRAMES
     "", // STR_PAN_ANGLE
-    "", // STR_DEGREES
+    "", // STR_HOURS
     "", // STR_PAN_DIRECTION
     "", // STR_LEFT
     "", // STR_RIGHT
+    "", // STR_GOTO_RA_CONTROL
+    "", // STR_GOTO_RA_CURRENT
+    "", // STR_GOTO_RA_TARGET
+    "", // STR_GOTO_RA_HINT
+    "", // STR_START_GOTO_RA
+    "", // STR_STOP_GOTO_RA
     "", // STR_ENABLE_TRACKING
     "", // STR_NO
     "", // STR_YES

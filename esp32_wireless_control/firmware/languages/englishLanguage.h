@@ -28,6 +28,8 @@ const char* englishLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Capture: Panning",                           // MSG_CAP_PANNING
     "Capture: Delay",                             // MSG_CAP_DELAY
     "Capture: Rewind",                            // MSG_CAP_REWIND
+    "Goto RA: Panning ON",                        // MSG_GOTO_RA_PANNING_ON
+    "Goto RA: Panning OFF",                       // MSG_GOTO_RA_PANNING_OFF
     "Idle",                                       // MSG_IDLE
 };
 
@@ -88,25 +90,33 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "Number of Frames",              // STR_FRAMES
     "nº of frames",                  // STR_NO_FRAMES
     "Pan Angle",                     // STR_PAN_ANGLE
-    "degrees (Ex. 3.45)",            // STR_DEGREES
+    "hours (Ex. 6)",                 // STR_HOURS
     "Pan Direction",                 // STR_PAN_DIRECTION
     "Left",                          // STR_LEFT
     "Right",                         // STR_RIGHT
-    "Disable Tracking On End",       // STR_ENABLE_TRACKING
-    "No",                            // STR_NO
-    "Yes",                           // STR_YES
-    "Dither",                        // STR_DITHER
-    "Dither Frequency",              // STR_DITHER_FREQ
-    "Lens focal length",             // STR_FOCAL_LENGTH
-    "in millimeters (Ex. 135)",      // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",             // STR_PIXEL_SIZE
-    "in micrometers (Ex. 4.1)",      // STR_PIXEL_SIZE_HINT
-    "Start Capture",                 // STR_START_CAPTURE
-    "Abort Capture",                 // STR_ABORT_CAPTURE
-    "Capture Time",                  // STR_CAPTURE_TIME
-    "Status",                        // STR_STATUS
-    "Ready",                         // STR_STATUS_MSG
-    "Firmware Version"               // STR_FIRMWARE_VERSION
+    "Goto RA Control",               // STR_GOTO_RA_CONTROL
+    "Goto RA Current",               // STR_GOTO_RA_CURRENT
+    "Goto RA Target",                // STR_GOTO_RA_TARGET
+    "Center your camera on\n"
+    "memorable star like Deneb,Altair..\n"
+    "then enter coordinates of target\n", // STR_GOTO_RA_HINT
+    "Start Goto RA",                      // STR_START_GOTO_RA
+    "Stop Goto RA",                       // STR_STOP_GOTO_RA
+    "Disable Tracking On End",            // STR_ENABLE_TRACKING
+    "No",                                 // STR_NO
+    "Yes",                                // STR_YES
+    "Dither",                             // STR_DITHER
+    "Dither Frequency",                   // STR_DITHER_FREQ
+    "Lens focal length",                  // STR_FOCAL_LENGTH
+    "in millimeters (Ex. 135)",           // STR_FOCAL_LENGTH_HINT
+    "Camera pixel size",                  // STR_PIXEL_SIZE
+    "in micrometers (Ex. 4.1)",           // STR_PIXEL_SIZE_HINT
+    "Start Capture",                      // STR_START_CAPTURE
+    "Abort Capture",                      // STR_ABORT_CAPTURE
+    "Capture Time",                       // STR_CAPTURE_TIME
+    "Status",                             // STR_STATUS
+    "Ready",                              // STR_STATUS_MSG
+    "Firmware Version"                    // STR_FIRMWARE_VERSION
 };
 
 #endif
