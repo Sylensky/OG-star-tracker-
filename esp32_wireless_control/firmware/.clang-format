@@ -20,4 +20,4 @@ SpaceBeforeParens: ControlStatements
 SpacesInAngles: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: false
-Standard: Cpp11
+Standard: Cpp20
