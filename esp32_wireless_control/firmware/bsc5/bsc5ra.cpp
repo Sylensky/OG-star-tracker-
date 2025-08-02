@@ -53,8 +53,14 @@ std::optional<Entry> BSC5::findByXno(float xno)
 
         if (entry->xno == xno)
         {
-            entry->_sra0 = ntoh64(&entry->_sra0);
-            entry->_sdec0 = ntoh64(&entry->_sdec0);
+            {
+                uint64_t tmp = entry->_sra0;
+                entry->_sra0 = ntoh64(&tmp);
+            }
+            {
+                uint64_t tmp = entry->_sdec0;
+                entry->_sdec0 = ntoh64(&tmp);
+            }
             entry->mag = ntohs(entry->mag);
             entry->_xrpm = ntohl(entry->_xrpm);
             entry->_xdpm = ntohl(entry->_xdpm);
@@ -117,8 +123,14 @@ void BSC5::printStar(int32_t index)
     //	print_out("");
 
     entry->_xno = ntohl(entry->_xno);
-    entry->_sra0 = ntoh64(&entry->_sra0);
-    entry->_sdec0 = ntoh64(&entry->_sdec0);
+    {
+        uint64_t tmp = entry->_sra0;
+        entry->_sra0 = ntoh64(&tmp);
+    }
+    {
+        uint64_t tmp = entry->_sdec0;
+        entry->_sdec0 = ntoh64(&tmp);
+    }
     entry->mag = ntohs(entry->mag);
     entry->_xrpm = ntohl(entry->_xrpm);
     entry->_xdpm = ntohl(entry->_xdpm);
