@@ -13,15 +13,6 @@ enum TrackingRateType
     TRACKING_SOLAR = 1,
     TRACKING_LUNAR = 2
 };
-// gear ratio 101.25, 1.8deg motor, 16?? msteps, f_cpu@240MHz
-//#define TRACKER_MOTOR_MICROSTEPPING 16
-//#define STEPS_PER_SECOND_256MICROSTEP	60
-//enum trackingRateS
-//{
-//    TRACKING_SIDEREAL = 15956296, // SIDEREAL (23h,56 min)
-//    TRACKING_SOLAR = 16000000,    // SOLAR (24h)
-//    TRACKING_LUNAR = 16343204,    // LUNAR (24h, 31 min)
-//};
 
 // Tracking rates class with calculated timer reload values
 class TrackingRates

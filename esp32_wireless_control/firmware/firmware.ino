@@ -558,11 +558,6 @@ void setup()
     digitalWrite(EN12_n, LOW);
     // handleExposureSettings();
 
-    if (DEFAULT_ENABLE_TRACKING == 1)
-    {
-        ra_axis.startTracking(ra_axis.trackingRate, ra_axis.trackingDirection);
-    }
-
     // Initialize Wifi and web server
     setupWireless();
 
