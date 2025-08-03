@@ -14,6 +14,12 @@
 
 #include "star_database_interface.h"
 
+// Forward declarations
+struct NGCEntry;
+
+// Forward declare NGC2000
+class NGC2000;
+
 class StarDatabase
 {
   protected:

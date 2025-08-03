@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ngc/ngc2000.h"
+
 #include "star_database.h"
 #include "uart.h"
 
@@ -11,6 +13,9 @@ StarDatabase::StarDatabase(StarDatabaseType db_type, const uint8_t* start, const
 {
     switch (db_type)
     {
+        case DB_NGC2000:
+            _backend = new NGC2000(start, end);
+            break;
         default:
             print_out("Error: Unsupported database type %d", db_type);
             break;

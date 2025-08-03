@@ -15,6 +15,7 @@
 enum StarDatabaseType
 {
     DB_NONE = 0,
+    DB_NGC2000,         // New General Catalogue
 };
 
 // Unified object entry for search results
