@@ -9,13 +9,14 @@
 #include <string.h>
 
 #include "axis.h"
-#include "bsc5/bsc5_notes.h"
-#include "bsc5/bsc5ra.h"
+// #include "bsc5/bsc5_notes.h"
+// #include "bsc5/bsc5ra.h"
 #include "commands.h"
 #include "common_strings.h"
 #include "config.h"
 #include "hardwaretimer.h"
 #include "intervalometer.h"
+#include "star_database.h"
 #include "uart.h"
 #include "web_languages.h"
 #include "website_strings.h"
@@ -31,6 +32,8 @@ void intervalometerTask(void* pvParameters);
 
 extern const uint8_t interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t interface_index_html_end[] asm("_binary_interface_index_html_end");
+
+// Defer large JSON allocation to setup()
 
 // Handle requests to the root URL ("/")
 void handleRoot()
@@ -419,31 +422,32 @@ void handleVersion()
 
 void handleSearch()
 {
-    String query = server.arg("q");
-    String json;
-    JsonDocument results;
+    // String query = server.arg("q");
+    // String json;
+    // JsonDocument results;
 
-    std::list<Note> notes = bsc5_notes.search(query);
-    for(auto note : notes) {
-//    	print_out_nonl("note: %d %s\n", note.id, note.description.c_str());
-//    	results.add(note.toJson(results));
+    // std::list<Note> notes = bsc5_notes.search(query);
+    // for (auto note : notes)
+    // {
+    //     //    	print_out_nonl("note: %d %s\n", note.id, note.description.c_str());
+    //     //    	results.add(note.toJson(results));
 
-    	std::optional<Entry> entry = bsc5.findByXno(note.id);
-    	if(entry.has_value())
-    	{
-    		print_out_nonl("Description: %s\n", note.description.c_str());
-    		entry.value().print();
-    	}
-    	note.toJson(results);
+    //     std::optional<Entry> entry = bsc5.findByXno(note.id);
+    //     if (entry.has_value())
+    //     {
+    //         print_out_nonl("Description: %s\n", note.description.c_str());
+    //         entry.value().print();
+    //     }
+    //     note.toJson(results);
 
-//    	JsonObject jsonNote = results.add<JsonObject>();
-//    	jsonNote["id"] = note.id;
-//    	jsonNote["description"] = note.description;
-    }
-    serializeJson(results, json);
-    // print_out(json);
+    //     //    	JsonObject jsonNote = results.add<JsonObject>();
+    //     //    	jsonNote["id"] = note.id;
+    //     //    	jsonNote["description"] = note.description;
+    // }
+    // serializeJson(results, json);
+    // // print_out(json);
 
-    server.send(200, MIME_APPLICATION_JSON, json);
+    // server.send(200, MIME_APPLICATION_JSON, json);
 }
 
 void setupWireless()
@@ -578,14 +582,56 @@ void setup()
 
     ra_axis.begin();
 
-    BSC5 bsc5(bsc5_BSC5ra_bsc5_start, bsc5_BSC5ra_bsc5_end);
-    bsc5.printHeader();
-    bsc5.printStar(0);
-    std::list<Note> notes = bsc5_notes.search("polaris");
-    for (auto note : notes) 
+    print_out("StarDatabase Unified Catalog Example");
+    print_out("====================================");
+
+    StarDatabase* starDB = nullptr;
+    bool ok = false;
+
+#if STAR_DATABASE == DB_NGC2000
+    // extern const uint8_t _binary_ngc_ngc2000_json_start[];
+    // extern const uint8_t _binary_ngc_ngc2000_json_end[];
+    // size_t star_database_json_len = _binary_ngc_ngc2000_json_end -
+    // _binary_ngc_ngc2000_json_start; starDB = new StarDatabase(DB_NGC2000); ok =
+    // starDB->loadDatabase((const char*) _binary_ngc_ngc2000_json_start, star_database_json_len);
+#elif STAR_DATABASE == DB_BSC5
+    extern const uint8_t _binary_bsc5_bsc5_stars_with_notes_json_start[];
+    extern const uint8_t _binary_bsc5_bsc5_stars_with_notes_json_end[];
+    size_t star_database_json_len =
+        _binary_bsc5_bsc5_stars_with_notes_json_end - _binary_bsc5_bsc5_stars_with_notes_json_start;
+    starDB = new StarDatabase(DB_BSC5);
+    ok = starDB->loadDatabase((const char*) _binary_bsc5_bsc5_stars_with_notes_json_start,
+                              star_database_json_len);
+#endif
+
+    if (ok)
     {
-        print_out_nonl("note: %d %s\n", note.id, note.description.c_str());
+        print_out("Database loaded successfully!");
+        starDB->printDatabaseInfo();
     }
+    else
+    {
+        print_out("Failed to load any databases");
+        return;
+    }
+
+    UnifiedEntry obj;
+
+    // Example 1: Search for a star by name
+    if (starDB->findByName("Andromeda", obj))
+    {
+        print_out("\nFound object containing 'Andromeda':");
+        obj.print();
+    }
+
+    // BSC5 bsc5(bsc5_BSC5ra_bsc5_start, bsc5_BSC5ra_bsc5_end);
+    // bsc5.printHeader();
+    // bsc5.printStar(0);
+    // std::list<Note> notes = bsc5_notes.search("polaris");
+    // for (auto note : notes)
+    // {
+    //     print_out_nonl("note: %d %s\n", note.id, note.description.c_str());
+    // }
 }
 
 void loop()

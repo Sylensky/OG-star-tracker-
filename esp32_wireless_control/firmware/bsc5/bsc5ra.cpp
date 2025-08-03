@@ -1,151 +1,387 @@
 #include "bsc5ra.h"
 #include "uart.h"
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include <cmath>
+#include <cstring>
 
-#define ntohll(x) ((((uint64_t) ntohl(x)) << 32) + (ntohl((x) >> 32)))
+// Global instance - simplified initialization
+BSC5 bsc5(nullptr, nullptr);
 
-BSC5 bsc5(bsc5_BSC5ra_bsc5_start, bsc5_BSC5ra_bsc5_end);
-
-uint64_t ntoh64(const uint64_t* input)
+// StarEntry methods
+void StarEntry::print() const
 {
-    uint64_t rval;
-    uint8_t* data = (uint8_t*) &rval;
-
-    data[0] = *input >> 56;
-    data[1] = *input >> 48;
-    data[2] = *input >> 40;
-    data[3] = *input >> 32;
-    data[4] = *input >> 24;
-    data[5] = *input >> 16;
-    data[6] = *input >> 8;
-    data[7] = *input >> 0;
-
-    return rval;
-}
-
-// Entry Entry::newFromIndex(int32_t index)
-//{
-//
-// }
-
-BSC5::BSC5(const uint8_t* start, const uint8_t* end) : _start(start), _end(end)
-{
-}
-
-std::optional<Entry> BSC5::findByXno(float xno)
-{
-    bsc5_entry_t _entry;
-    bsc5_entry_t* entry = &_entry;
-    const uint8_t* i = 0;
-    char is[3] = {0};
-
-    print_out("Catalog number of star to search: %.0f", xno);
-
-    for (i = _start + sizeof(bsc5_header_t); i < _end; i += sizeof(bsc5_entry_t))
+    print_out("=== Star Information ===");
+    print_out("Catalog ID: %u", id);
+    print_out("Name: %s", name.c_str());
+    print_out("Right Ascension (radians): %.10f", ra);
+    print_out("Declination (radians): %.10f", dec);
+    print_out("Spectral type: %s", spec.c_str());
+    print_out("Magnitude: %.2f", mag);
+    print_out("RA proper motion: %.15f", ra_pm);
+    print_out("Dec proper motion: %.15f", dec_pm);
+    if (notes.length() > 0)
     {
-        //		bcopy(_start+sizeof(bsc5_header_t)+i*sizeof(bsc5_entry_t), &_entry,
-        // sizeof(bsc5_entry_t));
+        print_out("Notes: %s", notes.c_str());
+    }
+}
 
-        bcopy(i, &_entry, sizeof(bsc5_entry_t));
+// BSC5 class implementation - simplified
+BSC5::BSC5(const uint8_t* start, const uint8_t* end)
+    : StarDatabase(DB_BSC5), _start(start), _end(end), _doc(nullptr), _using_json(false),
+      _star_count(0)
+{
+}
 
-        entry->_xno = ntohl(entry->_xno);
+BSC5::BSC5()
+    : StarDatabase(DB_BSC5), _start(nullptr), _end(nullptr), _doc(nullptr), _using_json(false),
+      _star_count(0)
+{
+}
 
-        //		print_out("Search for: %.0f; current: %.0f", xno, entry->xno);
+bool BSC5::begin_json(const String& json_data)
+{
+    _using_json = true;
+    _star_count = 0;
 
-        if (entry->xno == xno)
+    // Allocate JsonDocument
+    if (_doc)
+    {
+        delete _doc;
+    }
+    _doc = new JsonDocument;
+
+    DeserializationError error = deserializeJson(*_doc, json_data);
+    if (error)
+    {
+        print_out("JSON parsing failed: %s", error.c_str());
+        delete _doc;
+        _doc = nullptr;
+        return false;
+    }
+
+    // Simple approach - check for stars array or use direct array
+    JsonVariant starsVar = (*_doc)["stars"];
+    if (starsVar.is<JsonArray>())
+    {
+        // New format with metadata
+        _star_count = starsVar.as<JsonArray>().size();
+
+        JsonVariant catalogVar = (*_doc)["catalog"];
+        if (catalogVar.is<const char*>())
         {
-            {
-                uint64_t tmp = entry->_sra0;
-                entry->_sra0 = ntoh64(&tmp);
-            }
-            {
-                uint64_t tmp = entry->_sdec0;
-                entry->_sdec0 = ntoh64(&tmp);
-            }
-            entry->mag = ntohs(entry->mag);
-            entry->_xrpm = ntohl(entry->_xrpm);
-            entry->_xdpm = ntohl(entry->_xdpm);
-
-            is[0] = entry->is[0];
-            is[1] = entry->is[1];
-
-            return Entry(entry->xno, entry->sra0, entry->sdec0, is, entry->mag, entry->xrpm,
-                         entry->xdpm);
+            print_out("Catalog: %s", catalogVar.as<const char*>());
         }
     }
-    return {};
+    else if (_doc->is<JsonArray>())
+    {
+        // Legacy format - direct array
+        _star_count = _doc->as<JsonArray>().size();
+    }
+    else
+    {
+        print_out("Invalid JSON format");
+        delete _doc;
+        _doc = nullptr;
+        return false;
+    }
+
+    print_out("Loaded %zu stars from JSON", _star_count);
+    return _star_count > 0;
 }
 
+bool BSC5::findStarById(uint32_t id, StarEntry& result) const
+{
+    if (!_using_json || !_doc)
+        return false;
+
+    JsonArray stars;
+    JsonVariant starsVar = (*_doc)["stars"];
+
+    if (starsVar.is<JsonArray>())
+    {
+        stars = starsVar.as<JsonArray>();
+    }
+    else if (_doc->is<JsonArray>())
+    {
+        stars = _doc->as<JsonArray>();
+    }
+    else
+    {
+        return false;
+    }
+
+    for (JsonVariant starVar : stars)
+    {
+        JsonObject star = starVar.as<JsonObject>();
+
+        // Check for both 'id' and 'xno' fields
+        uint32_t star_id = 0;
+        if (star["id"].is<uint32_t>())
+        {
+            star_id = star["id"].as<uint32_t>();
+        }
+        else if (star["xno"].is<uint32_t>())
+        {
+            star_id = star["xno"].as<uint32_t>();
+        }
+
+        if (star_id == id)
+        {
+            return parseStarFromJson(star, result);
+        }
+    }
+
+    return false;
+}
+
+bool BSC5::findStarByName(const String& name_fragment, StarEntry& result) const
+{
+    if (!_using_json || !_doc)
+        return false;
+
+    JsonArray stars;
+    JsonVariant starsVar = (*_doc)["stars"];
+
+    if (starsVar.is<JsonArray>())
+    {
+        stars = starsVar.as<JsonArray>();
+    }
+    else if (_doc->is<JsonArray>())
+    {
+        stars = _doc->as<JsonArray>();
+    }
+    else
+    {
+        return false;
+    }
+
+    String search_term = name_fragment;
+    search_term.toLowerCase();
+
+    for (JsonVariant starVar : stars)
+    {
+        JsonObject star = starVar.as<JsonObject>();
+        String star_name = star["name"].as<String>();
+        star_name.toLowerCase();
+
+        if (star_name.indexOf(search_term) >= 0)
+        {
+            return parseStarFromJson(star, result);
+        }
+    }
+
+    return false;
+}
+
+bool BSC5::parseStarFromJson(JsonObject star_obj, StarEntry& star) const
+{
+    // Handle ID field
+    if (star_obj["id"].is<uint32_t>())
+    {
+        star.id = star_obj["id"].as<uint32_t>();
+    }
+    else if (star_obj["xno"].is<uint32_t>())
+    {
+        star.id = star_obj["xno"].as<uint32_t>();
+    }
+
+    // Handle coordinate fields
+    if (star_obj["ra"].is<double>())
+    {
+        star.ra = star_obj["ra"].as<double>();
+        star.dec = star_obj["dec"].as<double>();
+    }
+    else
+    {
+        star.ra = star_obj["sra0"].as<double>();
+        star.dec = star_obj["sdec0"].as<double>();
+    }
+
+    // Handle spectral type
+    if (star_obj["spec"].is<const char*>())
+    {
+        star.spec = star_obj["spec"].as<String>();
+    }
+    else if (star_obj["spectral_type"].is<const char*>())
+    {
+        star.spec = star_obj["spectral_type"].as<String>();
+    }
+
+    star.mag = star_obj["mag"].as<float>();
+    star.name = star_obj["name"].as<String>();
+
+    // Handle proper motion (set both field names for compatibility)
+    star.ra_pm = star_obj["ra_pm"].as<double>();
+    star.dec_pm = star_obj["dec_pm"].as<double>();
+    star.pm_ra = star.ra_pm;
+    star.pm_dec = star.dec_pm;
+
+    // Handle notes
+    star.notes = "";
+    JsonVariant notesVar = star_obj["notes"];
+    if (notesVar.is<JsonArray>())
+    {
+        JsonArray notes_array = notesVar.as<JsonArray>();
+        for (JsonVariant note : notes_array)
+        {
+            if (star.notes.length() > 0)
+            {
+                star.notes += "; ";
+            }
+            star.notes += note.as<String>();
+        }
+    }
+
+    return true;
+}
+
+void BSC5::printStar(const StarEntry& star) const
+{
+    star.print();
+}
+
+// Legacy Entry print method
 void Entry::print()
 {
-    print_out("Catalog number of star: %.0f", this->xno);
-    print_out("B1950 Right Ascension (radians): %.20f", this->sra0);
-    print_out("B1950 Declination (radians): %.20f", this->sdec0);
-    print_out("Spectral type (2 characters): %s", this->is);
-    print_out("V Magnitude * 100: %d", this->mag);
-    print_out("R.A. proper motion (radians per year): %.20f", this->xrpm);
-    print_out("Dec. proper motion (radians per year): %.20f", this->xdpm);
+    print_out("Legacy Entry:");
+    print_out("XNO: %.0f", xno);
+    print_out("RA: %.10f", sra0);
+    print_out("Dec: %.10f", sdec0);
+    print_out("Spectral: %s", is.c_str());
+    print_out("Magnitude: %.2f", mag / 100.0);
 }
 
-void BSC5::printHeader()
+// StarDatabase virtual function implementations
+bool BSC5::loadDatabase(const char* json_data)
 {
-    bsc5_header_t _header;
-    bsc5_header_t* header = &_header;
-    bcopy(_start, &_header, sizeof(bsc5_header_t));
-
-    header->star0 = ntohl(header->star0);
-    header->star1 = ntohl(header->star1);
-    header->starn = abs(static_cast<int32_t>(ntohl(header->starn)));
-    header->stnum = ntohl(header->stnum);
-    header->mprop = ntohl(header->mprop);
-    header->nmag = ntohl(header->nmag);
-    header->nbent = ntohl(header->nbent);
-
-    print_out("Subtract from star number to get sequence number: %d", header->star0);
-    print_out("First star number in file: %d", header->star1);
-    print_out("Number of stars in file: %d", header->starn);
-    print_out("i.d. numbers: %d", header->stnum);
-    print_out("proper motion is included: %d", header->mprop);
-    print_out("Number of magnitudes present (-1=J2000 instead of B1950): %d", header->nmag);
-    print_out("Number of bytes per star entry: %d", header->nbent);
+    return begin_json(String(json_data));
 }
 
-void BSC5::printStar(int32_t index)
+// New overload for pointer+length
+bool BSC5::loadDatabase(const char* json_data, size_t len)
 {
-    bsc5_entry_t _entry;
-    bsc5_entry_t* entry = &_entry;
-    bcopy(_start + sizeof(bsc5_header_t) + index * sizeof(bsc5_entry_t), &_entry,
-          sizeof(bsc5_entry_t));
+    // Avoid extra copy if possible
+    String json_str(json_data, len);
+    return begin_json(json_str);
+}
 
-    //	print_out_nonl("Hex: ");
-    //	for(int i = 0; i<sizeof(bsc5_entry_t); i++) {
-    //		print_out_nonl("%2X ", *((char *)entry+i));
-    //	}
-    //	print_out("");
+bool BSC5::isLoaded() const
+{
+    return _using_json && _doc && _star_count > 0;
+}
 
-    entry->_xno = ntohl(entry->_xno);
+bool BSC5::findByName(const String& name, UnifiedEntry& result) const
+{
+    StarEntry star;
+    if (findStarByName(name, star))
     {
-        uint64_t tmp = entry->_sra0;
-        entry->_sra0 = ntoh64(&tmp);
+        return convertStarToUnified(star, result);
     }
+    return false;
+}
+
+bool BSC5::findByNameFragment(const String& name_fragment, UnifiedEntry& result) const
+{
+    if (!_using_json || !_doc)
+        return false;
+
+    JsonArray stars;
+    JsonVariant starsVar = (*_doc)["stars"];
+
+    if (starsVar.is<JsonArray>())
     {
-        uint64_t tmp = entry->_sdec0;
-        entry->_sdec0 = ntoh64(&tmp);
+        stars = starsVar.as<JsonArray>();
     }
-    entry->mag = ntohs(entry->mag);
-    entry->_xrpm = ntohl(entry->_xrpm);
-    entry->_xdpm = ntohl(entry->_xdpm);
+    else if (_doc->is<JsonArray>())
+    {
+        stars = _doc->as<JsonArray>();
+    }
+    else
+    {
+        return false;
+    }
 
-    //	print_out_nonl("Hex: ");
-    //	for(int i = 0; i<sizeof(bsc5_entry_t); i++) {
-    //		print_out_nonl("%2X ", *((char *)entry+i));
-    //	}
-    //	print_out("");
+    String search_term = name_fragment;
+    search_term.toLowerCase();
 
-    print_out("Catalog number of star: %.0f", entry->xno);
-    print_out("B1950 Right Ascension (radians): %.20f", entry->sra0);
-    print_out("B1950 Declination (radians): %.20f", entry->sdec0);
-    print_out("Spectral type (2 characters): %c%c", entry->is[0], entry->is[1]);
-    print_out("V Magnitude * 100: %d", entry->mag);
-    print_out("R.A. proper motion (radians per year): %.20f", entry->xrpm);
-    print_out("Dec. proper motion (radians per year): %.20f", entry->xdpm);
+    for (JsonVariant starVar : stars)
+    {
+        JsonObject star = starVar.as<JsonObject>();
+        String star_name = star["name"].as<String>();
+        star_name.toLowerCase();
+
+        if (star_name.indexOf(search_term) >= 0)
+        {
+            StarEntry star_entry;
+            if (parseStarFromJson(star, star_entry))
+            {
+                return convertStarToUnified(star_entry, result);
+            }
+        }
+    }
+
+    return false;
+}
+
+bool BSC5::findByIndex(size_t index, UnifiedEntry& result) const
+{
+    StarEntry star;
+    if (findStarById(index + 1, star)) // BSC5 IDs typically start from 1
+    {
+        return convertStarToUnified(star, result);
+    }
+    return false;
+}
+
+size_t BSC5::getTotalObjectCount() const
+{
+    return _star_count;
+}
+
+void BSC5::printDatabaseInfo() const
+{
+    print_out("=== BSC5 Database Info ===");
+    print_out("Database Type: BSC5 (Yale Bright Star Catalog)");
+    print_out("Loaded: %s", isLoaded() ? "Yes" : "No");
+    if (isLoaded())
+    {
+        print_out("Total Stars: %zu", _star_count);
+    }
+    print_out("=========================");
+}
+
+String BSC5::formatCoordinates(double ra_deg, double dec_deg) const
+{
+    // BSC5 style formatting
+    int ra_h = (int) (ra_deg / 15.0);
+    int ra_m = (int) ((ra_deg / 15.0 - ra_h) * 60.0);
+    double ra_s = ((ra_deg / 15.0 - ra_h) * 60.0 - ra_m) * 60.0;
+
+    int dec_d = (int) abs(dec_deg);
+    int dec_m = (int) ((abs(dec_deg) - dec_d) * 60.0);
+    double dec_s = ((abs(dec_deg) - dec_d) * 60.0 - dec_m) * 60.0;
+
+    char coord_str[50];
+    snprintf(coord_str, sizeof(coord_str), "%02dh%02dm%06.3fs %c%02dd%02dm%06.3fs", ra_h, ra_m,
+             ra_s, (dec_deg >= 0) ? '+' : '-', dec_d, dec_m, dec_s);
+
+    return String(coord_str);
+}
+
+bool BSC5::convertStarToUnified(const StarEntry& star, UnifiedEntry& unified) const
+{
+    unified.name = star.name.length() > 0 ? star.name : String("HR ") + String(star.id);
+    unified.type_str = "Star";
+    unified.ra_deg = star.ra * 180.0 / M_PI; // Convert from radians to degrees
+    unified.dec_deg = star.dec * 180.0 / M_PI;
+    unified.magnitude = star.mag;
+    unified.constellation = ""; // BSC5 doesn't include constellation in our JSON
+    unified.description = "";
+    unified.source_db = DB_BSC5;
+    unified.spectral_type = star.spec;
+    unified.size_arcmin = 0.0;
+    unified.notes = star.notes;
+
+    return true;
 }

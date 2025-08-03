@@ -34,6 +34,13 @@
 #define TRACKING_RATE TRACKING_SIDEREAL // default tracking rate
 #endif
 
+#ifndef STAR_DATABASE
+// Available databases:
+// DB_BSC5 - BSC5 star catalog
+// DB_NGC2000 - NGC 2000 deep-sky catalog
+#define STAR_DATABASE DB_BSC5 // default database
+#endif
+
 // Set the microstepping for the stepper motor
 #ifndef TRACKER_MOTOR_MICROSTEPPING
 #define TRACKER_MOTOR_MICROSTEPPING 64 // Default to 64 microstepping mode
