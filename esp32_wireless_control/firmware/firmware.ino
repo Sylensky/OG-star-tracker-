@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "axis.h"
+#include "catalogues/star_database.h"
 #include "commands.h"
 #include "common_strings.h"
 #include "config.h"
@@ -20,6 +21,7 @@
 SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
 Languages language = EN;
+StarDatabase* starDB = nullptr;
 
 void uartTask(void* pvParameters);
 void consoleTask(void* pvParameters);
@@ -28,6 +30,11 @@ void intervalometerTask(void* pvParameters);
 
 extern const uint8_t interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t interface_index_html_end[] asm("_binary_interface_index_html_end");
+
+extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_start[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_bin_start");
+extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_end[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_bin_end");
 
 // Handle requests to the root URL ("/")
 void handleRoot()
@@ -543,6 +550,28 @@ void setup()
     print_out("Initializing axis with TMC driver...");
 
     ra_axis.begin();
+
+#if STAR_DATABASE == DB_NGC2000
+    size_t star_database_len =
+        _catalogues_ngc_converted_ngc2000_bin_end - _catalogues_ngc_converted_ngc2000_bin_start;
+    print_out("Setup: NGC2000 database size: %zu bytes", star_database_len);
+    starDB = new StarDatabase(DB_NGC2000, _catalogues_ngc_converted_ngc2000_bin_start,
+                              _catalogues_ngc_converted_ngc2000_bin_end);
+    if (starDB != nullptr)
+    {
+        starDB->loadDatabase((const char*) _catalogues_ngc_converted_ngc2000_bin_start,
+                             star_database_len);
+        print_out("Database loaded successfully!");
+        starDB->printDatabaseInfo();
+        print_out("Total Objects: %zu", starDB->getTotalObjectCount());
+        StarUnifiedEntry obj;
+        if (starDB->findByName("NGC224", obj))
+        {
+            print_out("\nFound object containing 'NGC224':");
+            obj.print();
+        }
+    }
+#endif
 }
 
 void loop()
