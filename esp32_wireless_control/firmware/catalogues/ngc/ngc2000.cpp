@@ -20,6 +20,13 @@ bool NGC2000::loadDatabase(const char* binary_data, size_t len)
     return begin_binary(reinterpret_cast<const uint8_t*>(binary_data), len);
 }
 
+bool NGC2000::unloadDatabase()
+{
+    _binary_entries.clear();
+    _object_count = 0;
+    return true;
+}
+
 bool NGC2000::isLoaded() const
 {
     return !_binary_entries.empty();

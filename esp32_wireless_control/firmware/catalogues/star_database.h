@@ -32,6 +32,7 @@ class StarDatabase
 
     // Database management
     virtual bool loadDatabase(const char* data, size_t len);
+    virtual bool unloadDatabase();
     StarDatabaseType getDatabaseType() const
     {
         return _db_type;

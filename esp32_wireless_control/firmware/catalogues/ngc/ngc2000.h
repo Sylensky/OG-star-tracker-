@@ -59,6 +59,7 @@ class NGC2000 : public StarDatabaseInterface
 
     // DatabaseInterface implementations (binary only)
     bool loadDatabase(const char* binary_data, size_t len) override;
+    bool unloadDatabase() override;
     bool isLoaded() const override;
 
     bool findByName(const String& name, StarUnifiedEntry& result) const override;

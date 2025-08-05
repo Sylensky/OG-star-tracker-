@@ -48,6 +48,7 @@ class StarDatabaseInterface
     {
     }
     virtual bool loadDatabase(const char* data, size_t len) = 0;
+    virtual bool unloadDatabase() = 0;
     virtual bool isLoaded() const = 0;
     virtual bool findByName(const String& name, StarUnifiedEntry& result) const = 0;
     virtual bool findByNameFragment(const String& name_fragment,

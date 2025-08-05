@@ -34,6 +34,17 @@ bool StarDatabase::loadDatabase(const char* data, size_t len)
     return false;
 }
 
+bool StarDatabase::unloadDatabase()
+{
+    if (_backend)
+    {
+        delete _backend;
+        _backend = nullptr;
+        return true;
+    }
+    return false;
+}
+
 bool StarDatabase::isLoaded() const
 {
     if (_backend)
