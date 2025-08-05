@@ -26,5 +26,7 @@ extern const char* MIME_TYPE_TEXT;
 extern const char* MIME_TYPE_HTML;
 extern const char* MIME_APPLICATION_JSON;
 extern const char* GOTO_RA;
+extern const char* STAR_CATALOG;
+extern const char* STAR_NAME;
 
 #endif // STRINGS_H

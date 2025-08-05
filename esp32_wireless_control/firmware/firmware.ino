@@ -421,6 +421,57 @@ void handleVersion()
     server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
+void handleCatalogSearch()
+{
+    if (!starDB)
+    {
+        server.send(500, MIME_TYPE_TEXT, "Star database not initialized");
+        return;
+    }
+
+    StarDatabaseType catalogType = (StarDatabaseType) server.arg(STAR_CATALOG).toInt();
+    String objectName = server.arg(STAR_NAME);
+
+#if DEBUG == 1
+    print_out("Received catalog=%d, name=%s", catalogType, objectName.c_str());
+#endif
+
+    if (objectName.length() == 0)
+    {
+        server.send(400, MIME_TYPE_TEXT, "Object name required");
+        return;
+    }
+
+    StarUnifiedEntry foundObject;
+    bool found = starDB->findByName(objectName.c_str(), foundObject);
+
+    if (found)
+    {
+        JsonDocument objectData;
+        String json;
+        objectData["name"] = foundObject.name;
+        objectData["ra"] = (long long) (foundObject.ra_hours * 3600.0);
+        objectData["dec"] = (long long) (foundObject.dec_deg * 3600.0);
+        objectData["type"] = foundObject.type_str;
+        objectData["magnitude"] = foundObject.magnitude;
+        objectData["constellation"] = foundObject.constellation;
+        serializeJson(objectData, json);
+
+#if DEBUG == 1
+        print_out("Found object: %s at RA=%.2fh, Dec=%.2f°", foundObject.name.c_str(),
+                  foundObject.ra_hours, foundObject.dec_deg);
+#endif
+        server.send(200, MIME_APPLICATION_JSON, json);
+    }
+    else
+    {
+#if DEBUG == 1
+        print_out("Object not found: %s", objectName.c_str());
+#endif
+        server.send(404, "text/plain", "Object not found");
+    }
+}
+
 void setupWireless()
 {
 #ifdef AP_MODE
@@ -468,7 +519,7 @@ void setupWireless()
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
-
+    server.on("/starSearch", HTTP_GET, handleCatalogSearch);
     // Start the server
     server.begin();
 

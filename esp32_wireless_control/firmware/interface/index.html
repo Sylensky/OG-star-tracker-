@@ -24,7 +24,7 @@
                 width: 100%;
                 user-select: none;
             }
-            
+
             html {
                 color: var(--text);
                 padding: 20px;
@@ -141,7 +141,14 @@
             #custom-speed-text {
                 color: var(--disabled-text);
             }
-            
+
+            #star-search-results {
+                margin-top: 10px;
+                text-align: center;
+                color: var(--secondary-text);
+                font-size: 14px;
+            }
+
             .grid {
                 display: flex;
                 flex-direction: row;
@@ -619,14 +626,120 @@
                         document.getElementById('mode').dispatchEvent(new Event('change'));
                         document.getElementById('dither').dispatchEvent(new Event('change'));
                         document.getElementById('enableTracking').dispatchEvent(new Event('change'));
-
-
                     }
                 };
                 var html = '/readPreset?preset=' + preset;
                 xhr.open('GET', html, true);
                 xhr.send();
 
+            }
+
+            function handleSearchKeyPress(event) {
+                if (event.key === 'Enter') {
+                    sendSearchRequest();
+                }
+            }
+
+            function sendSearchRequest() {
+                const catalogType = document.getElementById('star-catalog-select').value;
+                const searchTerm = document.getElementById('star-search-input').value.trim();
+                document.getElementById('star-object-info').style.display = 'none';
+
+                if (!searchTerm) {
+                    return;
+                }
+
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) {
+                            try {
+                                const foundObject = JSON.parse(this.responseText);
+                                displayObjectInfo(foundObject);
+                                updateTargetRAFields(foundObject);
+                            } catch (e) {
+                                displaySearchError('%STR_STAR_SEARCH_ERROR%');
+                            }
+                        } else {
+                            displaySearchError('%STR_STAR_OBJECT_NOT_FOUND%');
+                            const nullObject = { name: '', ra: 0, dec: 0 };
+                            updateTargetRAFields(nullObject);
+                        }
+                    }
+                };
+                const url = '/starSearch?starCatalog=' + catalogType + '&starName=' + encodeURIComponent(searchTerm);
+                xhr.open('GET', url, true);
+                xhr.send();
+            }
+
+            function displayObjectInfo(obj) {
+                const detailsDiv = document.getElementById('star-object-details');
+                if (!obj || !obj.name) {
+                    displaySearchError('%STR_STAR_OBJECT_NOT_FOUND%');
+                    return;
+                }
+
+                let html = '<strong>' + obj.name + '</strong><br>';
+                if (obj.ra !== undefined)
+                    html += '%STR_STAR_RA%: ' + formatRA(obj.ra) + '<br>';
+                if (obj.dec !== undefined)
+                    html += '%STR_STAR_DEC%: ' + formatDEC(obj.dec) + '<br>';
+                if (obj.type)
+                    html += '%STR_STAR_TYPE%: ' + obj.type + '<br>';
+                if (obj.magnitude !== undefined && obj.magnitude !== null)
+                    html += '%STR_STAR_MAGNITUDE%: ' + obj.magnitude + '<br>';
+                if (obj.constellation)
+                    html += '%STR_STAR_CONSTELLATION%: ' + obj.constellation + '<br>';
+
+                detailsDiv.innerHTML = html;
+                document.getElementById('star-object-info').style.display = 'block';
+            }
+
+            function displaySearchError(message) {
+                const detailsDiv = document.getElementById('star-object-details');
+                detailsDiv.innerHTML = message;
+                document.getElementById('star-object-info').style.display = 'block';
+            }
+
+            function formatRA(raArcseconds) {
+                const raHours = raArcseconds / 3600.0;
+                const hours = Math.floor(raHours);
+                const remainingMinutes = (raHours - hours) * 60;
+                const minutes = Math.floor(remainingMinutes);
+                const seconds = ((remainingMinutes - minutes) * 60).toFixed(1);
+                return hours.toString().padStart(2, '0') + 'h ' + minutes.toString().padStart(2, '0') + 'm ' + seconds.toString().padStart(4, '0') + 's';
+            }
+
+            function formatDEC(decArcseconds) {
+                const degreesInput = decArcseconds / 3600.0;
+                const sign = degreesInput >= 0 ? '+' : '-';
+                const absDegrees = Math.abs(degreesInput);
+                const degrees = Math.floor(absDegrees);
+                const minutesFloat = (absDegrees - degrees) * 60;
+                const minutes = Math.floor(minutesFloat);
+                const seconds = ((minutesFloat - minutes) * 60).toFixed(1);
+                return sign + degrees.toString().padStart(2, '0') + '° ' + minutes.toString().padStart(2, '0') + "' " + seconds.toString().padStart(4, '0') + '"';
+            }
+
+            function updateTargetRAFields(foundObject) {
+                if (!foundObject || foundObject.ra === undefined || foundObject.ra === null) {
+                    return;
+                }
+
+                const totalSeconds = foundObject.ra;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = Math.floor(totalSeconds % 60);
+
+                const targetHoursInput = document.getElementById('targetHours');
+                const targetMinutesInput = document.getElementById('targetMinutes');
+                const targetSecondsInput = document.getElementById('targetSeconds');
+
+                if (targetHoursInput) targetHoursInput.value = hours;
+                if (targetMinutesInput) targetMinutesInput.value = minutes;
+                if (targetSecondsInput) targetSecondsInput.value = seconds;
+
+                calculateRAInput();
             }
         </script>
     </head>
@@ -798,37 +911,45 @@
                     <input id='custom-gotora-speed' type='number' value='2'
                         min='2' max='400' style="display:none;" />
                 </div>
-
+                <div class="grid">
+                    <h3>%STR_STAR_CATALOG%:</h3>
+                    <select aria-label="star_catalog" id='star-catalog-select'>
+                        <option value='1'>NGC2000</option>
+                    </select>
+                    <h3>%STR_STAR_OBJECT_NAME%:</h3>
+                    <input type='text' id='star-search-input'
+                        placeholder='%STR_STAR_SEARCH_PLACEHOLDER%'
+                        onkeypress="handleSearchKeyPress(event);">
+                    <button class="right-separator" type="button"
+                        id='star-search-button'
+                        onclick="sendSearchRequest();">%STR_STAR_SEARCH%</button>
+                </div>
+                <div id="star-search-results">
+                    <div id="star-object-info" style="display: none;">
+                        <h4>%STR_STAR_OBJECT_DETAILS%:</h4>
+                        <div id="star-object-details"></div>
+                    </div>
+                </div>
                 <div class="grid3x4">
                     <div></div>
                     <h3>%STR_GOTO_RA_CURRENT%</h3>
                     <h3>%STR_GOTO_RA_TARGET%</h3>
-
                     <h3>Hours:</h3>
                     <input type="number" id="currentHours" placeholder="0"
-                        min="0" max="23"
-                        onchange="calculateRAInput();">
+                        min="0" max="23" onchange="calculateRAInput();">
                     <input type="number" id="targetHours" placeholder="0"
-                        min="0" max="23"
-                        onchange="calculateRAInput();">
-
+                        min="0" max="23" onchange="calculateRAInput();">
                     <h3>Minutes:</h3>
                     <input type="number" id="currentMinutes" placeholder="0"
-                        min="0" max="59"
-                        onchange="calculateRAInput();">
+                        min="0" max="59" onchange="calculateRAInput();">
                     <input type="number" id="targetMinutes" placeholder="0"
-                        min="0" max="59"
-                        onchange="calculateRAInput();">
-
+                        min="0" max="59" onchange="calculateRAInput();">
                     <h3>Seconds:</h3>
                     <input type="number" id="currentSeconds" placeholder="0"
-                        min="0" max="59"
-                        onchange="calculateRAInput();">
+                        min="0" max="59" onchange="calculateRAInput();">
                     <input type="number" id="targetSeconds" placeholder="0"
-                        min="0" max="59"
-                        onchange="calculateRAInput();">
+                        min="0" max="59" onchange="calculateRAInput();">
                 </div>
-
                 <div class="grid">
                     <button class="right-separator" type="button"
                         id='start-gotora-button'

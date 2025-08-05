@@ -24,3 +24,5 @@ const char* MIME_TYPE_TEXT = "text/plain";
 const char* MIME_TYPE_HTML = "text/html";
 const char* MIME_APPLICATION_JSON = "application/json";
 const char* GOTO_RA = "gotoRA";
+const char* STAR_CATALOG = "starCatalog";
+const char* STAR_NAME = "starName";
