@@ -21,7 +21,7 @@
 SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
 Languages language = EN;
-StarDatabase* starDB = nullptr;
+StarDatabase* starDatabase = nullptr;
 
 void uartTask(void* pvParameters);
 void consoleTask(void* pvParameters);
@@ -35,6 +35,36 @@ extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_start[] asm(
     "_binary_catalogues_ngc_converted_ngc2000_bin_start");
 extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_end[] asm(
     "_binary_catalogues_ngc_converted_ngc2000_bin_end");
+
+StarDatabase* handleStarDatabase(StarDatabaseType type)
+{
+    StarDatabase* db = nullptr;
+    const uint8_t* bin_start = nullptr;
+    const uint8_t* bin_end = nullptr;
+    size_t len = 0;
+
+    if (starDatabase != nullptr && starDatabase->getDatabaseType() == type)
+        return starDatabase; // Return existing instance if already loaded
+
+    if (starDatabase != nullptr)
+        starDatabase->unloadDatabase();
+
+    switch (type)
+    {
+        case DB_NGC2000:
+            bin_start = _catalogues_ngc_converted_ngc2000_bin_start;
+            bin_end = _catalogues_ngc_converted_ngc2000_bin_end;
+            len = bin_end - bin_start;
+            db = new StarDatabase(DB_NGC2000, bin_start, bin_end);
+            if (!db->loadDatabase((const char*) bin_start, len))
+                return nullptr;
+            break;
+        default:
+            print_out("Error: Unsupported database type %d", type);
+            return nullptr;
+    }
+    return db;
+}
 
 // Handle requests to the root URL ("/")
 void handleRoot()
@@ -423,14 +453,10 @@ void handleVersion()
 
 void handleCatalogSearch()
 {
-    if (!starDB)
-    {
-        server.send(500, MIME_TYPE_TEXT, "Star database not initialized");
-        return;
-    }
-
     StarDatabaseType catalogType = (StarDatabaseType) server.arg(STAR_CATALOG).toInt();
     String objectName = server.arg(STAR_NAME);
+
+    starDatabase = handleStarDatabase(catalogType);
 
 #if DEBUG == 1
     print_out("Received catalog=%d, name=%s", catalogType, objectName.c_str());
@@ -443,7 +469,7 @@ void handleCatalogSearch()
     }
 
     StarUnifiedEntry foundObject;
-    bool found = starDB->findByName(objectName.c_str(), foundObject);
+    bool found = starDatabase->findByName(objectName.c_str(), foundObject);
 
     if (found)
     {
@@ -601,28 +627,6 @@ void setup()
     print_out("Initializing axis with TMC driver...");
 
     ra_axis.begin();
-
-#if STAR_DATABASE == DB_NGC2000
-    size_t star_database_len =
-        _catalogues_ngc_converted_ngc2000_bin_end - _catalogues_ngc_converted_ngc2000_bin_start;
-    print_out("Setup: NGC2000 database size: %zu bytes", star_database_len);
-    starDB = new StarDatabase(DB_NGC2000, _catalogues_ngc_converted_ngc2000_bin_start,
-                              _catalogues_ngc_converted_ngc2000_bin_end);
-    if (starDB != nullptr)
-    {
-        starDB->loadDatabase((const char*) _catalogues_ngc_converted_ngc2000_bin_start,
-                             star_database_len);
-        print_out("Database loaded successfully!");
-        starDB->printDatabaseInfo();
-        print_out("Total Objects: %zu", starDB->getTotalObjectCount());
-        StarUnifiedEntry obj;
-        if (starDB->findByName("NGC224", obj))
-        {
-            print_out("\nFound object containing 'NGC224':");
-            obj.print();
-        }
-    }
-#endif
 }
 
 void loop()
