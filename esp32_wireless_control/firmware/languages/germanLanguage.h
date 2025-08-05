@@ -116,7 +116,19 @@ const char* germanLangHTMLStrings[numberOfHTMLStrings] = {
     "Aufnahmezeit",                                       // STR_CAPTURE_TIME
     "Status",                                             // STR_STATUS
     "Bereit",                                             // STR_STATUS_MSG
-    "Firmware Version"                                    // STR_FIRMWARE_VERSION
+    "Firmware Version",                                   // STR_FIRMWARE_VERSION
+    "Sternkatalog",                                       // STR_STAR_CATALOG
+    "Objektname",                                         // STR_STAR_OBJECT_NAME
+    "(z.B. NGC224)",                                      // STR_STAR_SEARCH_PLACEHOLDER
+    "Suchen",                                             // STR_STAR_SEARCH
+    "Objektdetails",                                      // STR_STAR_OBJECT_DETAILS
+    "Suchfehler",                                         // STR_STAR_SEARCH_ERROR
+    "Objekt nicht gefunden",                              // STR_STAR_OBJECT_NOT_FOUND
+    "RA",                                                 // STR_STAR_RA
+    "DEC",                                                // STR_STAR_DEC
+    "Typ",                                                // STR_STAR_TYPE
+    "Magnitude",                                          // STR_STAR_MAGNITUDE
+    "Sternbild"                                           // STR_STAR_CONSTELLATION
 };
 
 #endif

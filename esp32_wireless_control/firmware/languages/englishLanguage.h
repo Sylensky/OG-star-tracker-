@@ -116,7 +116,19 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "Capture Time",                       // STR_CAPTURE_TIME
     "Status",                             // STR_STATUS
     "Ready",                              // STR_STATUS_MSG
-    "Firmware Version"                    // STR_FIRMWARE_VERSION
+    "Firmware Version",                   // STR_FIRMWARE_VERSION
+    "Star Catalog",                       // STR_STAR_CATALOG
+    "Object Name",                        // STR_STAR_OBJECT_NAME
+    "(e.g., NGC224)",                     // STR_STAR_SEARCH_PLACEHOLDER
+    "Search",                             // STR_STAR_SEARCH
+    "Object Details",                     // STR_STAR_OBJECT_DETAILS
+    "Search Error",                       // STR_STAR_SEARCH_ERROR
+    "Object Not Found",                   // STR_STAR_OBJECT_NOT_FOUND
+    "RA",                                 // STR_STAR_RA
+    "DEC",                                // STR_STAR_DEC
+    "Type",                               // STR_STAR_TYPE
+    "Magnitude",                          // STR_STAR_MAGNITUDE
+    "Constellation"                       // STR_STAR_CONSTELLATION
 };
 
 #endif

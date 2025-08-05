@@ -52,71 +52,81 @@ const char* chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
 
 const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     // HTML STRINGS
-    "OG 赤道仪控制面板",        // STR_TITLE
-    "TRACKER CONTROLLER",       // STR_TRACKER_CONTOLLER
-    "追踪",                     // STR_TRACKING
-    "半球",                     // STR_HEMISPHERE
-    "北半球",                   // STR_NORTH
-    "南半球",                   // STR_SOUTH
-    "追踪速率",                 // STR_TRACKING_RATE
-    "恒星速率",                 // STR_SIDEREAL
-    "太阳速率",                 // STR_SOLAR
-    "月球速率",                 // STR_LUNAR
-    "开启",                     // STR_BTN_ON
-    "关闭",                     // STR_BTN_OFF
-    "快速调",                   // STR_SLEW_CONTROL
-    "速度倍率",                 // STR_SPEED_MULTIPLIER
-    "自定义",                   // STR_CUSTOM
-    "自定义速度",               // STR_CUSTOM_SPEED
-    "按住方向按钮进行快速调整", // STR_SLEW_HINT
-    "向左调整",                 // STR_SLEW_LEFT
-    "向右调整",                 // STR_SLEW_RIGHT
-    "停止调整",                 // STR_ABORT_SLEW
-    "INTERVALOMETER",           // STR_INTERVALOMETER
-    "Preset",                   // STR_PRESET
-    "SAVE PRESET",              // STR_SAVE_PRESET
-    "LOAD PRESET",              // STR_LOAD_PRESET
-    "Mode",                     // STR_MODE
-    "Long Exposure Still",      // STR_LONG_EXPOSURE_STILL
-    "Long Exposure Movie",      // STR_LONG_EXPOSURE_MOVIE
-    "Day Time Lapse",           // STR_DAY_TIME_LAPSE
-    "Day Time Lapse Pan",       // STR_DAY_TIME_LAPSE_PAN
-    "曝光时长",                 // STR_EXPOSURE_LENGTH
-    "单位：秒 (例如: 30)",      // STR_EXPOSURE_HINT
-    "Number of exposures",      // STR_NO_EXPOSURES
-    "拍摄张数 (例如: 20)",      // STR_NUM_EXPOSURES_HINT
-    "Pre Delay Time (5s)",      // STR_PRE_DELAY
-    "Delay",                    // STR_DELAY
-    "Number of Frames",         // STR_FRAMES
-    "nº of frames",             // STR_NO_FRAMES
-    "Pan Angle",                // STR_PAN_ANGLE
-    "hours (Ex. 6)",            // STR_HOURS
-    "Pan Direction",            // STR_PAN_DIRECTION
-    "Left",                     // STR_LEFT
-    "Right",                    // STR_RIGHT
-    "Goto RA Control",          // STR_GOTO_RA_CONTROL
-    "Current",                  // STR_GOTO_RA_CURRENT
-    "Target",                   // STR_GOTO_RA_TARGET
-    "将相机对准\n"
-    "一颗容易辨认的恒星（如天津四、牛郎星等）\n"
-    "然后输入目标坐标\n",      // STR_GOTO_RA_HINT
-    "Start Goto RA",           // STR_START_GOTO_RA
-    "Stop Goto RA",            // STR_STOP_GOTO_RA
-    "Disable Tracking On End", // STR_ENABLE_TRACKING
-    "No",                      // STR_NO
-    "Yes",                     // STR_YES
-    "Dither",                  // STR_DITHER
-    "Dither Frequency",        // STR_DITHER_FREQ
-    "Lens focal length",       // STR_FOCAL_LENGTH
-    "单位：毫米 (例如: 135)",  // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",       // STR_PIXEL_SIZE
-    "单位：微米 (例如: 4.1)",  // STR_PIXEL_SIZE_HINT
-    "开始拍摄",                // STR_START_CAPTURE
-    "停止拍摄",                // STR_ABORT_CAPTURE
-    "Capture Time",            // STR_CAPTURE_TIME
-    "状态",                    // STR_STATUS
-    "就绪",                    // STR_STATUS_MSG
-    "固件版本"                 // STR_FIRMWARE_VERSION
+    "OG 赤道仪控制面板",                                                  // STR_TITLE
+    "TRACKER CONTROLLER",                                                 // STR_TRACKER_CONTOLLER
+    "追踪",                                                               // STR_TRACKING
+    "半球",                                                               // STR_HEMISPHERE
+    "北半球",                                                             // STR_NORTH
+    "南半球",                                                             // STR_SOUTH
+    "追踪速率",                                                           // STR_TRACKING_RATE
+    "恒星速率",                                                           // STR_SIDEREAL
+    "太阳速率",                                                           // STR_SOLAR
+    "月球速率",                                                           // STR_LUNAR
+    "开启",                                                               // STR_BTN_ON
+    "关闭",                                                               // STR_BTN_OFF
+    "快速调",                                                             // STR_SLEW_CONTROL
+    "速度倍率",                                                           // STR_SPEED_MULTIPLIER
+    "自定义",                                                             // STR_CUSTOM
+    "自定义速度",                                                         // STR_CUSTOM_SPEED
+    "按住方向按钮进行快速调整",                                           // STR_SLEW_HINT
+    "向左调整",                                                           // STR_SLEW_LEFT
+    "向右调整",                                                           // STR_SLEW_RIGHT
+    "停止调整",                                                           // STR_ABORT_SLEW
+    "间隔拍摄",                                                           // STR_INTERVALOMETER
+    "预设",                                                               // STR_PRESET
+    "保存预设",                                                           // STR_SAVE_PRESET
+    "加载预设",                                                           // STR_LOAD_PRESET
+    "模式",                                                               // STR_MODE
+    "长曝光静态",                                                         // STR_LONG_EXPOSURE_STILL
+    "长曝光视频",                                                         // STR_LONG_EXPOSURE_MOVIE
+    "日间延时摄影",                                                       // STR_DAY_TIME_LAPSE
+    "日间延时摄影平移",                                                   // STR_DAY_TIME_LAPSE_PAN
+    "曝光时长",                                                           // STR_EXPOSURE_LENGTH
+    "单位：秒 (例如: 30)",                                                // STR_EXPOSURE_HINT
+    "曝光次数",                                                           // STR_NO_EXPOSURES
+    "拍摄张数 (例如: 20)",                                                // STR_NUM_EXPOSURES_HINT
+    "预延迟时间 (5秒)",                                                   // STR_PRE_DELAY
+    "延迟",                                                               // STR_DELAY
+    "帧数",                                                               // STR_FRAMES
+    "帧数",                                                               // STR_NO_FRAMES
+    "平移角度",                                                           // STR_PAN_ANGLE
+    "小时 (例如: 6)",                                                     // STR_HOURS
+    "平移方向",                                                           // STR_PAN_DIRECTION
+    "左",                                                                 // STR_LEFT
+    "右",                                                                 // STR_RIGHT
+    "定位赤经控制",                                                       // STR_GOTO_RA_CONTROL
+    "当前",                                                               // STR_GOTO_RA_CURRENT
+    "目标",                                                               // STR_GOTO_RA_TARGET
+    "将相机对准一颗容易辨认的恒星（如天津四、牛郎星等）然后输入目标坐标", // STR_GOTO_RA_HINT
+    "开始定位赤经",                                                       // STR_START_GOTO_RA
+    "停止定位赤经",                                                       // STR_STOP_GOTO_RA
+    "结束时禁用跟踪",                                                     // STR_ENABLE_TRACKING
+    "否",                                                                 // STR_NO
+    "是",                                                                 // STR_YES
+    "微调",                                                               // STR_DITHER
+    "微调频率",                                                           // STR_DITHER_FREQ
+    "镜头焦距",                                                           // STR_FOCAL_LENGTH
+    "单位：毫米 (例如: 135)",                                             // STR_FOCAL_LENGTH_HINT
+    "相机像素大小",                                                       // STR_PIXEL_SIZE
+    "单位：微米 (例如: 4.1)",                                             // STR_PIXEL_SIZE_HINT
+    "开始拍摄",                                                           // STR_START_CAPTURE
+    "停止拍摄",                                                           // STR_ABORT_CAPTURE
+    "拍摄时间",                                                           // STR_CAPTURE_TIME
+    "状态",                                                               // STR_STATUS
+    "就绪",                                                               // STR_STATUS_MSG
+    "固件版本",                                                           // STR_FIRMWARE_VERSION
+    "星表",                                                               // STR_STAR_CATALOG
+    "天体名称",                                                           // STR_STAR_OBJECT_NAME
+    "(例如: NGC224)", // STR_STAR_SEARCH_PLACEHOLDER
+    "搜索",           // STR_STAR_SEARCH
+    "天体详情",       // STR_STAR_OBJECT_DETAILS
+    "搜索错误",       // STR_STAR_SEARCH_ERROR
+    "未找到天体",     // STR_STAR_OBJECT_NOT_FOUND
+    "赤经",           // STR_STAR_RA
+    "赤纬",           // STR_STAR_DEC
+    "类型",           // STR_STAR_TYPE
+    "星等",           // STR_STAR_MAGNITUDE
+    "星座"            // STR_STAR_CONSTELLATION
 };
 
 #endif
