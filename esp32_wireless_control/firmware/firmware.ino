@@ -36,6 +36,11 @@ extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_start[] asm(
 extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_end[] asm(
     "_binary_catalogues_ngc_converted_ngc2000_bin_end");
 
+extern const uint8_t _catalogues_ngc_converted_ngc2000_compact_bin_start[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_compact_bin_start");
+extern const uint8_t _catalogues_ngc_converted_ngc2000_compact_bin_end[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_compact_bin_end");
+
 StarDatabase* handleStarDatabase(StarDatabaseType type)
 {
     StarDatabase* db = nullptr;
@@ -58,6 +63,11 @@ StarDatabase* handleStarDatabase(StarDatabaseType type)
         case DB_NGC2000:
             bin_start = _catalogues_ngc_converted_ngc2000_bin_start;
             bin_end = _catalogues_ngc_converted_ngc2000_bin_end;
+            len = bin_end - bin_start;
+            break;
+        case DB_NGC2000_COMPACT:
+            bin_start = _catalogues_ngc_converted_ngc2000_compact_bin_start;
+            bin_end = _catalogues_ngc_converted_ngc2000_compact_bin_end;
             len = bin_end - bin_start;
             break;
         default:

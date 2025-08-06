@@ -14,6 +14,7 @@ StarDatabase::StarDatabase(StarDatabaseType db_type, const uint8_t* start, const
     switch (db_type)
     {
         case DB_NGC2000:
+        case DB_NGC2000_COMPACT:
             _backend = new NGC2000(start, end);
             break;
         default:

@@ -72,34 +72,64 @@ bool NGC2000::findByIndex(size_t index, StarUnifiedEntry& result) const
 
 bool NGC2000::begin_binary(const uint8_t* data, size_t len)
 {
+    size_t header_offset = 12;
+    uint32_t num_objects = *reinterpret_cast<const uint32_t*>(data);
+    const char* magic = reinterpret_cast<const char*>(data + 4);
+    uint32_t version = *reinterpret_cast<const uint32_t*>(data + 8);
     _binary_entries.clear();
 
-    // Check if we have enough data for the header (12 bytes minimum)
-    if (len < 12)
+    // Check if we have enough data for the header (8 bytes minimum)
+    if (len < 8)
     {
         print_out("Error: Binary data too small for header");
         return false;
     }
 
-    // Read header: number_of_objects (4 bytes) + magic (4 bytes) + version (4 bytes)
-    uint32_t num_objects = *reinterpret_cast<const uint32_t*>(data);
-    const char* magic = reinterpret_cast<const char*>(data + 4);
-    uint32_t version = *reinterpret_cast<const uint32_t*>(data + 8);
+    bool is_full = false, is_compact = false;
+    if (memcmp(magic, "NGC2", 4) == 0)
+        is_full = true;
+    else if (memcmp(magic, "NC2C", 4) == 0)
+        is_compact = true;
 
-    print_out("NGC Binary Header: objects=%u, magic=%.4s, version=%u", num_objects, magic, version);
-    print_out("BinaryNGCEntry size: %zu bytes", sizeof(BinaryNGCEntry));
-
-    // Skip header and start reading objects
-    size_t offset = 12;
-
-    while (offset + sizeof(BinaryNGCEntry) <= len && _binary_entries.size() < num_objects)
+    if (is_full)
     {
-        BinaryNGCEntry entry;
-        // Copy the binary data manually to avoid memcpy issues
-        const BinaryNGCEntry* src = reinterpret_cast<const BinaryNGCEntry*>(data + offset);
-        entry = *src;
-        _binary_entries.push_back(entry);
-        offset += sizeof(BinaryNGCEntry);
+        print_out("NGC Binary Header (full): objects=%u, magic=%.4s, version=%u", num_objects,
+                  magic, version);
+        print_out("BinaryNGCEntry size: %zu bytes", sizeof(BinaryNGCEntry));
+        while (header_offset + sizeof(BinaryNGCEntry) <= len &&
+               _binary_entries.size() < num_objects)
+        {
+            BinaryNGCEntry entry;
+            const BinaryNGCEntry* src =
+                reinterpret_cast<const BinaryNGCEntry*>(data + header_offset);
+            entry = *src;
+            _binary_entries.push_back(entry);
+            header_offset += sizeof(BinaryNGCEntry);
+        }
+    }
+    else if (is_compact)
+    {
+        print_out("NGC Binary Header (compact): objects=%u, magic=%.4s", num_objects, magic);
+        print_out("CompactBinaryNGCEntry size: %zu bytes", sizeof(CompactBinaryNGCEntry));
+        for (size_t i = 0; i < num_objects && header_offset + sizeof(CompactBinaryNGCEntry) <= len;
+             ++i)
+        {
+            const CompactBinaryNGCEntry* src =
+                reinterpret_cast<const CompactBinaryNGCEntry*>(data + header_offset);
+            BinaryNGCEntry entry = {};
+            memcpy(entry.id, src->id, 12);
+            memcpy(entry.type, src->type, 4);
+            entry.ra = src->ra;
+            entry.dec = src->dec;
+            entry.constellation[0] = '\0';
+            entry.constellation[1] = '\0';
+            entry.constellation[2] = '\0';
+            entry.size_arcmin = 0.0f;
+            entry.magnitude = src->magnitude;
+            entry.description[0] = '\0';
+            _binary_entries.push_back(entry);
+            header_offset += sizeof(CompactBinaryNGCEntry);
+        }
     }
     _object_count = _binary_entries.size();
     print_out("Loaded %zu NGC objects from binary (expected %u)", _object_count, num_objects);

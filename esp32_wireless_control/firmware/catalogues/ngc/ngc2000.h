@@ -48,6 +48,17 @@ struct BinaryNGCEntry
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct CompactBinaryNGCEntry
+{
+    char id[12];     // NGC/IC ID
+    char type[4];    // Object type
+    float ra;        // Right Ascension (hours)
+    float dec;       // Declination (degrees)
+    float magnitude; // Magnitude
+};
+#pragma pack(pop)
+
 // Main NGC2000 catalog class
 // Implements DatabaseInterface
 class NGC2000 : public StarDatabaseInterface
