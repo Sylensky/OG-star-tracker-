@@ -149,7 +149,7 @@ def write_binary_format(objects, output_path, compact_format):
                 f.write(type_bytes)
                 f.write(struct.pack('<f', float(obj['ra'] or 0)))
                 f.write(struct.pack('<f', float(obj['dec'] or 0)))
-                f.write(struct.pack('<f', float(obj['magnitude'] or 0)))
+                f.write(struct.pack('<f', float(obj.get('magnitude', 0) or 0)))
                 # Omit description, constellation, size_arcmin
             else:
                 # Full binary format: id (12s), type (4s), ra_deg (f), dec_deg (f), constellation (3s), size_arcmin (f), magnitude (f), description (48s)
@@ -164,7 +164,7 @@ def write_binary_format(objects, output_path, compact_format):
                 const = obj.get('constellation', '')[:3].ljust(3, '\0').encode('ascii')
                 f.write(const)
                 f.write(struct.pack('<f', float(obj.get('size_arcmin', 0) or 0)))
-                f.write(struct.pack('<f', float(obj['magnitude'] or 0)))
+                f.write(struct.pack('<f', float(obj.get('magnitude', 0) or 0)))
                 desc = obj.get('description', '')
                 desc_bytes = desc.encode('utf-8')[:47]
                 desc_bytes += b'\0' * (48 - len(desc_bytes))
@@ -205,18 +205,19 @@ def should_include_object(obj, include_types, max_magnitude, min_magnitude):
     if include_types and obj_type not in include_types:
         return False
 
-    # Magnitude logic: lower magnitude = brighter object
-    # max_magnitude: only include objects with magnitude <= max_magnitude (brighter or equal)
-    # min_magnitude: only include objects with magnitude >= min_magnitude (fainter or equal)
-    if max_magnitude is not None:
-        if magnitude is None:
-            return False
-        if magnitude > max_magnitude:
+    # Always include nebulae even if magnitude is missing
+    nebula_keywords = ["NB", "PL", "C+N"]
+    type_norm = obj_type.strip().upper()
+    if magnitude is None:
+        if any(keyword in type_norm for keyword in nebula_keywords):
+            return True
+        else:
             return False
 
-    if min_magnitude is not None:
-        if magnitude is None or magnitude < min_magnitude:
-            return False
+    if max_magnitude is not None and magnitude > max_magnitude:
+        return False
+    if min_magnitude is not None and magnitude < min_magnitude:
+        return False
 
     return True
 
@@ -246,7 +247,7 @@ def main():
     args = parser.parse_args()
 
     if args.preset == 'minimal':
-        args.types = ['Gx', 'OC', 'Gb', 'Pl', '*']
+        args.types = ['Gx', 'OC', 'Gb', 'Pl', 'Nb', '*']
         args.max_magnitude = 8.0
         args.min_magnitude = 2.0
         if not args.compact:
