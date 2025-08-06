@@ -47,7 +47,11 @@ StarDatabase* handleStarDatabase(StarDatabaseType type)
         return starDatabase; // Return existing instance if already loaded
 
     if (starDatabase != nullptr)
+    {
         starDatabase->unloadDatabase();
+        delete starDatabase;
+        starDatabase = nullptr;
+    }
 
     switch (type)
     {
@@ -55,14 +59,19 @@ StarDatabase* handleStarDatabase(StarDatabaseType type)
             bin_start = _catalogues_ngc_converted_ngc2000_bin_start;
             bin_end = _catalogues_ngc_converted_ngc2000_bin_end;
             len = bin_end - bin_start;
-            db = new StarDatabase(DB_NGC2000, bin_start, bin_end);
-            if (!db->loadDatabase((const char*) bin_start, len))
-                return nullptr;
             break;
         default:
             print_out("Error: Unsupported database type %d", type);
             return nullptr;
     }
+
+    db = new StarDatabase(type, bin_start, bin_end);
+    if (!db->loadDatabase((const char*) bin_start, len))
+    {
+        delete db;
+        return nullptr;
+    }
+
     return db;
 }
 

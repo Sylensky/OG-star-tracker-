@@ -38,8 +38,7 @@ bool StarDatabase::unloadDatabase()
 {
     if (_backend)
     {
-        delete _backend;
-        _backend = nullptr;
+        _backend->unloadDatabase();
         return true;
     }
     return false;
