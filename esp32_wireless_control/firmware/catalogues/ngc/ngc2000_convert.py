@@ -51,15 +51,16 @@ def parse_ngc_line(line):
     # Parse ID and preserve NGC/IC prefix if present
     raw_id = line[0:5].strip()
     # Remove all spaces from the ID for consistency (e.g., 'NGC 104' -> 'NGC104')
-    if raw_id.startswith('I'):
+    raw_id_nospaces = raw_id.replace(' ', '')
+    if raw_id_nospaces.startswith('I'):
         # IC object, remove spaces only
-        id = 'IC' + raw_id[1:].replace(' ', '')
-    elif raw_id.isdigit():
-        id = 'NGC' + raw_id.replace(' ', '')
-    elif raw_id.startswith('NGC'):
-        id = raw_id.replace(' ', '')
+        id = 'IC' + raw_id_nospaces[1:]
+    elif raw_id_nospaces.isdigit():
+        id = 'NGC' + raw_id_nospaces
+    elif raw_id_nospaces.startswith('NGC'):
+        id = raw_id_nospaces
     else:
-        id = raw_id.replace(' ', '')
+        id = raw_id_nospaces
     obj_type = line[6:9].strip()
     ra_h = line[10:12].strip()
     ra_m = line[13:17].strip()
