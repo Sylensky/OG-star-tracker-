@@ -16,9 +16,12 @@
 
 // Forward declarations
 struct NGCEntry;
+struct BSC5Entry;
 
 // Forward declare NGC2000
 class NGC2000;
+// Forward declare BSC5
+class BSC5;
 
 class StarDatabase
 {
