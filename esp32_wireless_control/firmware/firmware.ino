@@ -539,7 +539,7 @@ void handleCatalogSearch()
 
 void setupWireless()
 {
-#ifdef AP_MODE
+#if AP_MODE == 1
     WiFi.mode(WIFI_MODE_AP);
     WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
     vTaskDelay(500);
