@@ -22,7 +22,6 @@ static const char cmd_stack_highwater_uart[] = "Uart stack highwater: ";
 static const char cmd_stack_highwater_console[] = "Console stack highwater: ";
 static const char cmd_stack_highwater_intervalometer[] = "Intervalometer stack highwater: ";
 static const char cmd_stack_highwater_webserver[] = "Webserver stack highwater: ";
-static const char cmd_stack_highwater_dnsserver[] = "DNSserver stack highwater: ";
 
 static const char cmd_help_title[] = "Serial terminal usage:\r\n";
 static const char cmd_help_help[] = "  help or ?                      Print this usage\r\n";
@@ -38,7 +37,6 @@ static const char tsk_start_uart[] = "started uartTask\r\n";
 static const char tsk_start_console[] = "started ConsoleTask\r\n";
 static const char tsk_start_intervalometer[] = "started IntervalometerTask\r\n";
 static const char tsk_start_webserver[] = "started WebserverTask\r\n";
-static const char tsk_start_dnsserver[] = "started DNSserverTask\r\n";
 
 // general purpose
 static const char malloc_failed[] = "Malloc failed!\r\n";
@@ -68,7 +66,6 @@ const char* const string_table[] = {
     cmd_stack_highwater_console,
     cmd_stack_highwater_intervalometer,
     cmd_stack_highwater_webserver,
-    cmd_stack_highwater_dnsserver,
 
     cmd_help_title,
     cmd_help_help,
@@ -84,7 +81,6 @@ const char* const string_table[] = {
     tsk_start_console,
     tsk_start_intervalometer,
     tsk_start_webserver,
-    tsk_start_dnsserver,
 
     // general purpose
     malloc_failed,
@@ -115,7 +111,6 @@ enum pgm_table_index_t
     CMD_STACK_HIGHWATER_CONSOLE,
     CMD_STACK_HIGHWATER_INTERVALOMETER,
     CMD_STACK_HIGHWATER_WEBSERVER,
-    CMD_STACK_HIGHWATER_DNSSERVER,
 
     CMD_HELP_TITLE,
     CMD_HELP_HELP,
@@ -130,7 +125,6 @@ enum pgm_table_index_t
     TSK_START_CONSOLE,
     TSK_START_INTERVALOMETER,
     TSK_START_WEBSERVER,
-    TSK_START_DNSSERVER,
 
     MALLOC_FAILED,
     NOT_SUPPORTED,

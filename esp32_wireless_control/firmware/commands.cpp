@@ -14,7 +14,6 @@ enum task_names : uint8_t
     CONSOLE_TASK,
     INTERVALOMETER_TASK,
     WEBSERVER_TASK,
-    DNSSERVER_TASK,
 };
 
 static void cmdHelp()
@@ -72,10 +71,6 @@ static void cmdStackAvailable()
                 case WEBSERVER_TASK:
                     print_out_tbl(CMD_STACK_HIGHWATER_WEBSERVER);
                     print_out("%d Bytes", get_stack_high_water("webserver"));
-                    break;
-                case DNSSERVER_TASK:
-                    print_out_tbl(CMD_STACK_HIGHWATER_DNSSERVER);
-                    print_out("%d Bytes", get_stack_high_water("dnsserver"));
                     break;
                 default:
                     print_out("Task %d not found", atoi(arg));
