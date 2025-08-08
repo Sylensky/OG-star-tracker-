@@ -1,6 +1,6 @@
 #ifndef NEXT_LANG_H
 #define NEXT_LANG_H
-#include "web_languages.h"
+#include "../website/web_languages.h"
 
 /*Use this template to add an additional lamguage.
 After finishing adjust web_languages.h and .cpp to include the new language

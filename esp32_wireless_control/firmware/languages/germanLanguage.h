@@ -1,6 +1,6 @@
 #ifndef GERMAN_LANG_H
 #define GERMAN_LANG_H
-#include "web_languages.h"
+#include "../website/web_languages.h"
 
 const char* germanLangLanguageNames[LANG_COUNT] = {
     // LANGUAGE NAMES

@@ -15,8 +15,8 @@
 #include "hardwaretimer.h"
 #include "intervalometer.h"
 #include "uart.h"
-#include "web_languages.h"
-#include "website_strings.h"
+#include "website/web_languages.h"
+#include "website/website_strings.h"
 
 SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);

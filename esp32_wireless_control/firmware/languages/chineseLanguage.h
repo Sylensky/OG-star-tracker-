@@ -1,6 +1,6 @@
 #ifndef CHINESE_LANG_H
 #define CHINESE_LANG_H
-#include "web_languages.h"
+#include "../website/web_languages.h"
 
 const char* chineseLangLanguageNames[LANG_COUNT] = {
     // LANGUAGE NAMES
