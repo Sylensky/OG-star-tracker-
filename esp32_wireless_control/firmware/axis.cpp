@@ -1,7 +1,6 @@
 #include "soc/gpio_struct.h"
 
 #include "axis.h"
-#include "consts.h"
 #include "uart.h"
 
 #if MICROSTEPPING_MOTOR_DRIVER == USE_MSx_PINS_MICROSTEPPING

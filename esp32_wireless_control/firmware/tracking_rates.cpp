@@ -1,6 +1,4 @@
 #include "tracking_rates.h"
-#include "config.h"
-#include "consts.h"
 
 // Calculate tracking rate from period in milliseconds
 // Formula: Timer_reload_value = TIMER_APB_CLK_FREQ / timer_interrupts_per_second

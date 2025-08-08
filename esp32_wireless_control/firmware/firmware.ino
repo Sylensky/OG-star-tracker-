@@ -11,7 +11,7 @@
 #include "catalogues/star_database.h"
 #include "commands.h"
 #include "common_strings.h"
-#include "config.h"
+#include "configs/config.h"
 #include "hardwaretimer.h"
 #include "intervalometer.h"
 #include "uart.h"

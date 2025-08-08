@@ -1,7 +1,8 @@
 #ifndef AXIS_H
 #define AXIS_H
 
-#include "config.h"
+#include "configs/config.h"
+#include "configs/consts.h"
 #include "hardwaretimer.h"
 #include "motor_driver.h"
 

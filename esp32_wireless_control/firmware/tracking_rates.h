@@ -1,8 +1,10 @@
 #ifndef _TRACKING_RATES_H_
 #define _TRACKING_RATES_H_ 1
 
-#include "config.h"
 #include <stdint.h>
+
+#include "configs/config.h"
+#include "configs/consts.h"
 
 #if MOTOR_TRACKING_RATE == TRACKING_RATE_BOARD_V2
 

@@ -1,11 +1,12 @@
 #ifndef INTERVALOMETER_H
 #define INTERVALOMETER_H
 
+#include <EEPROM.h>
+
 #include "axis.h"
-#include "config.h"
+#include "configs/config.h"
 #include "error.h"
 #include "hardwaretimer.h"
-#include <EEPROM.h>
 
 class Intervalometer
 {
