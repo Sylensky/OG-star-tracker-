@@ -3,8 +3,8 @@
 
 #include "configs/config.h"
 #include "configs/consts.h"
+#include "drivers/motor_driver.h"
 #include "hardwaretimer.h"
-#include "motor_driver.h"
 
 #include "tracking_rates.h"
 

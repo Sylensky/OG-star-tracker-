@@ -4,10 +4,10 @@
 #include "uart.h"
 
 #if MICROSTEPPING_MOTOR_DRIVER == USE_MSx_PINS_MICROSTEPPING
-#include "msx_motor_driver.h"
+#include "drivers/msx_motor_driver.h"
 MSxMotorDriver ra_driver(RA_MS1, RA_MS2, AXIS1_DIR);
 #elif MICROSTEPPING_MOTOR_DRIVER == USE_TMC_DRIVER_MICROSTEPPING
-#include "tmc_motor_driver.h"
+#include "drivers/tmc_motor_driver.h"
 TmcMotorDriver ra_driver(&AXIS_SERIAL_PORT, AXIS1_ADDR, TMC_R_SENSE, AXIS_RX, AXIS_TX);
 #else
 #error Unknown Motor Driver
