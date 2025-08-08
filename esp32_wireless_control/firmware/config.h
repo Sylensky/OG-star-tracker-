@@ -64,7 +64,7 @@
 
 // try to update every time there is breaking change
 #ifndef INTERNAL_VERSION
-#define INTERNAL_VERSION 7
+#define INTERNAL_VERSION 8
 #endif
 /**********************/
 
