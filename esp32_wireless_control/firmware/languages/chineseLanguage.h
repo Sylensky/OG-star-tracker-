@@ -127,7 +127,8 @@ const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     "赤纬",           // STR_STAR_DEC
     "类型",           // STR_STAR_TYPE
     "星等",           // STR_STAR_MAGNITUDE
-    "星座"            // STR_STAR_CONSTELLATION
+    "星座",           // STR_STAR_CONSTELLATION
+    "当地时间"        // STR_LOCAL_TIME
 };
 
 #endif

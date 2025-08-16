@@ -129,7 +129,8 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "DEC",                                // STR_STAR_DEC
     "Type",                               // STR_STAR_TYPE
     "Magnitude",                          // STR_STAR_MAGNITUDE
-    "Constellation"                       // STR_STAR_CONSTELLATION
+    "Constellation",                      // STR_STAR_CONSTELLATION
+    "Local Time"                          // STR_LOCAL_TIME
 };
 
 #endif

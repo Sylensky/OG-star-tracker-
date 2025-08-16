@@ -129,7 +129,8 @@ const char* germanLangHTMLStrings[numberOfHTMLStrings] = {
     "DEC",                                                // STR_STAR_DEC
     "Typ",                                                // STR_STAR_TYPE
     "Magnitude",                                          // STR_STAR_MAGNITUDE
-    "Sternbild"                                           // STR_STAR_CONSTELLATION
+    "Sternbild",                                          // STR_STAR_CONSTELLATION
+    "Ortszeit"                                            // STR_LOCAL_TIME
 };
 
 #endif

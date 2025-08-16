@@ -109,6 +109,7 @@ const char* HTMLplaceHolders[numberOfHTMLStrings] = {
   "%STR_STAR_DEC%",
   "%STR_STAR_TYPE%",
   "%STR_STAR_MAGNITUDE%",
-  "%STR_STAR_CONSTELLATION%"
+  "%STR_STAR_CONSTELLATION%",
+  "%STR_LOCAL_TIME%"
 };
 /* clang-format on */

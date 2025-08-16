@@ -337,6 +337,11 @@
                         inset 3px -3px 4px rgba(140, 0, 0, 0.5),
                         inset -3px 3px 4px rgba(140, 0, 0, 0.5);
             }
+
+            #status-info {
+                margin-bottom: 0.5em;
+            }
+
         </style>
         <script>
             var lastClick = 0;
@@ -886,6 +891,20 @@
 
                 calculateRAInput();
             }
+
+            function updateLocalTime() {
+                const now = new Date();
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                document.getElementById('local-time').textContent = `%STR_LOCAL_TIME% (${tz}): ${hours}h${minutes}min${seconds}s`;
+            }
+
+            window.addEventListener('DOMContentLoaded', function () {
+                updateLocalTime();
+                setInterval(updateLocalTime, 10000);
+            });
         </script>
     </head>
     <body onload="handleLoad()">
@@ -1283,7 +1302,10 @@
                     onchange="changeLanguage()">%LANG_SELECT%</select>
             </div>
 
+        <div class="status-info">
             <h4 id='firmware'>%STR_FIRMWARE_VERSION%: </h4>
+            <h4 id='local-time'>%STR_LOCAL_TIME%: </h4>
+        </div>
         </div>
     </body>
 </html>
