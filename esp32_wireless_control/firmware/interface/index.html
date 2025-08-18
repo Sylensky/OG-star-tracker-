@@ -370,11 +370,29 @@
         #status-info {
             margin-bottom: 0.5em;
         }
+
+        #current-position-card .grid>div {
+            color: var(--secondary-text);
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            background-color: #1a0000;
+            border: 1px solid #3a0000;
+            border-radius: 8px;
+            margin: 2px;
+        }
+
+        #current-position-card h2 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
     </style>
     <script>
         var lastClick = 0;
         var delay = 500;
         var currentLangIndex = 0;
+        let positionInterval = null;
 
         function sendRequest(url) {
             var xhr = new XMLHttpRequest();
@@ -722,6 +740,76 @@
             sendRequest(goToRAUrl);
         }
 
+        function isCurrentPositionEntered() {
+            const currentHours = document.getElementById('currentHours').value.trim();
+            const currentMinutes = document.getElementById('currentMinutes').value.trim();
+            const currentSeconds = document.getElementById('currentSeconds').value.trim();
+
+            return currentHours !== '' || currentMinutes !== '' || currentSeconds !== '';
+        }
+
+        function requestPosition() {
+            const now = new Date();
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const utcTime = now.toISOString();
+            var offsetMinutes = now.getTimezoneOffset();
+            var offsetHours = -offsetMinutes / 60;
+            const estimatedLongitude = offsetHours * 15;
+            sendPositionRequest(utcTime, timezone, estimatedLongitude);
+        }
+
+        function sendPositionRequest(utcTime, timezone, longitude) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        try {
+                            var positionData = JSON.parse(this.responseText);
+                            updateCurrentPositionDisplay(positionData, utcTime, longitude);
+                        } catch (e) {
+                            console.error('Error parsing position data:', e);
+                            updateCurrentPositionDisplay({}, utcTime, longitude);
+                        }
+                    } else {
+                        console.error('Error fetching position data:', this.status);
+                        updateCurrentPositionDisplay({}, utcTime, longitude);
+                    }
+                }
+            };
+
+            var positionUrl = '/getCurrentPosition?utcTime=' + encodeURIComponent(utcTime) +
+                '&timezone=' + encodeURIComponent(timezone) +
+                '&longitude=' + longitude;
+            xhr.open('GET', positionUrl, true);
+            xhr.send();
+        }
+
+        function sendPosition() {
+            var currentRA = parseCurrentRAInput();
+
+            var url = '/setPosition?currentRA=' + currentRA;
+            sendRequest(url);
+        }
+
+        function updateCurrentPositionDisplay(positionData, utcTime, longitude) {
+            if (positionData.ra !== undefined) {
+                const raDisplay = formatRA(positionData.ra);
+                document.getElementById('raDisplay').value = raDisplay;
+            } else {
+                document.getElementById('raDisplay').value = '--h --m --s';
+            }
+
+            const timeDisplay = new Date(utcTime).toLocaleTimeString();
+            document.getElementById('timeDisplay').value = timeDisplay;
+
+            if (longitude !== 0) {
+                const longitudeDisplay = longitude.toFixed(2) + '°';
+                document.getElementById('longitudeDisplay').value = longitudeDisplay;
+            } else {
+                document.getElementById('longitudeDisplay').value = 'Not available';
+            }
+        }
+
         function sendPresetReadRequest() {
             var preset = document.getElementById('preset-select').selectedIndex;
             var xhr = new XMLHttpRequest();
@@ -918,6 +1006,7 @@
             if (currentSecondsInput) currentSecondsInput.value = seconds;
 
             calculateRAInput();
+            sendPosition();
         }
 
         function updateLocalTime() {
@@ -932,7 +1021,20 @@
         window.addEventListener('DOMContentLoaded', function () {
             updateLocalTime();
             setInterval(updateLocalTime, 10000);
-        });
+
+            setInterval(function () {
+                if (isCurrentPositionEntered()) {
+                    if (!positionInterval) {
+                        positionInterval = setInterval(requestPosition, 1000);
+                    }
+                } else {
+                    if (positionInterval) {
+                        clearInterval(positionInterval);
+                        positionInterval = null;
+                    }
+                }
+            }, 1000);
+        })
     </script>
 </head>
 
@@ -1159,6 +1261,18 @@
                     onclick="sendRequest('/abort-goto-ra');">%STR_STOP_GOTO_RA%</button>
             </div>
             <h4>%STR_GOTO_RA_HINT%</h4>
+        </div>
+
+        <div class="card" id="currentPosition" style="display: block;">
+            <h2>%STR_CURRENT_POSITION%</h2>
+            <div class="grid">
+                <h3>%STR_CURRENT_RA_POSITION%:</h3>
+                <input type="text" id="raDisplay" placeholder="0" disabled>
+                <h3>%STR_CURRENT_TIME%:</h3>
+                <input type="text" id="timeDisplay" placeholder="--:--:--" disabled>
+                <h3>%STR_LONGITUDE%:</h3>
+                <input type="text" id="longitudeDisplay" placeholder="-- °" disabled>
+            </div>
         </div>
 
         <div class="card">
