@@ -30,6 +30,7 @@ const char* chineseLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Capture: Rewind",                            // MSG_CAP_REWIND
     "Goto RA: Panning ON",                        // MSG_GOTO_RA_PANNING_ON
     "Goto RA: Panning OFF",                       // MSG_GOTO_RA_PANNING_OFF
+    "Position set successfully",                  // MSG_POSITION_SET_SUCCESS
     "空闲"                                        // MSG_IDLE
 };
 
@@ -128,7 +129,11 @@ const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     "类型",           // STR_STAR_TYPE
     "星等",           // STR_STAR_MAGNITUDE
     "星座",           // STR_STAR_CONSTELLATION
-    "当地时间"        // STR_LOCAL_TIME
+    "当地时间",       // STR_LOCAL_TIME
+    "当前位置",       // STR_CURRENT_POSITION
+    "当前赤经位置",   // STR_CURRENT_RA_POSITION
+    "当前时间",       // STR_CURRENT_TIME
+    "经度"            // STR_LONGITUDE
 };
 
 #endif

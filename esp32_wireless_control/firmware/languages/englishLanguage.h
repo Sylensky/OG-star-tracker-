@@ -30,6 +30,7 @@ const char* englishLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Capture: Rewind",                            // MSG_CAP_REWIND
     "Goto RA: Panning ON",                        // MSG_GOTO_RA_PANNING_ON
     "Goto RA: Panning OFF",                       // MSG_GOTO_RA_PANNING_OFF
+    "Position set successfully",                  // MSG_POSITION_SET_SUCCESS
     "Idle",                                       // MSG_IDLE
 };
 
@@ -130,7 +131,11 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "Type",                               // STR_STAR_TYPE
     "Magnitude",                          // STR_STAR_MAGNITUDE
     "Constellation",                      // STR_STAR_CONSTELLATION
-    "Local Time"                          // STR_LOCAL_TIME
+    "Local Time",                         // STR_LOCAL_TIME
+    "Current Position",                   // STR_CURRENT_POSITION
+    "Current RA Position",                // STR_CURRENT_RA_POSITION
+    "Current Time",                       // STR_CURRENT_TIME
+    "Longitude"                           // STR_LONGITUDE
 };
 
 #endif

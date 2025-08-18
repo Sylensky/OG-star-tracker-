@@ -347,28 +347,31 @@ void handleSetCurrent()
     }
 }
 
+Position calculatePosition(String Arg)
+{
+    Position position(0, 0, 0);
+    position.arcseconds = Arg.toInt();
+
+    if (position.arcseconds == -1)
+    {
+        position.arcseconds = 0;
+#if DEBUG == 1
+        print_out("Invalid position input. Defaulting to 0.");
+#endif
+    }
+
+    return position;
+}
+
 void handleGotoRA()
 {
-    Position currentPosition(0, 0, 0);
-    Position targetPosition(0, 0, 0);
+    Position currentPosition = calculatePosition(server.arg("currentRA"));
+    Position targetPosition = calculatePosition(server.arg("targetRA"));
     int pan_speed = server.arg(SPEED).toInt();
-    currentPosition.arcseconds = server.arg("currentRA").toInt();
-    targetPosition.arcseconds = server.arg("targetRA").toInt();
 
     pan_speed = pan_speed > MAX_CUSTOM_SLEW_RATE   ? MAX_CUSTOM_SLEW_RATE
                 : pan_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
                                                    : pan_speed;
-
-    if (currentPosition.arcseconds == -1)
-    {
-        currentPosition.arcseconds = 0;
-        print_out("Invalid Current RA input. Defaulting to 0.");
-    }
-    if (targetPosition.arcseconds == -1)
-    {
-        targetPosition.arcseconds = 0;
-        print_out("Invalid Target RA input. Defaulting to 0.");
-    }
 
     print_out("GotoRA called with:");
     print_out("  Current RA: %lld arcseconds", currentPosition.arcseconds);
@@ -377,6 +380,15 @@ void handleGotoRA()
 
     ra_axis.gotoTarget((2 * ra_axis.rate.tracking) / pan_speed, currentPosition, targetPosition);
     server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_GOTO_RA_PANNING_ON]);
+}
+
+void handleSetPosition()
+{
+    Position currentPosition = calculatePosition(server.arg("currentRA"));
+    int64_t stepPosition = currentPosition.arcseconds * trackingRates.getStepsPerSecondSolar();
+
+    ra_axis.setPosition(stepPosition);
+    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_POSITION_SET_SUCCESS]);
 }
 
 void handleGetPresetExposureSettings()
@@ -490,6 +502,28 @@ void handleVersion()
     server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
+void handleGetCurrentPosition()
+{
+    String utcTimeStr = server.arg("utcTime");
+    String timezoneStr = server.arg("timezone");
+    float longitude = server.arg("longitude").toFloat();
+    int64_t currentStepPosition = ra_axis.getPosition();
+
+    const int64_t STEPS_PER_FULL_REV = STEPS_PER_TRACKER_FULL_REV_INT;
+    const int64_t RA_SECONDS_PER_FULL_REV = (SOLAR_DAY_MS / 1000);
+
+    // Calculate current RA position in seconds (0-86399)
+    // Normalize position to handle negative values and multiple revolutions
+    int64_t normalizedSteps =
+        ((currentStepPosition % STEPS_PER_FULL_REV) + STEPS_PER_FULL_REV) % STEPS_PER_FULL_REV;
+    long raSeconds = (long) ((normalizedSteps * RA_SECONDS_PER_FULL_REV) / STEPS_PER_FULL_REV);
+
+    String response = "{\"ra\":" + String(raSeconds) + ",\"utcTime\":\"" + utcTimeStr + "\"" +
+                      ",\"longitude\":" + String(longitude) + "}";
+
+    server.send(200, MIME_APPLICATION_JSON, response);
+}
+
 void handleCatalogSearch()
 {
     StarDatabaseType catalogType = (StarDatabaseType) server.arg(STAR_CATALOG).toInt();
@@ -581,6 +615,8 @@ void setupWireless()
     server.on("/abort", HTTP_GET, handleAbortCapture);
     server.on("/status", HTTP_GET, handleStatusRequest);
     server.on("/gotoRA", HTTP_GET, handleGotoRA);
+    server.on("/setPosition", HTTP_GET, handleSetPosition);
+    server.on("/getCurrentPosition", HTTP_GET, handleGetCurrentPosition);
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
