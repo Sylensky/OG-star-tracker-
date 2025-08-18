@@ -159,7 +159,7 @@ void Axis::stopTracking()
 void Axis::gotoTarget(uint64_t rateArg, const Position& current, const Position& target)
 {
     setMicrostep(TRACKER_MOTOR_MICROSTEPPING / 2);
-    int64_t deltaArcseconds = -1 * (target.arcseconds - current.arcseconds);
+    int64_t deltaArcseconds = target.arcseconds - current.arcseconds;
     int64_t stepsPerSecond = trackingRates.getStepsPerSecondSolar();
 
     print_out_nonl("deltaArcseconds: %lld\n", deltaArcseconds);
