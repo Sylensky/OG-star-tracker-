@@ -139,6 +139,9 @@ void handleRoot()
 
 void handleOn()
 {
+#if DEBUG == 1
+    logRequest("/on");
+#endif
     print_out("Handling tracking ON request with custom rate: %d",
               server.arg(TRACKING_SPEED).toInt());
 
@@ -342,6 +345,31 @@ void handleSetCurrent()
         server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ALREADY_ON]);
     }
 }
+
+#if DEBUG == 1
+void logRequest(const char* endpoint)
+{
+    print_out("HTTP Request: %s %s", server.method() == HTTP_GET ? "GET" : "POST", endpoint);
+    print_out("  Client: %s", server.client().remoteIP().toString().c_str());
+    if (server.args() > 0)
+    {
+        print_out("  Arguments (%d):", server.args());
+        for (int i = 0; i < server.args(); i++)
+        {
+            print_out("    %s = %s", server.argName(i).c_str(), server.arg(i).c_str());
+        }
+    }
+}
+
+void handleNotFound()
+{
+    print_out("HTTP 404: %s %s", server.method() == HTTP_GET ? "GET" : "POST",
+              server.uri().c_str());
+    print_out("  Client: %s", server.client().remoteIP().toString().c_str());
+    print_out("  User-Agent: %s", server.header("User-Agent").c_str());
+    server.send(404, MIME_TYPE_TEXT, "Not Found");
+}
+#endif
 
 Position calculatePosition(String Arg)
 {
@@ -654,6 +682,12 @@ void setupWireless()
     server.on("/getTrackingRates", HTTP_GET, handleGetTrackingRates);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
     server.on("/starSearch", HTTP_GET, handleCatalogSearch);
+
+#if DEBUG == 1
+    server.onNotFound(handleNotFound);
+    print_out("Web server debug logging enabled");
+#endif
+
     // Start the server
     server.begin();
 
