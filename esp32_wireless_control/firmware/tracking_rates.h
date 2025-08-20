@@ -11,9 +11,9 @@
 // Tracking rate enum constants (backward compatible)
 enum TrackingRateType
 {
-    TRACKING_SIDEREAL = 0,
-    TRACKING_SOLAR = 1,
-    TRACKING_LUNAR = 2
+    TRACKING_SIDEREAL = 1,
+    TRACKING_SOLAR = 2,
+    TRACKING_LUNAR = 3
 };
 
 // Tracking rates class with calculated timer reload values
@@ -36,6 +36,20 @@ class TrackingRates
         return current_rate;
     };
     void setRate(TrackingRateType type);
+    void setCustomRate(uint64_t rate);
+
+    uint64_t getSiderealRate()
+    {
+        return sidereal_rate;
+    }
+    uint64_t getSolarRate()
+    {
+        return solar_rate;
+    }
+    uint64_t getLunarRate()
+    {
+        return lunar_rate;
+    }
 
     uint64_t getStepsPerSecondSidereal();
     uint64_t getStepsPerSecondSolar();

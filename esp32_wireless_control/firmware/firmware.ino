@@ -139,23 +139,16 @@ void handleRoot()
 
 void handleOn()
 {
-    int tracking_speed = server.arg(TRACKING_SPEED).toInt();
-    switch (tracking_speed)
-    {
-        case 0: // sidereal rate
-            trackingRates.setRate(TrackingRateType::TRACKING_SIDEREAL);
-            break;
-        case 1: // solar rate
-            trackingRates.setRate(TrackingRateType::TRACKING_SOLAR);
-            break;
-        case 2: // lunar rate
-            trackingRates.setRate(TrackingRateType::TRACKING_LUNAR);
-            break;
-        default:
-            trackingRates.setRate(TrackingRateType::TRACKING_SIDEREAL);
-            break;
-    }
+    print_out("Handling tracking ON request with custom rate: %d",
+              server.arg(TRACKING_SPEED).toInt());
+
+    uint64_t custom_rate = server.arg(TRACKING_SPEED).toInt();
     int direction = server.arg(DIRECTION).toInt();
+
+    trackingRates.setCustomRate(custom_rate);
+#if DEBUG == 1
+    print_out("  Direction: %d, Final rate: %llu", direction, trackingRates.getRate());
+#endif
     ra_axis.startTracking(trackingRates.getRate(), direction);
 
     if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
@@ -163,6 +156,9 @@ void handleOn()
     else
         server.send(200, MIME_TYPE_TEXT,
                     languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
+#if DEBUG == 1
+    print_out("  Tracking ON response sent");
+#endif
 }
 
 void handleOff()
@@ -502,6 +498,42 @@ void handleVersion()
     server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
+void handleGetTrackingRates()
+{
+#if DEBUG == 1
+    print_out("HTTP Request: GET /getTrackingRates");
+    print_out("  Client IP: %s", server.client().remoteIP().toString().c_str());
+#endif
+
+    int rateType = server.arg("type").toInt(); // 0=current, 1=sidereal, 2=solar, 3=lunar
+    print_out("Received tracking rate request with type: %d", rateType);
+    uint64_t rate = 0;
+
+    switch (rateType)
+    {
+        case 0:
+            rate = trackingRates.getRate(); // current rate
+            break;
+        case 1:
+            rate = trackingRates.getSiderealRate();
+            break;
+        case 2:
+            rate = trackingRates.getSolarRate();
+            break;
+        case 3:
+            rate = trackingRates.getLunarRate();
+            break;
+        default:
+            rate = trackingRates.getRate(); // default to current
+            break;
+    }
+
+    server.send(200, MIME_TYPE_TEXT, String(rate));
+#if DEBUG == 1
+    print_out("  Response sent: %s", String(rate).c_str());
+#endif
+}
+
 void handleGetCurrentPosition()
 {
     String utcTimeStr = server.arg("utcTime");
@@ -619,6 +651,7 @@ void setupWireless()
     server.on("/getCurrentPosition", HTTP_GET, handleGetCurrentPosition);
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
+    server.on("/getTrackingRates", HTTP_GET, handleGetTrackingRates);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
     server.on("/starSearch", HTTP_GET, handleCatalogSearch);
     // Start the server
