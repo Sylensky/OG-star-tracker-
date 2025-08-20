@@ -420,6 +420,24 @@
             xhr.send();
         }
 
+        function loadTrackingRate(type) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        var currentRate = parseInt(this.responseText);
+                        document.getElementById('tracking-rate-value').value = currentRate;
+                        console.log("Current tracking rate:", currentRate);
+                    } catch (e) {
+                        console.error('Error parsing current tracking rate:', e);
+                        document.getElementById('tracking-rate-value').value = 0;
+                    }
+                }
+            };
+            xhr.open('GET', '/getTrackingRates?type=' + type, true);
+            xhr.send();
+        }
+
         function changeLanguage() {
             var lang = document.getElementById('language-select').value;
             var xhr = new XMLHttpRequest();
@@ -434,9 +452,33 @@
 
         function sendStartRequest(url) {
             var direction = document.getElementById('hemisphere-select').value;
-            var trackingSpeed = document.getElementById('tracking-speed-select').value;
+            var trackingSpeed = document.getElementById('tracking-rate-value').value;
             var starturl = url + '?direction=' + direction + '&trackingSpeed=' + trackingSpeed;
             sendRequest(starturl);
+        }
+
+        function updateTrackingRateFromDropdown() {
+            var trackingSpeed = document.getElementById('tracking-speed-select').value;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        var rateValue = parseInt(this.responseText);
+                        document.getElementById('tracking-rate-value').value = rateValue;
+                    } catch (e) {
+                        console.error('Error parsing tracking rate:', e);
+                        document.getElementById('tracking-rate-value').value = 0;
+                    }
+                }
+            };
+            xhr.open('GET', '/getTrackingRates?type=' + trackingSpeed, true);
+            xhr.send();
+        }
+
+        function adjustTrackingRate(amount) {
+            var trackingRateInput = document.getElementById('tracking-rate-value');
+            var currentValue = parseInt(trackingRateInput.value) || 0;
+            trackingRateInput.value = currentValue + amount;
         }
 
         function sendSlewStop() {
@@ -609,6 +651,7 @@
             requestFirmwareVersion();
             changeMode();
             handleCatalogChange();
+            loadTrackingRate(0);
 
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -1129,11 +1172,29 @@
                 </select>
 
                 <h3>%STR_TRACKING_RATE%:</h3>
-                <select aria-label="tspeed" id='tracking-speed-select'>
-                    <option value='0'>%STR_SIDEREAL%</option>
-                    <option value='1'>%STR_SOLAR%</option>
-                    <option value='2'>%STR_LUNAR%</option>
+                <select aria-label="tspeed" id='tracking-speed-select' onchange="loadTrackingRate(value);">
+                    <option value='1'>%STR_SIDEREAL%</option>
+                    <option value='2'>%STR_SOLAR%</option>
+                    <option value='3'>%STR_LUNAR%</option>
                 </select>
+
+                <h3>Fine Tune:</h3>
+                <input id='tracking-rate-value' type='number' value='0' style='width: 100%;'>
+
+                <div class="button-group-fine-tune" style="width: 100%; display: flex; justify-content: space-between;">
+                    <button type="button" onclick="adjustTrackingRate(100)"
+                        style="width: 15%; font-size: 12px;">+100</button>
+                    <button type="button" onclick="adjustTrackingRate(10)"
+                        style="width: 15%; font-size: 12px;">+10</button>
+                    <button type="button" onclick="adjustTrackingRate(1)"
+                        style="width: 15%; font-size: 12px;">+1</button>
+                    <button type="button" onclick="adjustTrackingRate(-100)"
+                        style="width: 15%; font-size: 12px;">-100</button>
+                    <button type="button" onclick="adjustTrackingRate(-10)"
+                        style="width: 15%; font-size: 12px;">-10</button>
+                    <button type="button" onclick="adjustTrackingRate(-1)"
+                        style="width: 15%; font-size: 12px;">-1</button>
+                </div>
             </div>
 
             <div class="button-group">
