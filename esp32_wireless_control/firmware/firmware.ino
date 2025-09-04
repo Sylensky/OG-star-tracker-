@@ -12,8 +12,10 @@
 #include "commands.h"
 #include "common_strings.h"
 #include "configs/config.h"
+#include "eeprom_manager.h"
 #include "hardwaretimer.h"
 #include "intervalometer.h"
+#include "tracking_rates.h"
 #include "uart.h"
 #include "website/web_languages.h"
 #include "website/website_strings.h"
@@ -265,8 +267,7 @@ void handleSetLanguage()
 {
     int lang = server.arg("lang").toInt();
     language = static_cast<Languages>(lang);
-    EEPROM.write(LANG_EEPROM_ADDR, language);
-    EEPROM.commit();
+    EepromManager::writeObject(LANG_EEPROM_ADDR, language);
     server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_OK]);
 }
 
@@ -658,7 +659,7 @@ void handleSaveTrackingRatePreset()
     uint64_t customRate = server.arg(CUSTOM_RATE).toInt();
 
     // Save directly to tracking rate preset system
-    intervalometer.saveTrackingRatePreset(preset, trackingType, customRate);
+    trackingRates.saveTrackingRatePreset(preset, trackingType, customRate);
 
     server.send(200, MIME_TYPE_TEXT, "Tracking rate preset saved");
 }
@@ -670,11 +671,11 @@ void handleLoadTrackingRatePreset()
     if (preset < 5)
     {
         JsonDocument response;
-        response["trackingRateType"] = intervalometer.trackingRatePresets[preset].trackingRateType;
+        response["trackingRateType"] = trackingRates.trackingRatePresets[preset].trackingRateType;
         response["customTrackingRate"] =
-            (long long) intervalometer.trackingRatePresets[preset].customTrackingRate;
+            (long long) trackingRates.trackingRatePresets[preset].customTrackingRate;
 
-        intervalometer.loadTrackingRatePreset(preset);
+        trackingRates.loadTrackingRatePreset(preset);
 
         String json;
         serializeJson(response, json);
@@ -834,8 +835,10 @@ void setup()
     print_out("***     Application Tasks on Core 1    ***");
     print_out_tbl(HEAD_LINE_VERSION);
 
-    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
-    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
+    // Initialize EEPROM manager
+    EepromManager::begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
+    uint8_t langNum = 0;
+    EepromManager::readObject(LANG_EEPROM_ADDR, langNum);
 
     if (langNum >= LANG_COUNT)
         language = static_cast<Languages>(0);
@@ -876,6 +879,7 @@ void setup()
 void loop()
 {
     int delay_ticks = 0;
+    trackingRates.readTrackingRatePresetsFromEEPROM();
 
     if (DEFAULT_ENABLE_TRACKING == 1)
     {
@@ -913,7 +917,6 @@ void webserverTask(void* pvParameters)
 void intervalometerTask(void* pvParameters)
 {
     intervalometer.readPresetsFromEEPROM();
-    intervalometer.readTrackingRatePresetsFromEEPROM();
 
     for (;;)
     {

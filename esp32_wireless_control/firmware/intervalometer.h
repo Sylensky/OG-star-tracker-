@@ -1,10 +1,9 @@
 #ifndef INTERVALOMETER_H
 #define INTERVALOMETER_H
 
-#include <EEPROM.h>
-
 #include "axis.h"
 #include "configs/config.h"
+#include "eeprom_manager.h"
 #include "error.h"
 #include "hardwaretimer.h"
 
@@ -35,8 +34,6 @@ class Intervalometer
     uint16_t frames_taken;
     uint16_t getStepsPerTenPixels();
     float getArcsec_per_pixel();
-    template <class T> int writeObjectToEEPROM(int address, const T& object);
-    template <class T> int readObjectFromEEPROM(int address, T& object);
     uint8_t biasedRandomDirection(uint8_t previous_direction);
     uint8_t previousDitherDirection;
 

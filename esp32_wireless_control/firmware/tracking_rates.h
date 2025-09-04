@@ -17,6 +17,14 @@ enum TrackingRateType
     TRACKING_CUSTOM = 4,
 };
 
+// Tracking rate preset structure
+struct TrackingRatePreset
+{                                // 12 bytes
+    uint8_t trackingRateType;    // 1b (1=sidereal, 2=solar, 3=lunar, 4=custom)
+    uint64_t customTrackingRate; // 8b - custom fine-tuned rate (when type=4)
+    uint8_t padding[3];          // 3b padding for alignment
+};
+
 // Tracking rates class with calculated timer reload values
 class TrackingRates
 {
@@ -31,6 +39,9 @@ class TrackingRates
 
   public:
     TrackingRates(); // Constructor calculates all rates
+
+    // Preset management
+    TrackingRatePreset trackingRatePresets[5]; // 5 separate tracking rate presets
 
     uint64_t getRate()
     {
@@ -55,6 +66,12 @@ class TrackingRates
     uint64_t getStepsPerSecondSidereal();
     uint64_t getStepsPerSecondSolar();
     uint64_t getStepsPerSecondLunar();
+
+    // Preset management methods
+    void saveTrackingRatePreset(uint8_t preset, uint8_t rateType, uint64_t customRate);
+    void loadTrackingRatePreset(uint8_t preset);
+    void saveTrackingRatePresetsToEEPROM();
+    void readTrackingRatePresetsFromEEPROM();
 };
 
 // Global instance for easy access
