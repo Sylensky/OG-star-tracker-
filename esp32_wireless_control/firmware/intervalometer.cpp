@@ -279,7 +279,7 @@ void Intervalometer::savePresetsToEEPPROM()
 #if DEBUG == 1
     print_out("writtenBytes: ");
 #endif
-    print_out("%d", writeObjectToEEPROM(PRESETS_EEPROM_START_LOCATION, presets));
+    print_out("%d", EepromManager::writePresets(PRESETS_EEPROM_START_LOCATION, presets));
 }
 
 void Intervalometer::readPresetsFromEEPROM()
@@ -287,7 +287,7 @@ void Intervalometer::readPresetsFromEEPROM()
 #if DEBUG == 1
     print_out("readBytes: ");
 #endif
-    print_out("%d", readObjectFromEEPROM(PRESETS_EEPROM_START_LOCATION, presets));
+    print_out("%d", EepromManager::readPresets(PRESETS_EEPROM_START_LOCATION, presets));
 }
 
 uint16_t Intervalometer::getStepsPerTenPixels()
@@ -312,33 +312,4 @@ uint8_t Intervalometer::biasedRandomDirection(uint8_t previous_direction)
     return randomDirection;
 }
 
-template <class T> int Intervalometer::writeObjectToEEPROM(int address, const T& object)
-{
-    const byte* p = (const byte*) (const void*) &object;
-    unsigned int i;
-    for (i = 0; i < sizeof(object); i++)
-    {
-#if DEBUG == 1
-        print_out("Address = %d, Data = 0x%02X", address, *p);
-#endif
-        EEPROM.write(address++, *p++);
-        EEPROM.commit();
-    }
-
-    return i;
-}
-
-template <class T> int Intervalometer::readObjectFromEEPROM(int address, T& object)
-{
-    byte* p = (byte*) (void*) &object;
-    unsigned int i;
-    for (i = 0; i < sizeof(object); i++)
-    {
-#if DEBUG == 1
-        print_out("Address = %d, Data = 0x%02X", address, EEPROM.read(address));
-#endif
-        *p++ = EEPROM.read(address++);
-    }
-    return i;
-}
 Intervalometer intervalometer(INTERV_PIN);
