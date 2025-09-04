@@ -133,7 +133,11 @@ const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     "当前位置",       // STR_CURRENT_POSITION
     "当前赤经位置",   // STR_CURRENT_RA_POSITION
     "当前时间",       // STR_CURRENT_TIME
-    "经度"            // STR_LONGITUDE
+    "经度",           // STR_LONGITUDE
+    "微调",           // STR_TUNE_RATE
+    "预设速率",       // STR_RATE_PRESET
+    "保存速率",       // STR_SAVE_RATE_PRESET
+    "加载速率"        // STR_LOAD_RATE_PRESET
 };
 
 #endif

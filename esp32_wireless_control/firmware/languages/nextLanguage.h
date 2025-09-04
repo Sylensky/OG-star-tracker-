@@ -136,7 +136,11 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_CURRENT_POSITION
     "", // STR_CURRENT_RA_POSITION
     "", // STR_CURRENT_TIME
-    ""  // STR_LONGITUDE
+    "", // STR_LONGITUDE
+    "", // STR_TUNE_RATE
+    "", // STR_RATE_PRESET
+    "", // STR_SAVE_RATE_PRESET
+    ""  // STR_LOAD_RATE_PRESET
 };
 
 #endif

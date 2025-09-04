@@ -135,7 +135,11 @@ const char* germanLangHTMLStrings[numberOfHTMLStrings] = {
     "Aktuelle Position",                                  // STR_CURRENT_POSITION
     "Aktuelle RA-Position",                               // STR_CURRENT_RA_POSITION
     "Aktuelle Zeit",                                      // STR_CURRENT_TIME
-    "Längengrad"                                          // STR_LONGITUDE
+    "Längengrad",                                         // STR_LONGITUDE
+    "Feinabstimmung",                                     // STR_TUNE_RATE
+    "Voreinstellungsrate",                                // STR_RATE_PRESET
+    "Rate speichern",                                     // STR_SAVE_RATE_PRESET
+    "Rate laden"                                          // STR_LOAD_RATE_PRESET
 };
 
 #endif

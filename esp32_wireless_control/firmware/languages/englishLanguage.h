@@ -135,7 +135,11 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "Current Position",                   // STR_CURRENT_POSITION
     "Current RA Position",                // STR_CURRENT_RA_POSITION
     "Current Time",                       // STR_CURRENT_TIME
-    "Longitude"                           // STR_LONGITUDE
+    "Longitude",                          // STR_LONGITUDE
+    "Fine Tune",                          // STR_TUNE_RATE
+    "Rate Presets",                       // STR_RATE_PRESET
+    "Save Rate",                          // STR_SAVE_RATE_PRESET
+    "Load Rate"                           // STR_LOAD_RATE_PRESET
 };
 
 #endif
