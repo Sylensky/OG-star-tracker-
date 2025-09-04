@@ -13,7 +13,8 @@ enum TrackingRateType
 {
     TRACKING_SIDEREAL = 1,
     TRACKING_SOLAR = 2,
-    TRACKING_LUNAR = 3
+    TRACKING_LUNAR = 3,
+    TRACKING_CUSTOM = 4,
 };
 
 // Tracking rates class with calculated timer reload values
