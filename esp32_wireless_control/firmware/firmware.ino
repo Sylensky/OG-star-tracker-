@@ -651,6 +651,39 @@ void handleGetCurrentPosition()
     server.send(200, MIME_APPLICATION_JSON, response);
 }
 
+void handleSaveTrackingRatePreset()
+{
+    int preset = server.arg(PRESET).toInt();
+    uint8_t trackingType = server.arg(TRACKING_TYPE).toInt();
+    uint64_t customRate = server.arg(CUSTOM_RATE).toInt();
+
+    // Save directly to tracking rate preset system
+    intervalometer.saveTrackingRatePreset(preset, trackingType, customRate);
+
+    server.send(200, MIME_TYPE_TEXT, "Tracking rate preset saved");
+}
+
+void handleLoadTrackingRatePreset()
+{
+    int preset = server.arg(PRESET).toInt();
+
+    if (preset < 5)
+    {
+        JsonDocument response;
+        response["trackingRateType"] = intervalometer.trackingRatePresets[preset].trackingRateType;
+        response["customTrackingRate"] =
+            (long long) intervalometer.trackingRatePresets[preset].customTrackingRate;
+
+        intervalometer.loadTrackingRatePreset(preset);
+
+        String json;
+        serializeJson(response, json);
+        server.send(200, MIME_APPLICATION_JSON, json);
+    }
+    else
+        server.send(400, MIME_TYPE_TEXT, "Invalid preset number");
+}
+
 void handleCatalogSearch()
 {
     StarDatabaseType catalogType = (StarDatabaseType) server.arg(STAR_CATALOG).toInt();
@@ -747,6 +780,8 @@ void setupWireless()
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
     server.on("/getTrackingRates", HTTP_GET, handleGetTrackingRates);
+    server.on("/saveTrackingRatePreset", HTTP_GET, handleSaveTrackingRatePreset);
+    server.on("/loadTrackingRatePreset", HTTP_GET, handleLoadTrackingRatePreset);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
     server.on("/starSearch", HTTP_GET, handleCatalogSearch);
 
@@ -878,6 +913,7 @@ void webserverTask(void* pvParameters)
 void intervalometerTask(void* pvParameters)
 {
     intervalometer.readPresetsFromEEPROM();
+    intervalometer.readTrackingRatePresetsFromEEPROM();
 
     for (;;)
     {

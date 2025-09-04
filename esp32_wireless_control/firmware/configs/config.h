@@ -96,6 +96,8 @@
 #define STATUS_LED 26 // (Red)
 #define LANG_EEPROM_ADDR 0
 #define PRESETS_EEPROM_START_LOCATION 1
+// Start after intervalometer presets (10 * 28 bytes)
+#define TRACKING_RATE_PRESETS_EEPROM_START_LOCATION 300
 
 // Stepper driver pins -- intended for TMC2209 for now
 // AXIS 1 - RA
