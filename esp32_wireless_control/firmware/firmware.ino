@@ -736,14 +736,29 @@ void setupWireless()
 {
 #if AP_MODE == 1
     WiFi.mode(WIFI_MODE_AP);
-    WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
-    vTaskDelay(500);
-    print_out("Creating Wifi Network");
+    print_out("Creating Wifi Network: %s", WIFI_SSID);
+
+    // Configure AP with specific IP settings
+    IPAddress local_IP(192, 168, 4, 1);
+    IPAddress gateway(192, 168, 4, 1);
+    IPAddress subnet(255, 255, 255, 0);
+
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to configure AP IP settings");
+    }
+
+    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    {
+        print_out("Failed to start AP");
+    }
+
+    vTaskDelay(1000); // Give more time for AP to initialize
 
     // ANDROID 10 WORKAROUND==================================================
     // set new WiFi configurations
+    print_out("Applying Android 10 compatibility workaround...");
     WiFi.disconnect();
-    print_out("reconfig WiFi...");
     /*Stop wifi to change config parameters*/
     esp_wifi_stop();
     esp_wifi_deinit();
@@ -753,8 +768,24 @@ void setupWireless()
     print_out("WiFi: Disabled AMPDU...");
     esp_wifi_init(&my_config); // set the new config = "Disable AMPDU"
     esp_wifi_start();          // Restart WiFi
-    vTaskDelay(500);
+
+    // Restart AP after workaround
+    WiFi.mode(WIFI_MODE_AP);
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to reconfigure AP IP settings after workaround");
+    }
+    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    {
+        print_out("Failed to restart AP after workaround");
+    }
+
+    vTaskDelay(1000);
     // ANDROID 10 WORKAROUND==================================================
+
+    print_out("AP setup complete. Checking status...");
+    print_out("AP Status: %s", WiFi.softAPgetStationNum() >= 0 ? "Active" : "Inactive");
+    print_out("WiFi Mode: %d", WiFi.getMode());
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -794,10 +825,17 @@ void setupWireless()
     // Start the server
     server.begin();
 
-#ifdef AP
-    print_out("%s", WiFi.softAPIP().toString().c_str());
+#if AP_MODE == 1
+    IPAddress apIP = WiFi.softAPIP();
+    print_out("AP IP address: %s", apIP.toString().c_str());
+    if (apIP == IPAddress(0, 0, 0, 0))
+    {
+        print_out("ERROR: AP IP is 0.0.0.0 - AP may not be configured correctly");
+        print_out("WiFi Mode: %d", WiFi.getMode());
+        print_out("AP Status: %d", WiFi.status());
+    }
 #else
-    print_out("%s", WiFi.localIP().toString().c_str());
+    print_out("STA IP address: %s", WiFi.localIP().toString().c_str());
 #endif
 
     print_out("Starting mDNS responder");
@@ -866,7 +904,8 @@ void setup()
 
     if (xTaskCreatePinnedToCore(intervalometerTask, "intervalometer", 4096, NULL, 1, NULL, 1))
         print_out_tbl(TSK_START_INTERVALOMETER);
-    if (xTaskCreatePinnedToCore(webserverTask, "webserver", 4096, NULL, 1, NULL, 1))
+    // Increase webserver task stack size to handle large HTML responses and concurrent connections
+    if (xTaskCreatePinnedToCore(webserverTask, "webserver", 8192, NULL, 1, NULL, 1))
         print_out_tbl(TSK_START_WEBSERVER);
 
     // Give tasks time to fully initialize before starting axis
