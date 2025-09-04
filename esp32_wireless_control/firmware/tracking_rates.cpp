@@ -1,4 +1,5 @@
 #include "tracking_rates.h"
+#include "uart.h"
 
 // Calculate tracking rate from period in milliseconds
 // Formula: Timer_reload_value = TIMER_APB_CLK_FREQ / timer_interrupts_per_second
@@ -45,6 +46,9 @@ void TrackingRates::setRate(TrackingRateType type)
             break;
         case TRACKING_LUNAR:
             current_rate = lunar_rate;
+            break;
+        case TRACKING_CUSTOM:
+            print_out("WARNING: This should not be reached - use setCustomRate()");
             break;
     }
 };
