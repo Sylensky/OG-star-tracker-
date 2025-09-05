@@ -1,51 +1,53 @@
 #ifndef COMMAND_STRINGS_H
 #define COMMAND_STRINGS_H
 
+#include <pgmspace.h>
+
 /* clang-format off */
 // headline
-static const char head_line[] = "******************************************\r\n";
-static const char head_line_debug[] = "***************Debug Build****************\r\n";
-static const char head_line_version[] = "***     " BUILD_VERSION "  " __DATE__ "  " __TIME__ "    ***\r\n";
-static const char head_line_tracker[] = "***         Starting Tracker Up        ***\r\n";
+static const char head_line[] PROGMEM = "******************************************\r\n";
+static const char head_line_debug[] PROGMEM = "***************Debug Build****************\r\n";
+static const char head_line_version[] PROGMEM = "***     " BUILD_VERSION "  " __DATE__ "  " __TIME__ "    ***\r\n";
+static const char head_line_tracker[] PROGMEM = "***         Starting Tracker Up        ***\r\n";
 
 // command line interface
-static const char cmd_no_input[] = "No input to send - skipping\r\n";
-static const char cmd_insufficient_args[] = "  Unsufficient arguments provided - skipping\r\n";
-static const char cmd_unknown_argument[] = "Unknown argument: ";
-static const char cmd_unknown_command[] = "Unknown command: ";
-static const char cmd_heap_minimum_ever_free[] = "Minimum Heap (Bytes): ";
-static const char cmd_heap_free[] = "Free heap (Bytes): ";
-static const char cmd_heap_available_args[] = "Available args: all\r\n";
-static const char cmd_goto_target_ra_args[] = "Usage: gotoRA <+14° 34' 21.4\"> <+54° 12' 42.3\">\r\n";
+static const char cmd_no_input[] PROGMEM = "No input to send - skipping\r\n";
+static const char cmd_insufficient_args[] PROGMEM = "  Unsufficient arguments provided - skipping\r\n";
+static const char cmd_unknown_argument[] PROGMEM = "Unknown argument: ";
+static const char cmd_unknown_command[] PROGMEM = "Unknown command: ";
+static const char cmd_heap_minimum_ever_free[] PROGMEM = "Minimum Heap (Bytes): ";
+static const char cmd_heap_free[] PROGMEM = "Free heap (Bytes): ";
+static const char cmd_heap_available_args[] PROGMEM = "Available args: all\r\n";
+static const char cmd_goto_target_ra_args[] PROGMEM = "Usage: gotoRA <+14° 34' 21.4\"> <+54° 12' 42.3\">\r\n";
 
-static const char cmd_stack_highwater_uart[] = "Uart stack highwater: ";
-static const char cmd_stack_highwater_console[] = "Console stack highwater: ";
-static const char cmd_stack_highwater_intervalometer[] = "Intervalometer stack highwater: ";
-static const char cmd_stack_highwater_webserver[] = "Webserver stack highwater: ";
+static const char cmd_stack_highwater_uart[] PROGMEM = "Uart stack highwater: ";
+static const char cmd_stack_highwater_console[] PROGMEM = "Console stack highwater: ";
+static const char cmd_stack_highwater_intervalometer[] PROGMEM = "Intervalometer stack highwater: ";
+static const char cmd_stack_highwater_webserver[] PROGMEM = "Webserver stack highwater: ";
 
-static const char cmd_help_title[] = "Serial terminal usage:\r\n";
-static const char cmd_help_help[] = "  help or ?                      Print this usage\r\n";
-static const char cmd_help_stack[] = "  stack <0..N task>              Print available stack\r\n";
-static const char cmd_help_heap[] = "  heap <all>                     Print free heap\r\n";
-static const char cmd_help_reset[] = "  reset                          Reset the controller\r\n";
-static const char cmd_goto_target_ra[] = "  gotoRA <current> <target>      Goto target RA\r\n";
+static const char cmd_help_title[] PROGMEM = "Serial terminal usage:\r\n";
+static const char cmd_help_help[] PROGMEM = "  help or ?                      Print this usage\r\n";
+static const char cmd_help_stack[] PROGMEM = "  stack <0..N task>              Print available stack\r\n";
+static const char cmd_help_heap[] PROGMEM = "  heap <all>                     Print free heap\r\n";
+static const char cmd_help_reset[] PROGMEM = "  reset                          Reset the controller\r\n";
+static const char cmd_goto_target_ra[] PROGMEM = "  gotoRA <current> <target>      Goto target RA\r\n";
 
 // task related
-static const char tsk_not_avail[] = "task not available\r\n";
-static const char tsk_clear_screen[] = "\033c";
-static const char tsk_start_uart[] = "started uartTask\r\n";
-static const char tsk_start_console[] = "started ConsoleTask\r\n";
-static const char tsk_start_intervalometer[] = "started IntervalometerTask\r\n";
-static const char tsk_start_webserver[] = "started WebserverTask\r\n";
+static const char tsk_not_avail[] PROGMEM = "task not available\r\n";
+static const char tsk_clear_screen[] PROGMEM = "\033c";
+static const char tsk_start_uart[] PROGMEM = "started uartTask\r\n";
+static const char tsk_start_console[] PROGMEM = "started ConsoleTask\r\n";
+static const char tsk_start_intervalometer[] PROGMEM = "started IntervalometerTask\r\n";
+static const char tsk_start_webserver[] PROGMEM = "started WebserverTask\r\n";
 
 // general purpose
-static const char malloc_failed[] = "Malloc failed!\r\n";
-static const char not_supported[] = "not supported on this device\r\n";
-static const char str_true[] = "true";
-static const char str_false[] = "false";
-static const char cr_nl[] = "\r\n";
+static const char malloc_failed[] PROGMEM = "Malloc failed!\r\n";
+static const char not_supported[] PROGMEM = "not supported on this device\r\n";
+static const char str_true[] PROGMEM = "true";
+static const char str_false[] PROGMEM = "false";
+static const char cr_nl[] PROGMEM = "\r\n";
 
-const char* const string_table[] = {
+static const char* const string_table[] = {
     // headline
     head_line,
     head_line_debug,

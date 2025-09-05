@@ -6,7 +6,9 @@
  * Copyright (C) 2025, Sylensky
  */
 #include <Arduino.h>
-#include <cstring>
+#include <pgmspace.h>
+#include <string.h>
+
 
 #include <common_strings.h>
 #include <uart.h>
@@ -46,7 +48,17 @@ void print_out_nonl(const char* format, ...)
 void print_out_tbl(uint8_t index)
 {
     char tra_uart_buffer[MAX_UART_LINE_LEN];
-    strcpy(tra_uart_buffer, string_table[index]);
+    const char* src = (const char*) pgm_read_ptr(&string_table[index]);
+
+    // Copy string from PROGMEM to RAM
+    int i = 0;
+    char c;
+    while ((c = pgm_read_byte(src + i)) != '\0' && i < MAX_UART_LINE_LEN - 1)
+    {
+        tra_uart_buffer[i] = c;
+        i++;
+    }
+    tra_uart_buffer[i] = '\0';
 
     xQueueSend(uartq, tra_uart_buffer, portMAX_DELAY);
 }

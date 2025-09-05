@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include <ErriezSerialTerminal.h>
 
-#define MAX_UART_LINE_LEN 256
+#define MAX_UART_LINE_LEN 128
 
 #define CLI_DELIMITER_CHAR ' '
 #define CLI_NEWLINE_CHAR '\r'
