@@ -10,6 +10,9 @@
 #define STEPPER_0_9 0 // 0.9 degree stepper motor
 #define STEPPER_1_8 1 // 1.8 degree stepper motor
 
+#define USE_MSx_PINS_MICROSTEPPING 1
+#define USE_TMC_DRIVER_MICROSTEPPING 2
+
 #define TRACKING_RATE_BOARD_V2 1
 
 #define MOTOR_TRACKING_RATE TRACKING_RATE_BOARD_V2
@@ -43,6 +46,17 @@
 #ifndef STEPPER_TYPE
 #define STEPPER_TYPE STEPPER_0_9 // 0.9 degree stepper motor
 #endif
+
+// set the motor driver mode
+#ifndef MICROSTEPPING_MOTOR_DRIVER
+#define MICROSTEPPING_MOTOR_DRIVER USE_TMC_DRIVER_MICROSTEPPING
+#endif
+
+// error out when stepping mode is not supported
+#if MICROSTEPPING_MOTOR_DRIVER == USE_MSx_PINS_MICROSTEPPING && (TRACKER_MOTOR_MICROSTEPPING == 256)
+#error "MSx pins only support up to 64 microstepping"
+#endif
+
 // Configure the wifi settings if you are not using platformio
 #ifndef WIFI_SSID
 #define WIFI_SSID "OG Star Tracker" // change to your SSID
@@ -77,11 +91,6 @@
 #define AXIS2_ADDR 1
 
 /**********************/
-
-#define USE_MSx_PINS_MICROSTEPPING 1
-#define USE_TMC_DRIVER_MICROSTEPPING 2
-
-#define MICROSTEPPING_MOTOR_DRIVER USE_TMC_DRIVER_MICROSTEPPING
 
 /*****DO NOT MODIFY BELOW*****/
 // Set the resolution per step for the stepper motor
