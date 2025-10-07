@@ -16,6 +16,7 @@ class Intervalometer
         LONG_EXPOSURE_MOVIE,
         DAY_TIME_LAPSE,
         DAY_TIME_LAPSE_PAN,
+        NIGHT_TIME_LAPSE_PAN,
         MAX_MODES
     };
 
@@ -38,13 +39,14 @@ class Intervalometer
     uint8_t previousDitherDirection;
 
     struct Settings
-    {                            // 28 bytes
+    {                            // 32 bytes
         Mode mode;               // 4b
         uint16_t exposures;      // 2b
         uint16_t delayTime;      // seconds, max limt 18 h, 12 mins //2b
         uint16_t preDelay;       // seconds //2b
         uint16_t exposureTime;   // seconds, max limt 18 h, 12 mins //2b
-        float panAngle;          // degrees //4b
+        float panAngle;          // degrees (total angle for entire timelapse) //4b
+        uint16_t panDuration;    // seconds, total duration of panning //2b
         bool panDirection;       // 1b
         bool dither;             // 1b
         uint8_t ditherFrequency; // 1b

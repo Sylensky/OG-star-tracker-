@@ -45,6 +45,7 @@ const char* const englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "Invalid Delay Time",            // ERR_MSG_INVALID_DELAY_TIME
     "Invalid Frame Amount",          // ERR_MSG_INVALID_FRAME_AMOUNT
     "Invalid Pan Angle",             // ERR_MSG_INVALID_PAN_ANGLE
+    "Invalid Pan Duration",          // ERR_MSG_INVALID_PAN_DURATION
     "Invalid Pan Direction",         // ERR_MSG_INVALID_PAN_DIRECTION
     "Invalid Enable Tracking Value", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "Invalid Dither Choice",         // ERR_MSG_INVALID_DITHER_CHOICE
@@ -53,95 +54,96 @@ const char* const englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "Invalid Pixel Size"             // ERR_MSG_INVALID_PIXEL_SIZE
 };
 
-const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM =
-    {
-        // HTML STRINGS
-        "OG Star Tracker Control Panel", // STR_TITLE
-        "TRACKER CONTROLLER",            // STR_TRACKER_CONTROLLER
-        "Tracking",                      // STR_TRACKING
-        "Hemisphere",                    // STR_HEMISPHERE
-        "North",                         // STR_NORTH
-        "South",                         // STR_SOUTH
-        "Tracking Rate",                 // STR_TRACKING_RATE
-        "Sidereal",                      // STR_SIDEREAL
-        "Solar",                         // STR_SOLAR
-        "Lunar",                         // STR_LUNAR
-        "ON",                            // STR_BTN_ON
-        "OFF",                           // STR_BTN_OFF
-        "Slew Control",                  // STR_SLEW_CONTROL
-        "Speed Multiplier",              // STR_SPEED_MULTIPLIER
-        "Custom",                        // STR_CUSTOM
-        "Custom Speed",                  // STR_CUSTOM_SPEED
-        "Hold direction button to slew", // STR_SLEW_HINT
-        "Slew Left",                     // STR_SLEW_LEFT
-        "Slew Right",                    // STR_SLEW_RIGHT
-        "Abort Slew",                    // STR_ABORT_SLEW
-        "INTERVALOMETER",                // STR_INTERVALOMETER
-        "Preset",                        // STR_PRESET
-        "SAVE PRESET",                   // STR_SAVE_PRESET
-        "LOAD PRESET",                   // STR_LOAD_PRESET
-        "Mode",                          // STR_MODE
-        "Long Exposure Still",           // STR_LONG_EXPOSURE_STILL
-        "Long Exposure Movie",           // STR_LONG_EXPOSURE_MOVIE
-        "Day Time Lapse",                // STR_DAY_TIME_LAPSE
-        "Day Time Lapse Pan",            // STR_DAY_TIME_LAPSE_PAN
-        "Exposure Length",               // STR_EXPOSURE_LENGTH
-        "in seconds (Ex. 30)",           // STR_EXPOSURE_HINT
-        "Number of exposures",           // STR_NO_EXPOSURES
-        "number of photos (Ex. 20)",     // STR_NUM_EXPOSURES_HINT
-        "Pre Delay Time (5s)",           // STR_PRE_DELAY
-        "Delay",                         // STR_DELAY
-        "Number of Frames",              // STR_FRAMES
-        "nº of frames",                  // STR_NO_FRAMES
-        "Pan Angle",                     // STR_PAN_ANGLE
-        "hours (Ex. 6)",                 // STR_HOURS
-        "Pan Direction",                 // STR_PAN_DIRECTION
-        "Left",                          // STR_LEFT
-        "Right",                         // STR_RIGHT
-        "Goto RA Control",               // STR_GOTO_RA_CONTROL
-        "Current",                       // STR_GOTO_RA_CURRENT
-        "Target",                        // STR_GOTO_RA_TARGET
-        "Center your camera on\nmemorable star like Deneb,Altair..\nthen enter coordinates of "
-        "target\n",                 // STR_GOTO_RA_HINT
-        "Start Goto RA",            // STR_START_GOTO_RA
-        "Stop Goto RA",             // STR_STOP_GOTO_RA
-        "Disable Tracking On End",  // STR_ENABLE_TRACKING
-        "No",                       // STR_NO
-        "Yes",                      // STR_YES
-        "Dither",                   // STR_DITHER
-        "Dither Frequency",         // STR_DITHER_FREQ
-        "Lens focal length",        // STR_FOCAL_LENGTH
-        "in millimeters (Ex. 135)", // STR_FOCAL_LENGTH_HINT
-        "Camera pixel size",        // STR_PIXEL_SIZE
-        "in micrometers (Ex. 4.1)", // STR_PIXEL_SIZE_HINT
-        "Start Capture",            // STR_START_CAPTURE
-        "Abort Capture",            // STR_ABORT_CAPTURE
-        "Capture Time",             // STR_CAPTURE_TIME
-        "Status",                   // STR_STATUS
-        "Ready",                    // STR_STATUS_MSG
-        "Firmware Version",         // STR_FIRMWARE_VERSION
-        "Star Catalog",             // STR_STAR_CATALOG
-        "Object Name",              // STR_STAR_OBJECT_NAME
-        "(e.g., NGC224)",           // STR_STAR_SEARCH_PLACEHOLDER
-        "Search",                   // STR_STAR_SEARCH
-        "Set Current",              // STR_STAR_SET_CURRENT
-        "Object Details",           // STR_STAR_OBJECT_DETAILS
-        "Search Error",             // STR_STAR_SEARCH_ERROR
-        "Object Not Found",         // STR_STAR_OBJECT_NOT_FOUND
-        "RA",                       // STR_STAR_RA
-        "DEC",                      // STR_STAR_DEC
-        "Type",                     // STR_STAR_TYPE
-        "Magnitude",                // STR_STAR_MAGNITUDE
-        "Constellation",            // STR_STAR_CONSTELLATION
-        "Local Time",               // STR_LOCAL_TIME
-        "Current Position",         // STR_CURRENT_POSITION
-        "Current RA Position",      // STR_CURRENT_RA_POSITION
-        "Current Time",             // STR_CURRENT_TIME
-        "Longitude",                // STR_LONGITUDE
-        "Fine Tune",                // STR_TUNE_RATE
-        "Rate Presets",             // STR_RATE_PRESET
-        "Save Rate",                // STR_SAVE_RATE_PRESET
-        "Load Rate"                 // STR_LOAD_RATE_PRESET
+const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
+    // HTML STRINGS
+    "OG Star Tracker Control Panel", // STR_TITLE
+    "TRACKER CONTROLLER",            // STR_TRACKER_CONTROLLER
+    "Tracking",                      // STR_TRACKING
+    "Hemisphere",                    // STR_HEMISPHERE
+    "North",                         // STR_NORTH
+    "South",                         // STR_SOUTH
+    "Tracking Rate",                 // STR_TRACKING_RATE
+    "Sidereal",                      // STR_SIDEREAL
+    "Solar",                         // STR_SOLAR
+    "Lunar",                         // STR_LUNAR
+    "ON",                            // STR_BTN_ON
+    "OFF",                           // STR_BTN_OFF
+    "Slew Control",                  // STR_SLEW_CONTROL
+    "Speed Multiplier",              // STR_SPEED_MULTIPLIER
+    "Custom",                        // STR_CUSTOM
+    "Custom Speed",                  // STR_CUSTOM_SPEED
+    "Hold direction button to slew", // STR_SLEW_HINT
+    "Slew Left",                     // STR_SLEW_LEFT
+    "Slew Right",                    // STR_SLEW_RIGHT
+    "Abort Slew",                    // STR_ABORT_SLEW
+    "INTERVALOMETER",                // STR_INTERVALOMETER
+    "Preset",                        // STR_PRESET
+    "SAVE PRESET",                   // STR_SAVE_PRESET
+    "LOAD PRESET",                   // STR_LOAD_PRESET
+    "Mode",                          // STR_MODE
+    "Long Exposure Still",           // STR_LONG_EXPOSURE_STILL
+    "Long Exposure Movie",           // STR_LONG_EXPOSURE_MOVIE
+    "Day Time Lapse",                // STR_DAY_TIME_LAPSE
+    "Day Time Lapse Pan",            // STR_DAY_TIME_LAPSE_PAN
+    "Night Time Lapse Pan",          // STR_NIGHT_TIME_LAPSE_PAN
+    "Exposure Length",               // STR_EXPOSURE_LENGTH
+    "in seconds (Ex. 30)",           // STR_EXPOSURE_HINT
+    "Number of exposures",           // STR_NO_EXPOSURES
+    "number of photos (Ex. 20)",     // STR_NUM_EXPOSURES_HINT
+    "Pre Delay Time (5s)",           // STR_PRE_DELAY
+    "Delay",                         // STR_DELAY
+    "Number of Frames",              // STR_FRAMES
+    "nº of frames",                  // STR_NO_FRAMES
+    "Pan Angle",                     // STR_PAN_ANGLE
+    "Pan Duration (seconds)",        // STR_PAN_DURATION
+    "hours (Ex. 6)",                 // STR_HOURS
+    "Pan Direction",                 // STR_PAN_DIRECTION
+    "Left",                          // STR_LEFT
+    "Right",                         // STR_RIGHT
+    "Goto RA Control",               // STR_GOTO_RA_CONTROL
+    "Current",                       // STR_GOTO_RA_CURRENT
+    "Target",                        // STR_GOTO_RA_TARGET
+    "Center your camera on\nmemorable star like Deneb,Altair..\nthen enter coordinates of "
+    "target\n",                 // STR_GOTO_RA_HINT
+    "Start Goto RA",            // STR_START_GOTO_RA
+    "Stop Goto RA",             // STR_STOP_GOTO_RA
+    "Disable Tracking On End",  // STR_ENABLE_TRACKING
+    "No",                       // STR_NO
+    "Yes",                      // STR_YES
+    "Dither",                   // STR_DITHER
+    "Dither Frequency",         // STR_DITHER_FREQ
+    "Lens focal length",        // STR_FOCAL_LENGTH
+    "in millimeters (Ex. 135)", // STR_FOCAL_LENGTH_HINT
+    "Camera pixel size",        // STR_PIXEL_SIZE
+    "in micrometers (Ex. 4.1)", // STR_PIXEL_SIZE_HINT
+    "Start Capture",            // STR_START_CAPTURE
+    "Abort Capture",            // STR_ABORT_CAPTURE
+    "Capture Time",             // STR_CAPTURE_TIME
+    "Status",                   // STR_STATUS
+    "Ready",                    // STR_STATUS_MSG
+    "Firmware Version",         // STR_FIRMWARE_VERSION
+    "Star Catalog",             // STR_STAR_CATALOG
+    "Object Name",              // STR_STAR_OBJECT_NAME
+    "(e.g., NGC224)",           // STR_STAR_SEARCH_PLACEHOLDER
+    "Search",                   // STR_STAR_SEARCH
+    "Set Current",              // STR_STAR_SET_CURRENT
+    "Object Details",           // STR_STAR_OBJECT_DETAILS
+    "Search Error",             // STR_STAR_SEARCH_ERROR
+    "Object Not Found",         // STR_STAR_OBJECT_NOT_FOUND
+    "RA",                       // STR_STAR_RA
+    "DEC",                      // STR_STAR_DEC
+    "Type",                     // STR_STAR_TYPE
+    "Magnitude",                // STR_STAR_MAGNITUDE
+    "Constellation",            // STR_STAR_CONSTELLATION
+    "Local Time",               // STR_LOCAL_TIME
+    "Current Position",         // STR_CURRENT_POSITION
+    "Current RA Position",      // STR_CURRENT_RA_POSITION
+    "Current Time",             // STR_CURRENT_TIME
+    "Longitude",                // STR_LONGITUDE
+    "Fine Tune",                // STR_TUNE_RATE
+    "Rate Presets",             // STR_RATE_PRESET
+    "Save Rate",                // STR_SAVE_RATE_PRESET
+    "Load Rate"                 // STR_LOAD_RATE_PRESET
 };
 
 #endif

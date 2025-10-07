@@ -337,6 +337,14 @@ void handleSetCurrent()
         }
         intervalometer.currentSettings.panAngle = panAngle;
 
+        int panDuration = server.arg(PAN_DURATION).toInt();
+        if (panDuration < 0)
+        {
+            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_DURATION;
+            return;
+        }
+        intervalometer.currentSettings.panDuration = panDuration;
+
         int panDirection = server.arg(PAN_DIRECTION).toInt();
         if (panDirection < 0 || panDirection > 1)
         {
@@ -495,6 +503,7 @@ void handleGetPresetExposureSettings()
     settings[PREDELAY] = intervalometer.currentSettings.preDelay;
     settings[EXPOSURE_TIME] = intervalometer.currentSettings.exposureTime;
     settings[PAN_ANGLE] = intervalometer.currentSettings.panAngle * 100;
+    settings[PAN_DURATION] = intervalometer.currentSettings.panDuration;
     settings[PAN_DIRECTION] = intervalometer.currentSettings.panDirection;
     settings[DITHER_CHOICE] = intervalometer.currentSettings.dither;
     settings[DITHER_FREQUENCY] = intervalometer.currentSettings.ditherFrequency;

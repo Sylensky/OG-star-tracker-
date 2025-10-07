@@ -44,6 +44,7 @@ const char* const chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "无效的延迟时间",   // ERR_MSG_INVALID_DELAY_TIME
     "无效的帧数量",     // ERR_MSG_INVALID_FRAME_AMOUNT
     "无效的平移角度",   // ERR_MSG_INVALID_PAN_ANGLE
+    "无效的平移时长",   // ERR_MSG_INVALID_PAN_DURATION
     "无效的平移方向",   // ERR_MSG_INVALID_PAN_DIRECTION
     "无效的启用跟踪值", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "无效的抖动选择",   // ERR_MSG_INVALID_DITHER_CHOICE
@@ -54,51 +55,53 @@ const char* const chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
 
 const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     // HTML STRINGS
-    "OG 赤道仪控制面板",                                                  // STR_TITLE
-    "TRACKER CONTROLLER",                                                 // STR_TRACKER_CONTOLLER
-    "追踪",                                                               // STR_TRACKING
-    "半球",                                                               // STR_HEMISPHERE
-    "北半球",                                                             // STR_NORTH
-    "南半球",                                                             // STR_SOUTH
-    "追踪速率",                                                           // STR_TRACKING_RATE
-    "恒星速率",                                                           // STR_SIDEREAL
-    "太阳速率",                                                           // STR_SOLAR
-    "月球速率",                                                           // STR_LUNAR
-    "开启",                                                               // STR_BTN_ON
-    "关闭",                                                               // STR_BTN_OFF
-    "快速调",                                                             // STR_SLEW_CONTROL
-    "速度倍率",                                                           // STR_SPEED_MULTIPLIER
-    "自定义",                                                             // STR_CUSTOM
-    "自定义速度",                                                         // STR_CUSTOM_SPEED
-    "按住方向按钮进行快速调整",                                           // STR_SLEW_HINT
-    "向左调整",                                                           // STR_SLEW_LEFT
-    "向右调整",                                                           // STR_SLEW_RIGHT
-    "停止调整",                                                           // STR_ABORT_SLEW
-    "间隔拍摄",                                                           // STR_INTERVALOMETER
-    "预设",                                                               // STR_PRESET
-    "保存预设",                                                           // STR_SAVE_PRESET
-    "加载预设",                                                           // STR_LOAD_PRESET
-    "模式",                                                               // STR_MODE
-    "长曝光静态",                                                         // STR_LONG_EXPOSURE_STILL
-    "长曝光视频",                                                         // STR_LONG_EXPOSURE_MOVIE
-    "日间延时摄影",                                                       // STR_DAY_TIME_LAPSE
-    "日间延时摄影平移",                                                   // STR_DAY_TIME_LAPSE_PAN
-    "曝光时长",                                                           // STR_EXPOSURE_LENGTH
-    "单位：秒 (例如: 30)",                                                // STR_EXPOSURE_HINT
-    "曝光次数",                                                           // STR_NO_EXPOSURES
-    "拍摄张数 (例如: 20)",                                                // STR_NUM_EXPOSURES_HINT
-    "预延迟时间 (5秒)",                                                   // STR_PRE_DELAY
-    "延迟",                                                               // STR_DELAY
-    "帧数",                                                               // STR_FRAMES
-    "帧数",                                                               // STR_NO_FRAMES
-    "平移角度",                                                           // STR_PAN_ANGLE
-    "小时 (例如: 6)",                                                     // STR_HOURS
-    "平移方向",                                                           // STR_PAN_DIRECTION
-    "左",                                                                 // STR_LEFT
-    "右",                                                                 // STR_RIGHT
-    "定位赤经控制",                                                       // STR_GOTO_RA_CONTROL
-    "当前",                                                               // STR_GOTO_RA_CURRENT
-    "目标",                                                               // STR_GOTO_RA_TARGET
+    "OG 赤道仪控制面板",        // STR_TITLE
+    "TRACKER CONTROLLER",       // STR_TRACKER_CONTOLLER
+    "追踪",                     // STR_TRACKING
+    "半球",                     // STR_HEMISPHERE
+    "北半球",                   // STR_NORTH
+    "南半球",                   // STR_SOUTH
+    "追踪速率",                 // STR_TRACKING_RATE
+    "恒星速率",                 // STR_SIDEREAL
+    "太阳速率",                 // STR_SOLAR
+    "月球速率",                 // STR_LUNAR
+    "开启",                     // STR_BTN_ON
+    "关闭",                     // STR_BTN_OFF
+    "快速调",                   // STR_SLEW_CONTROL
+    "速度倍率",                 // STR_SPEED_MULTIPLIER
+    "自定义",                   // STR_CUSTOM
+    "自定义速度",               // STR_CUSTOM_SPEED
+    "按住方向按钮进行快速调整", // STR_SLEW_HINT
+    "向左调整",                 // STR_SLEW_LEFT
+    "向右调整",                 // STR_SLEW_RIGHT
+    "停止调整",                 // STR_ABORT_SLEW
+    "间隔拍摄",                 // STR_INTERVALOMETER
+    "预设",                     // STR_PRESET
+    "保存预设",                 // STR_SAVE_PRESET
+    "加载预设",                 // STR_LOAD_PRESET
+    "模式",                     // STR_MODE
+    "长曝光静态",               // STR_LONG_EXPOSURE_STILL
+    "长曝光视频",               // STR_LONG_EXPOSURE_MOVIE
+    "日间延时摄影",             // STR_DAY_TIME_LAPSE
+    "日间延时摄影平移",         // STR_DAY_TIME_LAPSE_PAN
+    "夜间延时摄影平移",         // STR_NIGHT_TIME_LAPSE_PAN
+    "曝光时长",                 // STR_EXPOSURE_LENGTH
+    "单位：秒 (例如: 30)",      // STR_EXPOSURE_HINT
+    "曝光次数",                 // STR_NO_EXPOSURES
+    "拍摄张数 (例如: 20)",      // STR_NUM_EXPOSURES_HINT
+    "预延迟时间 (5秒)",         // STR_PRE_DELAY
+    "延迟",                     // STR_DELAY
+    "帧数",                     // STR_FRAMES
+    "帧数",                     // STR_NO_FRAMES
+    "平移角度",                 // STR_PAN_ANGLE
+    "平移时长（秒）",           // STR_PAN_DURATION
+    "小时 (例如: 6)",           // STR_HOURS
+    "平移方向",                 // STR_PAN_DIRECTION
+    "左",                       // STR_LEFT
+    "右",                       // STR_RIGHT
+    "定位赤经控制",             // STR_GOTO_RA_CONTROL
+    "当前",                     // STR_GOTO_RA_CURRENT
+    "目标",                     // STR_GOTO_RA_TARGET
     "将相机对准一颗容易辨认的恒星（如天津四、牛郎星等）然后输入目标坐标", // STR_GOTO_RA_HINT
     "开始定位赤经",                                                       // STR_START_GOTO_RA
     "停止定位赤经",                                                       // STR_STOP_GOTO_RA

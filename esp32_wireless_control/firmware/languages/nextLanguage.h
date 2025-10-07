@@ -47,6 +47,7 @@ const char* const nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGMEM 
     "", // ERR_MSG_INVALID_DELAY_TIME
     "", // ERR_MSG_INVALID_FRAME_AMOUNT
     "", // ERR_MSG_INVALID_PAN_ANGLE
+    "", // ERR_MSG_INVALID_PAN_DURATION
     "", // ERR_MSG_INVALID_PAN_DIRECTION
     "", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "", // ERR_MSG_INVALID_DITHER_CHOICE
@@ -86,6 +87,7 @@ const char* const nextLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "", // STR_LONG_EXPOSURE_MOVIE
     "", // STR_DAY_TIME_LAPSE
     "", // STR_DAY_TIME_LAPSE_PAN
+    "", // STR_NIGHT_TIME_LAPSE_PAN
     "", // STR_EXPOSURE_LENGTH
     "", // STR_EXPOSURE_HINT
     "", // STR_NO_EXPOSURES
@@ -95,6 +97,7 @@ const char* const nextLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "", // STR_FRAMES
     "", // STR_NO_FRAMES
     "", // STR_PAN_ANGLE
+    "", // STR_PAN_DURATION
     "", // STR_HOURS
     "", // STR_PAN_DIRECTION
     "", // STR_LEFT

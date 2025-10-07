@@ -44,6 +44,7 @@ const char* const germanLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGME
     "Ungültige Verzögerungszeit",       // ERR_MSG_INVALID_DELAY_TIME
     "Ungültige Bildmenge",              // ERR_MSG_INVALID_FRAME_AMOUNT
     "Ungültiger Schwenkwinkel",         // ERR_MSG_INVALID_PAN_ANGLE
+    "Ungültige Schwenkdauer",           // ERR_MSG_INVALID_PAN_DURATION
     "Ungültige Schwenkrichtung",        // ERR_MSG_INVALID_PAN_DIRECTION
     "Ungültiger Aktivierungswert",      // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "Ungültige Zitterwahl",             // ERR_MSG_INVALID_DITHER_CHOICE
@@ -83,6 +84,7 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Langzeitbelichtung Film",                      // STR_LONG_EXPOSURE_MOVIE
     "Tageszeitraffer",                              // STR_DAY_TIME_LAPSE
     "Tageszeitraffer Schwenken",                    // STR_DAY_TIME_LAPSE_PAN
+    "Nachtzeitraffer Schwenken",                    // STR_NIGHT_TIME_LAPSE_PAN
     "Belichtungsdauer",                             // STR_EXPOSURE_LENGTH
     "in Sekunden (z.B. 30)",                        // STR_EXPOSURE_HINT
     "Anzahl der Belichtungen",                      // STR_NO_EXPOSURES
@@ -92,6 +94,7 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Anzahl der Bilder",                            // STR_FRAMES
     "nº der Bilder",                                // STR_NO_FRAMES
     "Schwenkwinkel",                                // STR_PAN_ANGLE
+    "Schwenkdauer (Sekunden)",                      // STR_PAN_DURATION
     "in Stunden (z.B. 6)",                          // STR_HOURS
     "Schwenkrichtung",                              // STR_PAN_DIRECTION
     "Links",                                        // STR_LEFT

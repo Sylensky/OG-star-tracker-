@@ -28,6 +28,7 @@ Intervalometer::Intervalometer(uint8_t triggerPinArg)
     currentSettings.preDelay = 1;
     currentSettings.exposureTime = 1;
     currentSettings.panAngle = 0.0;
+    currentSettings.panDuration = 0;
     currentSettings.panDirection = true;
     currentSettings.dither = false;
     currentSettings.ditherFrequency = 1;
@@ -57,8 +58,11 @@ void Intervalometer::startCapture()
 /* MODES:
 LONG_EXPOSURE_STILL: Predelay>(Internal Timed Capture>Dither?>Delay (x exposures)) (with tracking)
 LONG_EXPOSURE_MOVIE: (Predelay>(Internal Timed Capture>Dither?>Delay (x exposures))>rewind axis (x
-frames)) (with tracking) DAY_TIME_LAPSE: Predelay>(Camera Capture>delay (x exposures)) (no tracking)
-DAY_TIME_LAPSE_PAN: Predelay>(Camera Capture>pan deg>delay (x exposures)) (no tracking)
+frames)) (with tracking)
+DAY_TIME_LAPSE: Predelay>(Camera Capture>delay (x exposures)) (no tracking)
+DAY_TIME_LAPSE_PAN: Predelay>Start continuous pan>(Camera Capture>delay (x exposures)) (no tracking,
+pans continuously during captures) NIGHT_TIME_LAPSE_PAN: Predelay>(Camera Capture>pan step>delay (x
+exposures)) (no tracking, stops for each exposure)
 */
 
 void Intervalometer::run()
@@ -88,6 +92,7 @@ void Intervalometer::run()
             if (!timerStarted)
             {
                 print_out("Intervalometer: PREDELAY_START");
+                // Only stop tracking for DAY modes, not NIGHT_TIME_LAPSE_PAN
                 if ((currentSettings.mode == DAY_TIME_LAPSE ||
                      currentSettings.mode == DAY_TIME_LAPSE_PAN) &&
                     ra_axis.trackingActive)
@@ -105,6 +110,60 @@ void Intervalometer::run()
                 print_out("Intervalometer: PREDELAY_STOP");
                 nextState = false;
                 timerStarted = false;
+
+                // For DAY_TIME_LAPSE_PAN, start continuous panning after pre-delay
+                if (currentSettings.mode == DAY_TIME_LAPSE_PAN && currentSettings.panAngle > 0.0)
+                {
+                    print_out("Intervalometer: starting continuous pan");
+                    print_out("Pan angle: %.2f degrees", currentSettings.panAngle);
+
+                    // Calculate total steps for entire pan
+                    uint64_t arcSecsToMove = uint64_t(3600.0 * currentSettings.panAngle);
+                    int64_t totalStepsToMove = currentSettings.panDirection
+                                                   ? arcSecsToMove / ARCSEC_PER_STEP
+                                                   : (arcSecsToMove / ARCSEC_PER_STEP) * -1;
+
+                    print_out("Total steps to move: %lld", totalStepsToMove);
+
+                    // Calculate pan speed based on total duration
+                    // If panDuration is set, use it; otherwise calculate from exposures and delays
+                    uint32_t totalDuration =
+                        currentSettings.panDuration > 0
+                            ? currentSettings.panDuration
+                            : (currentSettings.exposures * currentSettings.delayTime);
+
+                    print_out("Total duration: %u seconds", totalDuration);
+
+                    // Ensure we have a valid duration to avoid division by zero
+                    if (totalDuration == 0)
+                    {
+                        totalDuration = 1;
+                    }
+
+                    // Calculate required slew rate: steps per second
+                    // rate.tracking is steps per sidereal second, we need steps per second for our
+                    // total move
+                    uint64_t stepsPerSecond =
+                        (totalStepsToMove < 0 ? -totalStepsToMove : totalStepsToMove) /
+                        totalDuration;
+
+                    print_out("Steps per second: %llu", stepsPerSecond);
+
+                    // Convert to tracking rate divisor (tracking rate / x)
+                    uint64_t slewRate = stepsPerSecond > 0 ? ra_axis.rate.tracking / stepsPerSecond
+                                                           : ra_axis.rate.tracking / 10;
+
+                    print_out("Slew rate: %llu", slewRate);
+
+                    ra_axis.resetAxisCount();
+                    ra_axis.setAxisTargetCount(totalStepsToMove);
+                    ra_axis.counterActive = true;
+                    ra_axis.goToTarget = true;
+                    ra_axis.startSlew(slewRate, currentSettings.panDirection);
+
+                    print_out("Pan goto started");
+                }
+
                 currentState = CAPTURE;
             }
             break;
@@ -118,7 +177,11 @@ void Intervalometer::run()
                     ra_axis.counterActive = true;
                 }
                 digitalWrite(triggerPin, HIGH);
-                if (currentSettings.mode > 1)
+                // DAY_TIME_LAPSE, DAY_TIME_LAPSE_PAN use short camera-timed exposures
+                // NIGHT_TIME_LAPSE_PAN, LONG_EXPOSURE_STILL, LONG_EXPOSURE_MOVIE use firmware-timed
+                // exposures
+                if (currentSettings.mode == DAY_TIME_LAPSE ||
+                    currentSettings.mode == DAY_TIME_LAPSE_PAN)
                 {
                     intervalometerTimer.start(2000, false); // 1 sec should cover day time
                                                             // exposures.
@@ -127,6 +190,8 @@ void Intervalometer::run()
                 }
                 else
                 {
+                    // For NIGHT_TIME_LAPSE_PAN and long exposure modes, firmware controls exposure
+                    // time
                     intervalometerTimer.start(2000 * currentSettings.exposureTime, false);
                 }
                 current_exposure++;
@@ -140,9 +205,9 @@ void Intervalometer::run()
                 nextState = false;
                 timerStarted = false;
                 exposures_taken++;
-                currentState = currentSettings.dither                       ? DITHER
-                               : currentSettings.mode == DAY_TIME_LAPSE_PAN ? PAN
-                                                                            : DELAY;
+                currentState = currentSettings.dither                         ? DITHER
+                               : currentSettings.mode == NIGHT_TIME_LAPSE_PAN ? PAN
+                                                                              : DELAY;
             }
             break;
         case DITHER:
@@ -184,30 +249,55 @@ void Intervalometer::run()
             }
             break;
         case PAN:
+            // This state is only used for NIGHT_TIME_LAPSE_PAN (step-by-step panning)
+            // DAY_TIME_LAPSE_PAN uses continuous panning started in PRE_DELAY
             if (!axisMoving)
             {
-                print_out("Intervalometer: pan_start");
+                print_out("Intervalometer: pan_step_start");
                 axisMoving = true;
-                uint64_t arcSecsToMove = uint64_t(3600.0 * currentSettings.panAngle);
-                int64_t stepsToMove = currentSettings.panDirection
-                                          ? arcSecsToMove / ARCSEC_PER_STEP
-                                          : (arcSecsToMove / ARCSEC_PER_STEP) * -1;
-                ra_axis.resetAxisCount();
-                ra_axis.setAxisTargetCount(stepsToMove);
-                if (ra_axis.targetCount != ra_axis.axisCountValue)
+
+                // Only pan if panAngle > 0
+                if (currentSettings.panAngle > 0.0)
                 {
-                    ra_axis.counterActive = true;
-                    ra_axis.goToTarget = true;
-                    ra_axis.startSlew(ra_axis.rate.tracking / 10,
-                                      currentSettings.panDirection); // pan at 20x tracking rate
+                    // Temporarily stop tracking during pan movement to avoid interference
+                    bool wasTracking = ra_axis.trackingActive;
+                    if (wasTracking)
+                    {
+                        ra_axis.stopTracking();
+                    }
+
+                    // Calculate angle per shot (total angle divided by number of exposures)
+                    float anglePerShot = currentSettings.panAngle / currentSettings.exposures;
+                    uint64_t arcSecsToMove = uint64_t(3600.0 * anglePerShot);
+                    int64_t stepsToMove = currentSettings.panDirection
+                                              ? arcSecsToMove / ARCSEC_PER_STEP
+                                              : (arcSecsToMove / ARCSEC_PER_STEP) * -1;
+
+                    // For NIGHT_TIME_LAPSE_PAN, move incrementally after each exposure
+                    int64_t currentTarget = ra_axis.axisCountValue + stepsToMove;
+                    ra_axis.setAxisTargetCount(currentTarget);
+                    if (ra_axis.targetCount != ra_axis.axisCountValue)
+                    {
+                        ra_axis.counterActive = true;
+                        ra_axis.goToTarget = true;
+                        ra_axis.startSlew(ra_axis.rate.tracking / 10,
+                                          currentSettings.panDirection); // pan at 20x tracking rate
+                    }
                 }
             }
             if (!ra_axis.slewActive)
             {
-                print_out("Intervalometer: pan_end");
+                print_out("Intervalometer: pan_step_end");
                 axisMoving = false;
                 ra_axis.counterActive = false;
                 ra_axis.goToTarget = false;
+
+                // Resume tracking if it was enabled before the pan
+                if (currentSettings.enableTracking && !ra_axis.trackingActive)
+                {
+                    ra_axis.startTracking(ra_axis.rate.tracking, ra_axis.direction.tracking);
+                }
+
                 currentState = DELAY;
             }
             break;
