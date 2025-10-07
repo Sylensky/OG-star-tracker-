@@ -45,6 +45,7 @@ const char* const englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "Invalid Delay Time",            // ERR_MSG_INVALID_DELAY_TIME
     "Invalid Frame Amount",          // ERR_MSG_INVALID_FRAME_AMOUNT
     "Invalid Pan Angle",             // ERR_MSG_INVALID_PAN_ANGLE
+    "Invalid Pan Duration",          // ERR_MSG_INVALID_PAN_DURATION
     "Invalid Pan Direction",         // ERR_MSG_INVALID_PAN_DIRECTION
     "Invalid Enable Tracking Value", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "Invalid Dither Choice",         // ERR_MSG_INVALID_DITHER_CHOICE
@@ -82,8 +83,8 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Mode",                          // STR_MODE
     "Long Exposure Still",           // STR_LONG_EXPOSURE_STILL
     "Long Exposure Movie",           // STR_LONG_EXPOSURE_MOVIE
-    "Day Time Lapse",                // STR_DAY_TIME_LAPSE
-    "Day Time Lapse Pan",            // STR_DAY_TIME_LAPSE_PAN
+    "Timelapse",                     // STR_TIMELAPSE
+    "Timelapse Pan",                 // STR_TIMELAPSE_PAN
     "Exposure Length",               // STR_EXPOSURE_LENGTH
     "in seconds (Ex. 30)",           // STR_EXPOSURE_HINT
     "Number of exposures",           // STR_NO_EXPOSURES
@@ -100,8 +101,7 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Goto RA Control",               // STR_GOTO_RA_CONTROL
     "Current",                       // STR_GOTO_RA_CURRENT
     "Target",                        // STR_GOTO_RA_TARGET
-    "Center your camera on\nmemorable star like Deneb,Altair..\nthen enter coordinates of "
-    "target\n",                 // STR_GOTO_RA_HINT
+    "Center your camera on\nmemorable star like Deneb, Altair..\nthen enter coordinates of target\n", // STR_GOTO_RA_HINT
     "Start Goto RA",            // STR_START_GOTO_RA
     "Stop Goto RA",             // STR_STOP_GOTO_RA
     "Disable Tracking On End",  // STR_ENABLE_TRACKING

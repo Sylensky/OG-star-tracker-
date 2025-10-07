@@ -44,6 +44,7 @@ const char* const chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "无效的延迟时间",   // ERR_MSG_INVALID_DELAY_TIME
     "无效的帧数量",     // ERR_MSG_INVALID_FRAME_AMOUNT
     "无效的平移角度",   // ERR_MSG_INVALID_PAN_ANGLE
+    "无效的平移时长",   // ERR_MSG_INVALID_PAN_DURATION
     "无效的平移方向",   // ERR_MSG_INVALID_PAN_DIRECTION
     "无效的启用跟踪值", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "无效的抖动选择",   // ERR_MSG_INVALID_DITHER_CHOICE
@@ -81,8 +82,8 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "模式",                                                               // STR_MODE
     "长曝光静态",                                                         // STR_LONG_EXPOSURE_STILL
     "长曝光视频",                                                         // STR_LONG_EXPOSURE_MOVIE
-    "日间延时摄影",                                                       // STR_DAY_TIME_LAPSE
-    "日间延时摄影平移",                                                   // STR_DAY_TIME_LAPSE_PAN
+    "延时摄影",                                                           // STR_TIMELAPSE
+    "延时摄影平移",                                                       // STR_TIMELAPSE_PAN
     "曝光时长",                                                           // STR_EXPOSURE_LENGTH
     "单位：秒 (例如: 30)",                                                // STR_EXPOSURE_HINT
     "曝光次数",                                                           // STR_NO_EXPOSURES

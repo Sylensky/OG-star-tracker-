@@ -13,8 +13,8 @@
 #include "common_strings.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
+#include "functions/intervalometer/intervalometer.h"
 #include "hardwaretimer.h"
-#include "intervalometer.h"
 #include "tracking_rates.h"
 #include "uart.h"
 #include "website/web_languages.h"
@@ -24,6 +24,7 @@ SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
 Languages language = EN;
 StarDatabase* starDatabase = nullptr;
+Intervalometer* intervalometer = nullptr;
 
 void uartTask(void* pvParameters);
 void consoleTask(void* pvParameters);
@@ -241,11 +242,11 @@ void handleOn()
 #endif
     ra_axis.startTracking(trackingRates.getRate(), direction);
 
-    if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
+    if (intervalometer->getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
         server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
     else
         server.send(200, MIME_TYPE_TEXT,
-                    languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
+                    languageErrorMessageStrings[language][intervalometer->getErrorMessage()]);
 #if DEBUG == 1
     print_out("  Tracking ON response sent");
 #endif
@@ -291,129 +292,135 @@ void handleSetLanguage()
 
 void handleSetCurrent()
 {
-    if (!intervalometer.intervalometerActive)
+    if (!intervalometer->isActive())
     {
         // Reset the current error message
-        intervalometer.currentErrorMessage = ERR_MSG_NONE;
+        intervalometer->setErrorMessage(ERR_MSG_NONE);
+
+        Intervalometer::Settings settings = intervalometer->getSettings();
 
         int modeInt = server.arg(CAPTURE_MODE).toInt();
-        if (modeInt < 0 || modeInt >= Intervalometer::Mode::MAX_MODES)
+        if (modeInt < 0 || modeInt >= static_cast<int>(Intervalometer::Mode::MaxModes))
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_CAPTURE_MODE;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_CAPTURE_MODE);
             return;
         }
-        Intervalometer::Mode captureMode = static_cast<Intervalometer::Mode>(modeInt);
-        intervalometer.currentSettings.mode = captureMode;
+        intervalometer->setMode(static_cast<Intervalometer::Mode>(modeInt));
 
         int exposureTime = server.arg(EXPOSURE_TIME).toInt();
         if (exposureTime <= 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_LENGTH;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_EXPOSURE_LENGTH);
             return;
         }
-        intervalometer.currentSettings.exposureTime = exposureTime;
+        settings.exposureTime = exposureTime;
 
         int exposures = server.arg(EXPOSURES).toInt();
         if (exposures <= 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_AMOUNT;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_EXPOSURE_AMOUNT);
             return;
         }
-        intervalometer.currentSettings.exposures = exposures;
+        settings.exposures = exposures;
 
         int preDelay = server.arg(PREDELAY).toInt();
         if (preDelay < 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PREDELAY_TIME;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PREDELAY_TIME);
             return;
         }
         else if (preDelay == 0)
             preDelay = 5;
-        intervalometer.currentSettings.preDelay = preDelay;
+        settings.preDelay = preDelay;
 
         int delayTime = server.arg(DELAY).toInt();
         if (delayTime < 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DELAY_TIME;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DELAY_TIME);
             return;
         }
-        intervalometer.currentSettings.delayTime = delayTime;
+        settings.delayTime = delayTime;
 
         int frames = server.arg(FRAMES).toInt();
         if (frames <= 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FRAME_AMOUNT;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_FRAME_AMOUNT);
             return;
         }
-        intervalometer.currentSettings.frames = frames;
+        settings.frames = frames;
 
         float panAngle = server.arg(PAN_ANGLE).toFloat() / 100;
         if (panAngle < 0.0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_ANGLE;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PAN_ANGLE);
             return;
         }
-        intervalometer.currentSettings.panAngle = panAngle;
+        settings.panAngle = panAngle;
+
+
 
         int panDirection = server.arg(PAN_DIRECTION).toInt();
         if (panDirection < 0 || panDirection > 1)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_DIRECTION;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PAN_DIRECTION);
             return;
         }
-        intervalometer.currentSettings.panDirection = panDirection;
+        settings.panDirection = panDirection;
 
         int enableTracking = server.arg(ENABLE_TRACKING).toInt();
         if (enableTracking < 0 || enableTracking > 1)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_ENABLE_TRACKING_VALUE;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_ENABLE_TRACKING_VALUE);
             return;
         }
-        intervalometer.currentSettings.enableTracking = enableTracking;
+        settings.enableTracking = enableTracking;
 
         int dither = server.arg(DITHER_CHOICE).toInt();
         if (dither < 0 || dither > 1)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_CHOICE;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DITHER_CHOICE);
             return;
         }
-        intervalometer.currentSettings.dither = dither;
+        settings.dither = dither;
 
         int ditherFrequency = server.arg(DITHER_FREQUENCY).toInt();
         if (ditherFrequency <= 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_FREQUENCY;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DITHER_FREQUENCY);
             return;
         }
-        intervalometer.currentSettings.ditherFrequency = ditherFrequency;
+        settings.ditherFrequency = ditherFrequency;
 
         int focalLength = server.arg(FOCAL_LENGTH).toInt();
         if (focalLength <= 0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FOCAL_LENGTH;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_FOCAL_LENGTH);
             return;
         }
-        intervalometer.currentSettings.focalLength = focalLength;
+        settings.focalLength = focalLength;
 
         float pixelSize = server.arg(PIXEL_SIZE).toFloat() / 100;
         if (pixelSize <= 0.0)
         {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PIXEL_SIZE;
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PIXEL_SIZE);
             return;
         }
-        intervalometer.currentSettings.pixelSize = pixelSize;
+        settings.pixelSize = pixelSize;
+        settings.mode = static_cast<uint8_t>(intervalometer->getMode());
+        intervalometer->setSettings(settings);
 
         String currentMode = server.arg(MODE);
         if (currentMode == "save")
         {
             int preset = server.arg(PRESET).toInt();
-            intervalometer.saveSettingsToPreset(preset);
+            intervalometer->saveSettingsToPreset(preset);
             server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SAVED_PRESET]);
         }
         else if (currentMode == "start")
         {
-            if ((intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_MOVIE ||
-                 intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_STILL) &&
+            Intervalometer::Mode mode = intervalometer->getMode();
+            if ((mode == Intervalometer::Mode::LongExposureMovie ||
+                 mode == Intervalometer::Mode::LongExposureStill) &&
                 !ra_axis.trackingActive)
             {
                 server.send(200, MIME_TYPE_TEXT,
@@ -421,7 +428,7 @@ void handleSetCurrent()
             }
             else
             {
-                intervalometer.startCapture();
+                intervalometer->startCapture();
                 server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ON]);
             }
         }
@@ -504,22 +511,23 @@ void handleSetPosition()
 void handleGetPresetExposureSettings()
 {
     int preset = server.arg(PRESET).toInt();
-    intervalometer.readSettingsFromPreset(preset);
-    JsonDocument settings;
+    intervalometer->readSettingsFromPreset(preset);
+    ArduinoJson::JsonDocument settings;
     String json;
-    settings[MODE] = intervalometer.currentSettings.mode;
-    settings[EXPOSURES] = intervalometer.currentSettings.exposures;
-    settings[DELAY] = intervalometer.currentSettings.delayTime;
-    settings[PREDELAY] = intervalometer.currentSettings.preDelay;
-    settings[EXPOSURE_TIME] = intervalometer.currentSettings.exposureTime;
-    settings[PAN_ANGLE] = intervalometer.currentSettings.panAngle * 100;
-    settings[PAN_DIRECTION] = intervalometer.currentSettings.panDirection;
-    settings[DITHER_CHOICE] = intervalometer.currentSettings.dither;
-    settings[DITHER_FREQUENCY] = intervalometer.currentSettings.ditherFrequency;
-    settings[ENABLE_TRACKING] = intervalometer.currentSettings.enableTracking;
-    settings[FRAMES] = intervalometer.currentSettings.frames;
-    settings[PIXEL_SIZE] = intervalometer.currentSettings.pixelSize * 100;
-    settings[FOCAL_LENGTH] = intervalometer.currentSettings.focalLength;
+    const Intervalometer::Settings& s = intervalometer->getSettings();
+    settings[MODE] = static_cast<uint8_t>(intervalometer->getMode());
+    settings[EXPOSURES] = s.exposures;
+    settings[DELAY] = s.delayTime;
+    settings[PREDELAY] = s.preDelay;
+    settings[EXPOSURE_TIME] = s.exposureTime;
+    settings[PAN_ANGLE] = s.panAngle * 100;
+    settings[PAN_DIRECTION] = s.panDirection;
+    settings[DITHER_CHOICE] = s.dither;
+    settings[DITHER_FREQUENCY] = s.ditherFrequency;
+    settings[ENABLE_TRACKING] = s.enableTracking;
+    settings[FRAMES] = s.frames;
+    settings[PIXEL_SIZE] = s.pixelSize * 100;
+    settings[FOCAL_LENGTH] = s.focalLength;
     serializeJson(settings, json);
     // print_out(json);
     server.send(200, MIME_APPLICATION_JSON, json);
@@ -527,9 +535,9 @@ void handleGetPresetExposureSettings()
 
 void handleAbortCapture()
 {
-    if (intervalometer.intervalometerActive)
+    if (intervalometer->isActive())
     {
-        intervalometer.abortCapture();
+        intervalometer->abortCapture();
         server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_OFF]);
     }
     else
@@ -549,31 +557,31 @@ void handleAbortGoToRA()
 
 void handleStatusRequest()
 {
-    if (intervalometer.intervalometerActive)
+    if (intervalometer->isActive())
     {
-        switch (intervalometer.currentState)
+        switch (intervalometer->getState())
         {
-            case Intervalometer::PRE_DELAY:
+            case Intervalometer::State::PreDelay:
                 server.send(200, MIME_TYPE_TEXT,
                             languageMessageStrings[language][MSG_CAP_PREDELAY]);
                 break;
-            case Intervalometer::CAPTURE:
+            case Intervalometer::State::Capture:
                 server.send(200, MIME_TYPE_TEXT,
                             languageMessageStrings[language][MSG_CAP_EXPOSING]);
                 break;
-            case Intervalometer::DITHER:
+            case Intervalometer::State::Dither:
                 server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DITHER]);
                 break;
-            case Intervalometer::PAN:
+            case Intervalometer::State::Pan:
                 server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_PANNING]);
                 break;
-            case Intervalometer::DELAY:
+            case Intervalometer::State::Delay:
                 server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DELAY]);
                 break;
-            case Intervalometer::REWIND:
+            case Intervalometer::State::Rewind:
                 server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_REWIND]);
                 break;
-            case Intervalometer::INACTIVE:
+            case Intervalometer::State::Inactive:
             default:
                 break;
         }
@@ -592,11 +600,11 @@ void handleStatusRequest()
     }
     else
     {
-        if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
+        if (intervalometer->getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
             server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_IDLE]);
         else
             server.send(200, MIME_TYPE_TEXT,
-                        languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
+                        languageErrorMessageStrings[language][intervalometer->getErrorMessage()]);
     }
 
     if (ra_axis.slewActive)
@@ -688,7 +696,7 @@ void handleLoadTrackingRatePreset()
 
     if (preset < 5)
     {
-        JsonDocument response;
+        ArduinoJson::JsonDocument response;
         response["trackingRateType"] = trackingRates.trackingRatePresets[preset].trackingRateType;
         response["customTrackingRate"] =
             (long long) trackingRates.trackingRatePresets[preset].customTrackingRate;
@@ -725,7 +733,7 @@ void handleCatalogSearch()
 
     if (found)
     {
-        JsonDocument objectData;
+        ArduinoJson::JsonDocument objectData;
         String json;
         objectData["name"] = foundObject.name;
         objectData["ra"] = (long long) (foundObject.ra_hours * 3600.0);
@@ -979,12 +987,13 @@ void webserverTask(void* pvParameters)
 
 void intervalometerTask(void* pvParameters)
 {
-    intervalometer.readPresetsFromEEPROM();
+    intervalometer = new Intervalometer(INTERV_PIN);
+    intervalometer->readPresetsFromEEPROM();
 
     for (;;)
     {
-        if (intervalometer.intervalometerActive)
-            intervalometer.run();
+        if (intervalometer->isActive())
+            intervalometer->cleanup();
         vTaskDelay(1);
     }
 }

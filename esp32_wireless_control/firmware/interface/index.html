@@ -621,21 +621,32 @@
                     document.getElementById('dither').value = 0;
                     document.getElementById('dither').dispatchEvent(new Event('change'));
                     break;
+                case 4:
+                    document.getElementById('exposureDiv').style.display = 'flex';
+                    document.getElementById('framesDiv').style.display = 'none';
+                    document.getElementById('panAngleDiv').style.display = 'flex';
+                    document.getElementById('panDirectionDiv').style.display = 'flex';
+                    document.getElementById('trackEndDiv').style.display = 'flex';
+                    document.getElementById('ditherChoiceDiv').style.display = 'none';
+                    document.getElementById('dither').value = 0;
+                    document.getElementById('dither').dispatchEvent(new Event('change'));
+                    break;
                 default:
             }
 
         }
 
         function calculateCaptureTime() {
-            exposureTime = document.getElementById('mode').selectedIndex < 2 ? document.getElementById('exposureTime').valueAsNumber : 1;
+            var modeIndex = document.getElementById('mode').selectedIndex;
+            exposureTime = (modeIndex < 2 || modeIndex == 4) ? document.getElementById('exposureTime').valueAsNumber : 1;
             exposures = document.getElementById('exposures').valueAsNumber;
             predelay = document.getElementById('preDelay').valueAsNumber;
             delay = document.getElementById('delay').valueAsNumber;
-            frames = document.getElementById('mode').selectedIndex == 1 ? document.getElementById('frames').valueAsNumber : 1;
-            panAngle = document.getElementById('mode').selectedIndex == 3 ? document.getElementById('panAngle').valueAsNumber : 1;
-            ditherFrequency = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('ditherFrequency').valueAsNumber : 1;
-            focalLength = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('focalLength').valueAsNumber : 1;
-            pixelSize = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('pixelSize').valueAsNumber : 1;
+            frames = modeIndex == 1 ? document.getElementById('frames').valueAsNumber : 1;
+            panAngle = (modeIndex == 3 || modeIndex == 4) ? document.getElementById('panAngle').valueAsNumber : 1;
+            ditherFrequency = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('ditherFrequency').valueAsNumber : 1;
+            focalLength = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('focalLength').valueAsNumber : 1;
+            pixelSize = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('pixelSize').valueAsNumber : 1;
             total = exposureTime + exposures + predelay + delay + frames + panAngle + ditherFrequency + focalLength + pixelSize;
             captureTime = (((delay + exposureTime) * exposures - delay) * frames) + predelay;
             if (isNaN(captureTime)) {
@@ -792,6 +803,17 @@
                     var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
                     var panDirection = document.getElementById('panDirection').selectedIndex;
                     var enableTracking = 0;
+                    var ditherChoice = 0;
+                    var ditherFrequency = 1;
+                    var focalLength = 1;
+                    var pixelSize = 1;
+                    break;
+                case 4:
+                    var exposureTime = document.getElementById('exposureTime').value.trim();
+                    var frames = "1";
+                    var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
+                    var panDirection = document.getElementById('panDirection').selectedIndex;
+                    var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = 0;
                     var ditherFrequency = 1;
                     var focalLength = 1;
@@ -1421,8 +1443,8 @@
                     <select aria-label="mode" id='mode' onchange="changeMode();">
                         <option value='0'>%STR_LONG_EXPOSURE_STILL%</option>
                         <option value='1'>%STR_LONG_EXPOSURE_MOVIE%</option>
-                        <option value='2'>%STR_DAY_TIME_LAPSE%</option>
-                        <option value='3'>%STR_DAY_TIME_LAPSE_PAN%</option>
+                        <option value='2'>%STR_TIMELAPSE%</option>
+                        <option value='3'>%STR_TIMELAPSE_PAN%</option>
                     </select>
                 </div>
 
