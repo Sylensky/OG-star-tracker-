@@ -13,6 +13,8 @@ up to 300mm and 2.5kg. It's also upgradable which means that you can add a anoth
 The kit can be purchased for around 150$ on [ogstartech.com](https://www.ogstartech.com/start/). There is a [discord](https://discord.gg/dyFKm79gKJ) for those who are interested or would want to ask me a few questions. New STLs are
 on [printables](https://www.printables.com/model/348574-og-star-tracker).
 
+[DeepWiki](https://deepwiki.com/OG-star-tech/OG-star-tracker-/1-overview) Provides a very detailed documentation of the project.
+
 ## License
 
 This work is licensed under a
