@@ -33,6 +33,7 @@ const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "", // MSG_CAP_REWIND
     "", // MSG_GOTO_RA_PANNING_ON
     "", // MSG_GOTO_RA_PANNING_OFF
+    "", // MSG_POSITION_SET_SUCCESS
     "", // MSG_IDLE
 };
 
@@ -130,7 +131,12 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_STAR_DEC
     "", // STR_STAR_TYPE
     "", // STR_STAR_MAGNITUDE
-    ""  // STR_STAR_CONSTELLATION
+    "", // STR_STAR_CONSTELLATION
+    "", // STR_LOCAL_TIME
+    "", // STR_CURRENT_POSITION
+    "", // STR_CURRENT_RA_POSITION
+    "", // STR_CURRENT_TIME
+    ""  // STR_LONGITUDE
 };
 
 #endif

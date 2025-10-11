@@ -1,7 +1,7 @@
 #ifndef WEB_LANGUAGES_H
 #define WEB_LANGUAGES_H
 
-#define numberOfHTMLStrings 76
+#define numberOfHTMLStrings 81
 
 #include "error.h"
 
@@ -35,6 +35,7 @@ enum Messages
     MSG_CAP_REWIND,
     MSG_GOTO_RA_PANNING_ON,
     MSG_GOTO_RA_PANNING_OFF,
+    MSG_POSITION_SET_SUCCESS,
     MSG_IDLE,
     NUMBER_OF_MESSAGES,
 };

@@ -30,6 +30,7 @@ const char* germanLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Aufnahme: Zurückspulen",                           // MSG_CAP_REWIND
     "Goto RA: Panning ON",                              // MSG_GOTO_RA_PANNING_ON
     "Goto RA: Panning OFF",                             // MSG_GOTO_RA_PANNING_OFF
+    "Position erfolgreich gesetzt",                     // MSG_POSITION_SET_SUCCESS
     "Leerlauf",                                         // MSG_IDLE
 };
 
@@ -129,7 +130,12 @@ const char* germanLangHTMLStrings[numberOfHTMLStrings] = {
     "DEC",                                                // STR_STAR_DEC
     "Typ",                                                // STR_STAR_TYPE
     "Magnitude",                                          // STR_STAR_MAGNITUDE
-    "Sternbild"                                           // STR_STAR_CONSTELLATION
+    "Sternbild",                                          // STR_STAR_CONSTELLATION
+    "Ortszeit",                                           // STR_LOCAL_TIME
+    "Aktuelle Position",                                  // STR_CURRENT_POSITION
+    "Aktuelle RA-Position",                               // STR_CURRENT_RA_POSITION
+    "Aktuelle Zeit",                                      // STR_CURRENT_TIME
+    "Längengrad"                                          // STR_LONGITUDE
 };
 
 #endif
