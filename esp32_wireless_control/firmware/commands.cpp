@@ -33,7 +33,7 @@ static uint16_t get_stack_high_water(const char* task_name)
     uint16_t stack_size = 0;
 
     if (task == NULL)
-        print_out(tsk_not_avail);
+        print_out_tbl(TSK_NOT_AVAIL);
     else
     {
         configASSERT(task);

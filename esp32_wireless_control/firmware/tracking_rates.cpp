@@ -1,4 +1,8 @@
 #include "tracking_rates.h"
+#include "uart.h"
+
+// Include for EEPROM operations (forward declaration in header)
+#include "eeprom_manager.h"
 
 // Calculate tracking rate from period in milliseconds
 // Formula: Timer_reload_value = TIMER_APB_CLK_FREQ / timer_interrupts_per_second
@@ -31,6 +35,13 @@ TrackingRates::TrackingRates()
     solar_rate = calculateTrackingRate(SOLAR_DAY_MS);
     lunar_rate = calculateTrackingRate(LUNAR_DAY_MS);
     setRate(TRACKING_RATE); // Set initial rate based on TRACKING_RATE
+
+    for (int i = 0; i < 5; i++)
+    {
+        // Initialize presets
+        trackingRatePresets[i].trackingRateType = TRACKING_SIDEREAL;
+        trackingRatePresets[i].customTrackingRate = 0;
+    }
 }
 
 void TrackingRates::setRate(TrackingRateType type)
@@ -45,6 +56,9 @@ void TrackingRates::setRate(TrackingRateType type)
             break;
         case TRACKING_LUNAR:
             current_rate = lunar_rate;
+            break;
+        case TRACKING_CUSTOM:
+            print_out("WARNING: This should not be reached - use setCustomRate()");
             break;
     }
 };
@@ -68,6 +82,51 @@ uint64_t TrackingRates::getStepsPerSecondSolar()
 uint64_t TrackingRates::getStepsPerSecondLunar()
 {
     return ((((uint64_t) STEPS_PER_TRACKER_FULL_REV_INT) * 1000ULL) / LUNAR_DAY_MS);
+}
+
+void TrackingRates::saveTrackingRatePreset(uint8_t preset, uint8_t rateType, uint64_t customRate)
+{
+    if (preset < 5)
+    {
+        trackingRatePresets[preset].trackingRateType = rateType;
+        trackingRatePresets[preset].customTrackingRate = customRate;
+    }
+}
+
+void TrackingRates::loadTrackingRatePreset(uint8_t preset)
+{
+    if (preset < 5)
+    {
+        TrackingRateType type =
+            static_cast<TrackingRateType>(trackingRatePresets[preset].trackingRateType);
+
+        if (type == TRACKING_CUSTOM)
+            setCustomRate(trackingRatePresets[preset].customTrackingRate);
+        else
+            setRate(type);
+    }
+}
+
+void TrackingRates::saveTrackingRatePresetsToEEPROM()
+{
+#if DEBUG == 1
+    print_out("Saving tracking rate presets to EEPROM, bytes written: ");
+    print_out("%d", EepromManager::writePresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION,
+                                                trackingRatePresets));
+#else
+    EepromManager::writePresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION, trackingRatePresets);
+#endif
+}
+
+void TrackingRates::readTrackingRatePresetsFromEEPROM()
+{
+#if DEBUG == 1
+    print_out("Reading tracking rate presets from EEPROM, bytes read: ");
+    print_out("%d", EepromManager::readPresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION,
+                                               trackingRatePresets));
+#else
+    EepromManager::readPresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION, trackingRatePresets);
+#endif
 }
 
 // Global instance of tracking rates

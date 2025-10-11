@@ -21,6 +21,8 @@ extern const char* DITHER_CHOICE;
 extern const char* DITHER_FREQUENCY;
 extern const char* FOCAL_LENGTH;
 extern const char* PIXEL_SIZE;
+extern const char* TRACKING_TYPE;
+extern const char* CUSTOM_RATE;
 extern const char* DISABLE_TRACKING_ON_FINISH;
 extern const char* MIME_TYPE_TEXT;
 extern const char* MIME_TYPE_HTML;

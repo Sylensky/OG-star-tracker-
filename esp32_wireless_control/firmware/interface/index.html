@@ -481,6 +481,44 @@
             trackingRateInput.value = currentValue + amount;
         }
 
+        function saveTrackingRatePreset() {
+            var preset = document.getElementById('rate-preset-select').value;
+            var trackingType = document.getElementById('tracking-speed-select').value;
+            var customRate = document.getElementById('tracking-rate-value').value;
+
+            var url = '/saveTrackingRatePreset?preset=' + preset +
+                '&trackingType=' + trackingType +
+                '&customRate=' + customRate;
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("Saved preset:", preset, "Type:", trackingType, "Custom Rate:", customRate);
+                }
+            };
+            xhr.open('GET', url, true);
+            xhr.send();
+        }
+
+        function loadTrackingRatePreset() {
+            var preset = document.getElementById('rate-preset-select').value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        var settings = JSON.parse(this.responseText);
+                        document.getElementById('tracking-speed-select').value = settings.trackingRateType;
+                        document.getElementById('tracking-rate-value').value = settings.customTrackingRate;
+                    } catch (e) {
+                        console.error('Error parsing tracking rate preset:', e);
+                    }
+                }
+            };
+            xhr.open('GET', '/loadTrackingRatePreset?preset=' + preset, true);
+            xhr.send();
+        }
+
         function sendSlewStop() {
             lastClick = Date.now();
             sendRequest('/stopslew');
@@ -1178,7 +1216,16 @@
                     <option value='3'>%STR_LUNAR%</option>
                 </select>
 
-                <h3>Fine Tune:</h3>
+                <h3>%STR_RATE_PRESET%:</h3>
+                <select aria-label="rate-preset" id='rate-preset-select'>
+                    <option value='0'>%STR_PRESET% 1</option>
+                    <option value='1'>%STR_PRESET% 2</option>
+                    <option value='2'>%STR_PRESET% 3</option>
+                    <option value='3'>%STR_PRESET% 4</option>
+                    <option value='4'>%STR_PRESET% 5</option>
+                </select>
+
+                <h3>%STR_TUNE_RATE%:</h3>
                 <input id='tracking-rate-value' type='number' value='0' style='width: 100%;'>
 
                 <div class="button-group-fine-tune" style="width: 100%; display: flex; justify-content: space-between;">
@@ -1194,6 +1241,13 @@
                         style="width: 15%; font-size: 12px;">-10</button>
                     <button type="button" onclick="adjustTrackingRate(-1)"
                         style="width: 15%; font-size: 12px;">-1</button>
+                </div>
+
+                <div class="button-group">
+                    <button class="right-separator" type="button"
+                        onclick="saveTrackingRatePreset()">%STR_SAVE_RATE_PRESET%</button>
+                    <button class="left-separator" type="button"
+                        onclick="loadTrackingRatePreset()">%STR_LOAD_RATE_PRESET%</button>
                 </div>
             </div>
 

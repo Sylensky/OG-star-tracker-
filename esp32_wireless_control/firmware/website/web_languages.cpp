@@ -5,35 +5,35 @@
 // include Next language
 
 /* clang-format off */
-const char** languageNames[LANG_COUNT] = {
+const char* const* languageNames[LANG_COUNT] = {
   englishLangLanguageNames,
   chineseLangLanguageNames,
   germanLangLanguageNames
   //nextLanguageLangNames  Array here
 };
 
-const char** languageMessageStrings[LANG_COUNT] = {
+const char* const* languageMessageStrings[LANG_COUNT] = {
   englishLangMessageStrings,
   chineseLangMessageStrings,
   germanLangMessageStrings
   //nextLanguageMessageStrings Array here
 };
 
-const char** languageErrorMessageStrings[LANG_COUNT] = {
+const char* const* languageErrorMessageStrings[LANG_COUNT] = {
   englishLangErrorMessageStrings,
   chineseLangErrorMessageStrings,
   germanLangErrorMessageStrings
   //nextLanguageErrorMessageStrings Array here
 };
 
-const char** languageHTMLStrings[LANG_COUNT] = {
+const char* const* languageHTMLStrings[LANG_COUNT] = {
   englishLangHTMLStrings,
   chineseLangHTMLStrings,
   germanLangHTMLStrings
   //nextLanguageHTMLStrings Array here
 };
 
-const char* HTMLplaceHolders[numberOfHTMLStrings] = {
+const char* const HTMLplaceHolders[numberOfHTMLStrings] PROGMEM = {
   "%STR_TITLE%",
   "%STR_TRACKER_CONTROLLER%",
   "%STR_TRACKING%",
@@ -114,6 +114,10 @@ const char* HTMLplaceHolders[numberOfHTMLStrings] = {
   "%STR_CURRENT_POSITION%",
   "%STR_CURRENT_RA_POSITION%",
   "%STR_CURRENT_TIME%",
-  "%STR_LONGITUDE%"
+  "%STR_LONGITUDE%",
+  "%STR_TUNE_RATE%",
+  "%STR_RATE_PRESET%",
+  "%STR_SAVE_RATE_PRESET%",
+  "%STR_LOAD_RATE_PRESET%"
 };
 /* clang-format on */

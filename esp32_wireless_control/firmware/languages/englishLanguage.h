@@ -1,16 +1,18 @@
 #ifndef ENGLISH_LANG_H
 #define ENGLISH_LANG_H
 #include "../website/web_languages.h"
+#include <pgmspace.h>
 
-const char* englishLangLanguageNames[LANG_COUNT] = {
+// English language arrays in PROGMEM
+const char* const englishLangLanguageNames[LANG_COUNT] PROGMEM = {
     // LANGUAGE NAMES
     "English", // ENGLISH
     "Chinese", // CHINESE
     "German",  // GERMAN
 };
 
-const char* englishLangMessageStrings[NUMBER_OF_MESSAGES] = {
-    // MESSAGE STRINSS
+const char* const englishLangMessageStrings[NUMBER_OF_MESSAGES] PROGMEM = {
+    // MESSAGE STRINGS
     "Tracking On",                                // MSG_TRACKING_ON
     "Tracking Off",                               // MSG_TRACKING_OFF
     "Slewing",                                    // MSG_SLEWING
@@ -34,7 +36,7 @@ const char* englishLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "Idle",                                       // MSG_IDLE
 };
 
-const char* englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
+const char* const englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGMEM = {
     // ERROR MESSAGE STRINGS
     "Invalid Capture Mode",          // ERR_MSG_INVALID_CAPTURE_MODE
     "Invalid Exposure Length",       // ERR_MSG_INVALID_EXPOSURE_LENGTH
@@ -51,10 +53,10 @@ const char* englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
     "Invalid Pixel Size"             // ERR_MSG_INVALID_PIXEL_SIZE
 };
 
-const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
+const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     // HTML STRINGS
     "OG Star Tracker Control Panel", // STR_TITLE
-    "TRACKER CONTROLLER",            // STR_TRACKER_CONTOLLER
+    "TRACKER CONTROLLER",            // STR_TRACKER_CONTROLLER
     "Tracking",                      // STR_TRACKING
     "Hemisphere",                    // STR_HEMISPHERE
     "North",                         // STR_NORTH
@@ -98,44 +100,47 @@ const char* englishLangHTMLStrings[numberOfHTMLStrings] = {
     "Goto RA Control",               // STR_GOTO_RA_CONTROL
     "Current",                       // STR_GOTO_RA_CURRENT
     "Target",                        // STR_GOTO_RA_TARGET
-    "Center your camera on\n"
-    "memorable star like Deneb,Altair..\n"
-    "then enter coordinates of target\n", // STR_GOTO_RA_HINT
-    "Start Goto RA",                      // STR_START_GOTO_RA
-    "Stop Goto RA",                       // STR_STOP_GOTO_RA
-    "Disable Tracking On End",            // STR_ENABLE_TRACKING
-    "No",                                 // STR_NO
-    "Yes",                                // STR_YES
-    "Dither",                             // STR_DITHER
-    "Dither Frequency",                   // STR_DITHER_FREQ
-    "Lens focal length",                  // STR_FOCAL_LENGTH
-    "in millimeters (Ex. 135)",           // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",                  // STR_PIXEL_SIZE
-    "in micrometers (Ex. 4.1)",           // STR_PIXEL_SIZE_HINT
-    "Start Capture",                      // STR_START_CAPTURE
-    "Abort Capture",                      // STR_ABORT_CAPTURE
-    "Capture Time",                       // STR_CAPTURE_TIME
-    "Status",                             // STR_STATUS
-    "Ready",                              // STR_STATUS_MSG
-    "Firmware Version",                   // STR_FIRMWARE_VERSION
-    "Star Catalog",                       // STR_STAR_CATALOG
-    "Object Name",                        // STR_STAR_OBJECT_NAME
-    "(e.g., NGC224)",                     // STR_STAR_SEARCH_PLACEHOLDER
-    "Search",                             // STR_STAR_SEARCH
-    "Set Current",                        // STR_STAR_SET_CURRENT
-    "Object Details",                     // STR_STAR_OBJECT_DETAILS
-    "Search Error",                       // STR_STAR_SEARCH_ERROR
-    "Object Not Found",                   // STR_STAR_OBJECT_NOT_FOUND
-    "RA",                                 // STR_STAR_RA
-    "DEC",                                // STR_STAR_DEC
-    "Type",                               // STR_STAR_TYPE
-    "Magnitude",                          // STR_STAR_MAGNITUDE
-    "Constellation",                      // STR_STAR_CONSTELLATION
-    "Local Time",                         // STR_LOCAL_TIME
-    "Current Position",                   // STR_CURRENT_POSITION
-    "Current RA Position",                // STR_CURRENT_RA_POSITION
-    "Current Time",                       // STR_CURRENT_TIME
-    "Longitude"                           // STR_LONGITUDE
+    "Center your camera on\nmemorable star like Deneb,Altair..\nthen enter coordinates of "
+    "target\n",                 // STR_GOTO_RA_HINT
+    "Start Goto RA",            // STR_START_GOTO_RA
+    "Stop Goto RA",             // STR_STOP_GOTO_RA
+    "Disable Tracking On End",  // STR_ENABLE_TRACKING
+    "No",                       // STR_NO
+    "Yes",                      // STR_YES
+    "Dither",                   // STR_DITHER
+    "Dither Frequency",         // STR_DITHER_FREQ
+    "Lens focal length",        // STR_FOCAL_LENGTH
+    "in millimeters (Ex. 135)", // STR_FOCAL_LENGTH_HINT
+    "Camera pixel size",        // STR_PIXEL_SIZE
+    "in micrometers (Ex. 4.1)", // STR_PIXEL_SIZE_HINT
+    "Start Capture",            // STR_START_CAPTURE
+    "Abort Capture",            // STR_ABORT_CAPTURE
+    "Capture Time",             // STR_CAPTURE_TIME
+    "Status",                   // STR_STATUS
+    "Ready",                    // STR_STATUS_MSG
+    "Firmware Version",         // STR_FIRMWARE_VERSION
+    "Star Catalog",             // STR_STAR_CATALOG
+    "Object Name",              // STR_STAR_OBJECT_NAME
+    "(e.g., NGC224)",           // STR_STAR_SEARCH_PLACEHOLDER
+    "Search",                   // STR_STAR_SEARCH
+    "Set Current",              // STR_STAR_SET_CURRENT
+    "Object Details",           // STR_STAR_OBJECT_DETAILS
+    "Search Error",             // STR_STAR_SEARCH_ERROR
+    "Object Not Found",         // STR_STAR_OBJECT_NOT_FOUND
+    "RA",                       // STR_STAR_RA
+    "DEC",                      // STR_STAR_DEC
+    "Type",                     // STR_STAR_TYPE
+    "Magnitude",                // STR_STAR_MAGNITUDE
+    "Constellation",            // STR_STAR_CONSTELLATION
+    "Local Time",               // STR_LOCAL_TIME
+    "Current Position",         // STR_CURRENT_POSITION
+    "Current RA Position",      // STR_CURRENT_RA_POSITION
+    "Current Time",             // STR_CURRENT_TIME
+    "Longitude",                // STR_LONGITUDE
+    "Fine Tune",                // STR_TUNE_RATE
+    "Rate Presets",             // STR_RATE_PRESET
+    "Save Rate",                // STR_SAVE_RATE_PRESET
+    "Load Rate"                 // STR_LOAD_RATE_PRESET
 };
 
 #endif

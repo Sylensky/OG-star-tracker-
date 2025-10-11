@@ -1,7 +1,7 @@
 #ifndef WEB_LANGUAGES_H
 #define WEB_LANGUAGES_H
 
-#define numberOfHTMLStrings 81
+#define numberOfHTMLStrings 85
 
 #include "error.h"
 
@@ -40,10 +40,10 @@ enum Messages
     NUMBER_OF_MESSAGES,
 };
 
-extern const char** languageNames[];
-extern const char** languageMessageStrings[];
-extern const char** languageErrorMessageStrings[];
-extern const char** languageHTMLStrings[];
-extern const char* HTMLplaceHolders[numberOfHTMLStrings];
+extern const char* const* languageNames[];
+extern const char* const* languageMessageStrings[];
+extern const char* const* languageErrorMessageStrings[];
+extern const char* const* languageHTMLStrings[];
+extern const char* const HTMLplaceHolders[numberOfHTMLStrings];
 
 #endif

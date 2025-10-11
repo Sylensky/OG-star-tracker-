@@ -1,18 +1,19 @@
 #ifndef NEXT_LANG_H
 #define NEXT_LANG_H
 #include "../website/web_languages.h"
+#include <pgmspace.h>
 
 /*Use this template to add an additional lamguage.
 After finishing adjust web_languages.h and .cpp to include the new language
 */
 
-const char* nextLanguageStrings[LANG_COUNT] = {
+const char* const nextLanguageStrings[LANG_COUNT] PROGMEM = {
     // LANGUAGE NAMES
     "", // ENGLISH
     "", // CHINESE
 };
 
-const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
+const char* const nextLangMessageStrings[NUMBER_OF_MESSAGES] PROGMEM = {
     // MESSAGE STRINSS
     "", // MSG_TRACKING_ON
     "", // MSG_TRACKING_OFF
@@ -37,7 +38,7 @@ const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "", // MSG_IDLE
 };
 
-const char* nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
+const char* const nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGMEM = {
     // ERROR MESSAGE STRINGS
     "", // ERR_MSG_INVALID_CAPTURE_MODE
     "", // ERR_MSG_INVALID_EXPOSURE_LENGTH
@@ -54,7 +55,7 @@ const char* nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
     ""  // ERR_MSG_INVALID_PIXEL_SIZE
 };
 
-const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
+const char* const nextLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     // HTML STRINGS
     "", // STR_TITLE
     "", // STR_TRACKER_CONTOLLER
@@ -136,7 +137,11 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_CURRENT_POSITION
     "", // STR_CURRENT_RA_POSITION
     "", // STR_CURRENT_TIME
-    ""  // STR_LONGITUDE
+    "", // STR_LONGITUDE
+    "", // STR_TUNE_RATE
+    "", // STR_RATE_PRESET
+    "", // STR_SAVE_RATE_PRESET
+    ""  // STR_LOAD_RATE_PRESET
 };
 
 #endif

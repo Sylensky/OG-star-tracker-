@@ -1,15 +1,16 @@
 #ifndef CHINESE_LANG_H
 #define CHINESE_LANG_H
 #include "../website/web_languages.h"
+#include <pgmspace.h>
 
-const char* chineseLangLanguageNames[LANG_COUNT] = {
+const char* const chineseLangLanguageNames[LANG_COUNT] PROGMEM = {
     // LANGUAGE NAMES
     "英语", // ENGLISH
     "中文", // CHINESE
     "德语", // GERMAN
 };
 
-const char* chineseLangMessageStrings[NUMBER_OF_MESSAGES] = {
+const char* const chineseLangMessageStrings[NUMBER_OF_MESSAGES] PROGMEM = {
     // MESSAGE STRINSS
     "追踪开启",                                   // MSG_TRACKING_ON
     "追踪关闭",                                   // MSG_TRACKING_OFF
@@ -34,7 +35,7 @@ const char* chineseLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "空闲"                                        // MSG_IDLE
 };
 
-const char* chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
+const char* const chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGMEM = {
     // ERROR MESSAGE STRINGS
     "无效的拍摄模式",   // ERR_MSG_INVALID_CAPTURE_MODE
     "无效的曝光时长",   // ERR_MSG_INVALID_EXPOSURE_LENGTH
@@ -51,7 +52,7 @@ const char* chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
     "无效的像素大小"    // ERR_MSG_INVALID_PIXEL_SIZE
 };
 
-const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
+const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     // HTML STRINGS
     "OG 赤道仪控制面板",                                                  // STR_TITLE
     "TRACKER CONTROLLER",                                                 // STR_TRACKER_CONTOLLER
@@ -133,7 +134,11 @@ const char* chineseLangHTMLStrings[numberOfHTMLStrings] = {
     "当前位置",       // STR_CURRENT_POSITION
     "当前赤经位置",   // STR_CURRENT_RA_POSITION
     "当前时间",       // STR_CURRENT_TIME
-    "经度"            // STR_LONGITUDE
+    "经度",           // STR_LONGITUDE
+    "微调",           // STR_TUNE_RATE
+    "预设速率",       // STR_RATE_PRESET
+    "保存速率",       // STR_SAVE_RATE_PRESET
+    "加载速率"        // STR_LOAD_RATE_PRESET
 };
 
 #endif

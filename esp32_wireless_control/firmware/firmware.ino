@@ -12,8 +12,10 @@
 #include "commands.h"
 #include "common_strings.h"
 #include "configs/config.h"
+#include "eeprom_manager.h"
 #include "hardwaretimer.h"
 #include "intervalometer.h"
+#include "tracking_rates.h"
 #include "uart.h"
 #include "website/web_languages.h"
 #include "website/website_strings.h"
@@ -265,8 +267,7 @@ void handleSetLanguage()
 {
     int lang = server.arg("lang").toInt();
     language = static_cast<Languages>(lang);
-    EEPROM.write(LANG_EEPROM_ADDR, language);
-    EEPROM.commit();
+    EepromManager::writeObject(LANG_EEPROM_ADDR, language);
     server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_OK]);
 }
 
@@ -651,6 +652,39 @@ void handleGetCurrentPosition()
     server.send(200, MIME_APPLICATION_JSON, response);
 }
 
+void handleSaveTrackingRatePreset()
+{
+    int preset = server.arg(PRESET).toInt();
+    uint8_t trackingType = server.arg(TRACKING_TYPE).toInt();
+    uint64_t customRate = server.arg(CUSTOM_RATE).toInt();
+
+    // Save directly to tracking rate preset system
+    trackingRates.saveTrackingRatePreset(preset, trackingType, customRate);
+
+    server.send(200, MIME_TYPE_TEXT, "Tracking rate preset saved");
+}
+
+void handleLoadTrackingRatePreset()
+{
+    int preset = server.arg(PRESET).toInt();
+
+    if (preset < 5)
+    {
+        JsonDocument response;
+        response["trackingRateType"] = trackingRates.trackingRatePresets[preset].trackingRateType;
+        response["customTrackingRate"] =
+            (long long) trackingRates.trackingRatePresets[preset].customTrackingRate;
+
+        trackingRates.loadTrackingRatePreset(preset);
+
+        String json;
+        serializeJson(response, json);
+        server.send(200, MIME_APPLICATION_JSON, json);
+    }
+    else
+        server.send(400, MIME_TYPE_TEXT, "Invalid preset number");
+}
+
 void handleCatalogSearch()
 {
     StarDatabaseType catalogType = (StarDatabaseType) server.arg(STAR_CATALOG).toInt();
@@ -702,14 +736,29 @@ void setupWireless()
 {
 #if AP_MODE == 1
     WiFi.mode(WIFI_MODE_AP);
-    WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
-    vTaskDelay(500);
-    print_out("Creating Wifi Network");
+    print_out("Creating Wifi Network: %s", WIFI_SSID);
+
+    // Configure AP with specific IP settings
+    IPAddress local_IP(192, 168, 4, 1);
+    IPAddress gateway(192, 168, 4, 1);
+    IPAddress subnet(255, 255, 255, 0);
+
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to configure AP IP settings");
+    }
+
+    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    {
+        print_out("Failed to start AP");
+    }
+
+    vTaskDelay(1000); // Give more time for AP to initialize
 
     // ANDROID 10 WORKAROUND==================================================
     // set new WiFi configurations
+    print_out("Applying Android 10 compatibility workaround...");
     WiFi.disconnect();
-    print_out("reconfig WiFi...");
     /*Stop wifi to change config parameters*/
     esp_wifi_stop();
     esp_wifi_deinit();
@@ -719,8 +768,24 @@ void setupWireless()
     print_out("WiFi: Disabled AMPDU...");
     esp_wifi_init(&my_config); // set the new config = "Disable AMPDU"
     esp_wifi_start();          // Restart WiFi
-    vTaskDelay(500);
+
+    // Restart AP after workaround
+    WiFi.mode(WIFI_MODE_AP);
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to reconfigure AP IP settings after workaround");
+    }
+    if (!WiFi.softAP(WIFI_SSID, WIFI_PASSWORD))
+    {
+        print_out("Failed to restart AP after workaround");
+    }
+
+    vTaskDelay(1000);
     // ANDROID 10 WORKAROUND==================================================
+
+    print_out("AP setup complete. Checking status...");
+    print_out("AP Status: %s", WiFi.softAPgetStationNum() >= 0 ? "Active" : "Inactive");
+    print_out("WiFi Mode: %d", WiFi.getMode());
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -747,6 +812,8 @@ void setupWireless()
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
     server.on("/getTrackingRates", HTTP_GET, handleGetTrackingRates);
+    server.on("/saveTrackingRatePreset", HTTP_GET, handleSaveTrackingRatePreset);
+    server.on("/loadTrackingRatePreset", HTTP_GET, handleLoadTrackingRatePreset);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
     server.on("/starSearch", HTTP_GET, handleCatalogSearch);
 
@@ -758,10 +825,17 @@ void setupWireless()
     // Start the server
     server.begin();
 
-#ifdef AP
-    print_out("%s", WiFi.softAPIP().toString().c_str());
+#if AP_MODE == 1
+    IPAddress apIP = WiFi.softAPIP();
+    print_out("AP IP address: %s", apIP.toString().c_str());
+    if (apIP == IPAddress(0, 0, 0, 0))
+    {
+        print_out("ERROR: AP IP is 0.0.0.0 - AP may not be configured correctly");
+        print_out("WiFi Mode: %d", WiFi.getMode());
+        print_out("AP Status: %d", WiFi.status());
+    }
 #else
-    print_out("%s", WiFi.localIP().toString().c_str());
+    print_out("STA IP address: %s", WiFi.localIP().toString().c_str());
 #endif
 
     print_out("Starting mDNS responder");
@@ -799,8 +873,10 @@ void setup()
     print_out("***     Application Tasks on Core 1    ***");
     print_out_tbl(HEAD_LINE_VERSION);
 
-    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
-    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
+    // Initialize EEPROM manager
+    EepromManager::begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
+    uint8_t langNum = 0;
+    EepromManager::readObject(LANG_EEPROM_ADDR, langNum);
 
     if (langNum >= LANG_COUNT)
         language = static_cast<Languages>(0);
@@ -828,7 +904,8 @@ void setup()
 
     if (xTaskCreatePinnedToCore(intervalometerTask, "intervalometer", 4096, NULL, 1, NULL, 1))
         print_out_tbl(TSK_START_INTERVALOMETER);
-    if (xTaskCreatePinnedToCore(webserverTask, "webserver", 4096, NULL, 1, NULL, 1))
+    // Increase webserver task stack size to handle large HTML responses and concurrent connections
+    if (xTaskCreatePinnedToCore(webserverTask, "webserver", 8192, NULL, 1, NULL, 1))
         print_out_tbl(TSK_START_WEBSERVER);
 
     // Give tasks time to fully initialize before starting axis
@@ -841,6 +918,7 @@ void setup()
 void loop()
 {
     int delay_ticks = 0;
+    trackingRates.readTrackingRatePresetsFromEEPROM();
 
     if (DEFAULT_ENABLE_TRACKING == 1)
     {
