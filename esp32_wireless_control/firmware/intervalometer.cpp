@@ -117,6 +117,17 @@ void Intervalometer::run()
                     print_out("Intervalometer: starting continuous pan");
                     print_out("Pan angle: %.2f degrees", currentSettings.panAngle);
 
+                    // Initialize position tracking if not already active
+                    if (!ra_axis.counterActive)
+                    {
+                        print_out("Counter not active, initializing position to 0");
+                        ra_axis.resetAxisCount();
+                    }
+
+                    // Get current position
+                    int64_t currentPosition = ra_axis.getAxisCount();
+                    print_out("Current position: %lld steps", currentPosition);
+
                     // Calculate total steps for entire pan
                     uint64_t arcSecsToMove = uint64_t(3600.0 * currentSettings.panAngle);
                     int64_t totalStepsToMove = currentSettings.panDirection
@@ -124,6 +135,10 @@ void Intervalometer::run()
                                                    : (arcSecsToMove / ARCSEC_PER_STEP) * -1;
 
                     print_out("Total steps to move: %lld", totalStepsToMove);
+
+                    // Calculate target position from current position
+                    int64_t targetPosition = currentPosition + totalStepsToMove;
+                    print_out("Target position: %lld steps", targetPosition);
 
                     // Calculate pan speed based on total duration
                     // If panDuration is set, use it; otherwise calculate from exposures and delays
@@ -140,34 +155,66 @@ void Intervalometer::run()
                         totalDuration = 1;
                     }
 
-                    // Calculate required slew rate: steps per second
-                    // rate.tracking is steps per sidereal second, we need steps per second for our
-                    // total move
-                    uint64_t stepsPerSecond =
-                        (totalStepsToMove < 0 ? -totalStepsToMove : totalStepsToMove) /
-                        totalDuration;
+                    // Calculate required speed multiplier for the pan duration
+                    // Formula: slew_rate = (2 * tracking_rate) / speed_multiplier
+                    // Rearranged: speed_multiplier = (2 * tracking_rate) / desired_rate
 
-                    print_out("Steps per second: %llu", stepsPerSecond);
+                    uint64_t absSteps = totalStepsToMove < 0 ? -totalStepsToMove : totalStepsToMove;
+                    uint64_t stepsPerSecond = absSteps / totalDuration;
 
-                    // Convert to tracking rate divisor (tracking rate / x)
-                    uint64_t slewRate = stepsPerSecond > 0 ? ra_axis.rate.tracking / stepsPerSecond
-                                                           : ra_axis.rate.tracking / 10;
+                    print_out("Steps per second needed: %llu", stepsPerSecond);
 
+                    // Calculate speed multiplier based on tracking rate
+                    // We want: (2 * tracking_rate) / speed_multiplier =
+                    // timer_period_for_steps_per_second The tracking rate is steps per sidereal
+                    // second We need to find what multiplier gives us the right speed
+                    uint64_t speedMultiplier = (2 * ra_axis.rate.tracking) / stepsPerSecond;
+
+                    // Limit speed multiplier to reasonable values (2-400)
+                    if (speedMultiplier < MIN_CUSTOM_SLEW_RATE)
+                    {
+                        speedMultiplier = MIN_CUSTOM_SLEW_RATE;
+                        print_out(
+                            "Speed too fast, limiting to %d (pan will be slower than requested)",
+                            MIN_CUSTOM_SLEW_RATE);
+                    }
+                    if (speedMultiplier > MAX_CUSTOM_SLEW_RATE)
+                    {
+                        speedMultiplier = MAX_CUSTOM_SLEW_RATE;
+                        print_out(
+                            "Speed too slow, limiting to %d (pan will be faster than requested)",
+                            MAX_CUSTOM_SLEW_RATE);
+                    }
+
+                    print_out("Speed multiplier: %llu", speedMultiplier);
+
+                    // Calculate actual slew rate using the standard formula
+                    uint64_t slewRate = (2 * ra_axis.rate.tracking) / speedMultiplier;
                     print_out("Slew rate: %llu", slewRate);
 
-                    ra_axis.resetAxisCount();
-                    ra_axis.setAxisTargetCount(totalStepsToMove);
+                    // Set up the goto movement
+                    ra_axis.setAxisTargetCount(targetPosition);
                     ra_axis.counterActive = true;
                     ra_axis.goToTarget = true;
                     ra_axis.startSlew(slewRate, currentSettings.panDirection);
 
-                    print_out("Pan goto started");
+                    print_out("Pan goto started - moving from %lld to %lld", currentPosition,
+                              targetPosition);
                 }
 
                 currentState = CAPTURE;
             }
             break;
         case CAPTURE:
+            // For NIGHT_TIME_LAPSE_PAN, ensure counter stays active during captures
+            if (currentSettings.mode == NIGHT_TIME_LAPSE_PAN && !ra_axis.counterActive &&
+                exposures_taken > 0)
+            {
+                print_out("WARNING: Counter disabled during capture! Re-enabling to maintain "
+                          "position...");
+                ra_axis.counterActive = true;
+            }
+
             if (!timerStarted)
             { // nightime modes
                 print_out("Intervalometer: capture_start");
@@ -251,6 +298,15 @@ void Intervalometer::run()
         case PAN:
             // This state is only used for NIGHT_TIME_LAPSE_PAN (step-by-step panning)
             // DAY_TIME_LAPSE_PAN uses continuous panning started in PRE_DELAY
+
+            // Ensure counter stays active throughout the entire pan sequence
+            if (!ra_axis.counterActive && exposures_taken > 0)
+            {
+                print_out("WARNING: Counter was disabled between pans! Re-enabling...");
+                // Don't reset - we want to maintain position
+                ra_axis.counterActive = true;
+            }
+
             if (!axisMoving)
             {
                 print_out("Intervalometer: pan_step_start");
@@ -266,6 +322,19 @@ void Intervalometer::run()
                         ra_axis.stopTracking();
                     }
 
+                    // Initialize position tracking on first pan (exposure 1)
+                    if (!ra_axis.counterActive)
+                    {
+                        print_out("Counter not active, initializing position to 0 (first pan)");
+                        ra_axis.resetAxisCount();
+                        ra_axis.counterActive = true;
+                    }
+
+                    // Get current position (should be maintained from previous pan)
+                    int64_t currentPosition = ra_axis.getAxisCount();
+                    print_out("Current position: %lld steps (exposure %d/%d)", currentPosition,
+                              exposures_taken, currentSettings.exposures);
+
                     // Calculate angle per shot (total angle divided by number of exposures)
                     float anglePerShot = currentSettings.panAngle / currentSettings.exposures;
                     uint64_t arcSecsToMove = uint64_t(3600.0 * anglePerShot);
@@ -273,15 +342,25 @@ void Intervalometer::run()
                                               ? arcSecsToMove / ARCSEC_PER_STEP
                                               : (arcSecsToMove / ARCSEC_PER_STEP) * -1;
 
+                    print_out("Steps to move this pan: %lld", stepsToMove);
+
                     // For NIGHT_TIME_LAPSE_PAN, move incrementally after each exposure
-                    int64_t currentTarget = ra_axis.axisCountValue + stepsToMove;
-                    ra_axis.setAxisTargetCount(currentTarget);
+                    int64_t targetPosition = currentPosition + stepsToMove;
+                    print_out("Target position: %lld steps", targetPosition);
+
+                    ra_axis.setAxisTargetCount(targetPosition);
                     if (ra_axis.targetCount != ra_axis.axisCountValue)
                     {
                         ra_axis.counterActive = true;
                         ra_axis.goToTarget = true;
                         ra_axis.startSlew(ra_axis.rate.tracking / 10,
                                           currentSettings.panDirection); // pan at 20x tracking rate
+                        print_out("Pan step goto started - moving from %lld to %lld",
+                                  currentPosition, targetPosition);
+                    }
+                    else
+                    {
+                        print_out("Warning: target equals current position, no movement needed");
                     }
                 }
             }
@@ -289,7 +368,8 @@ void Intervalometer::run()
             {
                 print_out("Intervalometer: pan_step_end");
                 axisMoving = false;
-                ra_axis.counterActive = false;
+                // Keep counterActive true to maintain position tracking across all pan steps
+                // ra_axis.counterActive = false;  // Don't disable - we need position tracking!
                 ra_axis.goToTarget = false;
 
                 // Resume tracking if it was enabled before the pan
@@ -302,6 +382,14 @@ void Intervalometer::run()
             }
             break;
         case DELAY:
+            // For NIGHT_TIME_LAPSE_PAN, ensure counter stays active during delays
+            if (currentSettings.mode == NIGHT_TIME_LAPSE_PAN && !ra_axis.counterActive)
+            {
+                print_out(
+                    "WARNING: Counter disabled during delay! Re-enabling to maintain position...");
+                ra_axis.counterActive = true;
+            }
+
             if (exposures_taken >= currentSettings.exposures)
             {
                 currentState = currentSettings.mode != LONG_EXPOSURE_MOVIE ? INACTIVE
