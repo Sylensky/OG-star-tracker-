@@ -49,6 +49,11 @@ void TrackingRates::setRate(TrackingRateType type)
     }
 };
 
+void TrackingRates::setCustomRate(uint64_t rate)
+{
+    current_rate = rate;
+};
+
 // Public functions to get steps per second at 256 microstepping
 uint64_t TrackingRates::getStepsPerSecondSidereal()
 {

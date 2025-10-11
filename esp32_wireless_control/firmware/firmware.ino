@@ -28,8 +28,8 @@ void consoleTask(void* pvParameters);
 void webserverTask(void* pvParameters);
 void intervalometerTask(void* pvParameters);
 
-extern const uint8_t interface_index_html_start[] asm("_binary_interface_index_html_start");
-extern const uint8_t interface_index_html_end[] asm("_binary_interface_index_html_end");
+extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
+extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
 
 extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_start[] asm(
     "_binary_catalogues_ngc_converted_ngc2000_bin_start");
@@ -108,54 +108,117 @@ StarDatabase* handleStarDatabase(StarDatabaseType type)
 // Handle requests to the root URL ("/")
 void handleRoot()
 {
-    String htmlString =
-        String(interface_index_html_start, interface_index_html_end - interface_index_html_start);
+#if DEBUG == 1
+    print_out("HTTP Request: GET / (serving main page)");
+    print_out("  Client IP: %s", server.client().remoteIP().toString().c_str());
+    print_out("  User-Agent: %s", server.header("User-Agent").c_str());
+#endif
+    size_t htmlSize = _interface_index_html_end - _interface_index_html_start;
+
+    // Work with raw bytes and avoid String for null-byte handling
+    // Allocate buffer for HTML with extra space for replacements
+    char* htmlBuffer = (char*) pvPortMalloc(htmlSize + 10000);
+    if (!htmlBuffer)
+    {
+        server.send(500, MIME_TYPE_TEXT, "Internal Server Error: Out of memory");
+        return;
+    }
+
+    memcpy(htmlBuffer, _interface_index_html_start, htmlSize);
+    size_t currentSize = htmlSize;
+
     for (int placeholder = 0; placeholder < numberOfHTMLStrings; placeholder++)
     {
-        htmlString.replace(HTMLplaceHolders[placeholder],
-                           languageHTMLStrings[language][placeholder]);
+        const char* searchStr = HTMLplaceHolders[placeholder];
+        const char* replaceStr = languageHTMLStrings[language][placeholder];
+
+        size_t searchLen = strlen(searchStr);
+        size_t replaceLen = strlen(replaceStr);
+
+        char* pos = htmlBuffer;
+        while ((pos = strstr(pos, searchStr)) != nullptr)
+        {
+            if (replaceLen > searchLen)
+            {
+                memmove(pos + replaceLen, pos + searchLen,
+                        currentSize - (pos - htmlBuffer) - searchLen);
+            }
+            memcpy(pos, replaceStr, replaceLen);
+            if (replaceLen < searchLen)
+            {
+                memmove(pos + replaceLen, pos + searchLen,
+                        currentSize - (pos - htmlBuffer) - searchLen);
+            }
+            currentSize += replaceLen - searchLen;
+            pos += replaceLen;
+        }
     }
+
     char buffer[100];
     String selectString = "";
     for (int lang = 0; lang < LANG_COUNT; lang++)
     {
         if (lang == language)
         {
-            sprintf(buffer, "<option value=\"%u\" selected>%s</option>\n", lang,
-                    languageNames[language][lang]);
+            snprintf(buffer, sizeof(buffer), "<option value=\"%u\" selected>%s</option>\n", lang,
+                     languageNames[language][lang]);
         }
         else
         {
-            sprintf(buffer, "<option value=\"%u\">%s</option>\n", lang,
-                    languageNames[language][lang]);
+            snprintf(buffer, sizeof(buffer), "<option value=\"%u\">%s</option>\n", lang,
+                     languageNames[language][lang]);
         }
-        // print_out(buffer);
         selectString.concat(buffer);
-        buffer[0] = '\0';
     }
-    htmlString.replace("%LANG_SELECT%", selectString);
-    server.send(200, MIME_TYPE_HTML, htmlString);
+
+    char* langPos = strstr(htmlBuffer, "%LANG_SELECT%");
+    if (langPos)
+    {
+        const char* langReplacement = selectString.c_str();
+        size_t langSearchLen = 13; // strlen("%LANG_SELECT%")
+        size_t langReplaceLen = selectString.length();
+
+        if (langReplaceLen > langSearchLen)
+        {
+            memmove(langPos + langReplaceLen, langPos + langSearchLen,
+                    currentSize - (langPos - htmlBuffer) - langSearchLen);
+        }
+        memcpy(langPos, langReplacement, langReplaceLen);
+        if (langReplaceLen < langSearchLen)
+        {
+            memmove(langPos + langReplaceLen, langPos + langSearchLen,
+                    currentSize - (langPos - htmlBuffer) - langSearchLen);
+        }
+        currentSize += langReplaceLen - langSearchLen;
+    }
+
+    server.send_P(200, MIME_TYPE_HTML, htmlBuffer, currentSize);
+    vPortFree(htmlBuffer);
+
+#if DEBUG == 1
+    print_out("  Raw HTML pointers: start=%p, end=%p, calculated size=%d",
+              _interface_index_html_start, _interface_index_html_end, currentSize);
+    print_out("  Final HTML size: %d bytes", currentSize);
+    print_out("  Language: %d, Placeholders replaced: %d", language, numberOfHTMLStrings);
+    print_out("  Response sent successfully");
+#endif
 }
 
 void handleOn()
 {
-    int tracking_speed = server.arg(TRACKING_SPEED).toInt();
-    switch (tracking_speed)
-    {
-        case 0: // sidereal rate
-            trackingRates.setRate(TrackingRateType::TRACKING_SIDEREAL);
-            break;
-        case 1: // solar rate
-            trackingRates.setRate(TrackingRateType::TRACKING_SOLAR);
-            break;
-        case 2: // lunar rate
-            trackingRates.setRate(TrackingRateType::TRACKING_LUNAR);
-            break;
-        default:
-            trackingRates.setRate(TrackingRateType::TRACKING_SIDEREAL);
-            break;
-    }
+#if DEBUG == 1
+    logRequest("/on");
+#endif
+    print_out("Handling tracking ON request with custom rate: %d",
+              server.arg(TRACKING_SPEED).toInt());
+
+    uint64_t custom_rate = server.arg(TRACKING_SPEED).toInt();
     int direction = server.arg(DIRECTION).toInt();
+
+    trackingRates.setCustomRate(custom_rate);
+#if DEBUG == 1
+    print_out("  Direction: %d, Final rate: %llu", direction, trackingRates.getRate());
+#endif
     ra_axis.startTracking(trackingRates.getRate(), direction);
 
     if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
@@ -163,6 +226,9 @@ void handleOn()
     else
         server.send(200, MIME_TYPE_TEXT,
                     languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
+#if DEBUG == 1
+    print_out("  Tracking ON response sent");
+#endif
 }
 
 void handleOff()
@@ -347,6 +413,31 @@ void handleSetCurrent()
     }
 }
 
+#if DEBUG == 1
+void logRequest(const char* endpoint)
+{
+    print_out("HTTP Request: %s %s", server.method() == HTTP_GET ? "GET" : "POST", endpoint);
+    print_out("  Client: %s", server.client().remoteIP().toString().c_str());
+    if (server.args() > 0)
+    {
+        print_out("  Arguments (%d):", server.args());
+        for (int i = 0; i < server.args(); i++)
+        {
+            print_out("    %s = %s", server.argName(i).c_str(), server.arg(i).c_str());
+        }
+    }
+}
+
+void handleNotFound()
+{
+    print_out("HTTP 404: %s %s", server.method() == HTTP_GET ? "GET" : "POST",
+              server.uri().c_str());
+    print_out("  Client: %s", server.client().remoteIP().toString().c_str());
+    print_out("  User-Agent: %s", server.header("User-Agent").c_str());
+    server.send(404, MIME_TYPE_TEXT, "Not Found");
+}
+#endif
+
 Position calculatePosition(String Arg)
 {
     Position position(0, 0, 0);
@@ -502,6 +593,42 @@ void handleVersion()
     server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
 }
 
+void handleGetTrackingRates()
+{
+#if DEBUG == 1
+    print_out("HTTP Request: GET /getTrackingRates");
+    print_out("  Client IP: %s", server.client().remoteIP().toString().c_str());
+#endif
+
+    int rateType = server.arg("type").toInt(); // 0=current, 1=sidereal, 2=solar, 3=lunar
+    print_out("Received tracking rate request with type: %d", rateType);
+    uint64_t rate = 0;
+
+    switch (rateType)
+    {
+        case 0:
+            rate = trackingRates.getRate(); // current rate
+            break;
+        case 1:
+            rate = trackingRates.getSiderealRate();
+            break;
+        case 2:
+            rate = trackingRates.getSolarRate();
+            break;
+        case 3:
+            rate = trackingRates.getLunarRate();
+            break;
+        default:
+            rate = trackingRates.getRate(); // default to current
+            break;
+    }
+
+    server.send(200, MIME_TYPE_TEXT, String(rate));
+#if DEBUG == 1
+    print_out("  Response sent: %s", String(rate).c_str());
+#endif
+}
+
 void handleGetCurrentPosition()
 {
     String utcTimeStr = server.arg("utcTime");
@@ -619,8 +746,15 @@ void setupWireless()
     server.on("/getCurrentPosition", HTTP_GET, handleGetCurrentPosition);
     server.on("/abort-goto-ra", HTTP_GET, handleAbortGoToRA);
     server.on("/version", HTTP_GET, handleVersion);
+    server.on("/getTrackingRates", HTTP_GET, handleGetTrackingRates);
     server.on("/setlang", HTTP_GET, handleSetLanguage);
     server.on("/starSearch", HTTP_GET, handleCatalogSearch);
+
+#if DEBUG == 1
+    server.onNotFound(handleNotFound);
+    print_out("Web server debug logging enabled");
+#endif
+
     // Start the server
     server.begin();
 
