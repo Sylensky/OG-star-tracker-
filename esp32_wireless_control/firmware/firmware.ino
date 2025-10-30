@@ -357,8 +357,6 @@ void handleSetCurrent()
         }
         settings.panAngle = panAngle;
 
-
-
         int panDirection = server.arg(PAN_DIRECTION).toInt();
         if (panDirection < 0 || panDirection > 1)
         {
@@ -495,7 +493,8 @@ void handleGotoRA()
     print_out("  Target RA: %lld arcseconds", targetPosition.arcseconds);
     print_out("  rate: %lld", (int) ((2 * ra_axis.rate.tracking) / pan_speed));
 
-    ra_axis.gotoTarget((2 * ra_axis.rate.tracking) / pan_speed, currentPosition, targetPosition);
+    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (2 * ra_axis.rate.tracking) / pan_speed,
+                       currentPosition, targetPosition);
     server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_GOTO_RA_PANNING_ON]);
 }
 
