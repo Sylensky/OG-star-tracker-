@@ -206,6 +206,23 @@ void Axis::stopGotoTarget()
     slewTimeOut.start(1, true);
 }
 
+void Axis::resumeGoto(uint64_t rateArg)
+{
+    // If a goto was previously set (goToTarget true) and the stepTimer is not
+    // currently running, restart the timer with the provided rate. Preserve
+    // the targetCount and counterActive flags.
+    if (goToTarget)
+    {
+        // Stop any existing timer state then restart with the new rate
+        stepTimer.stop();
+        setMicrostep(TRACKER_MOTOR_MICROSTEPPING / 2);
+        currentSlewRate = rateArg;
+        slewActive = true;
+        // Do not start generic slew timeout for goto-style movements
+        stepTimer.start(rateArg, true);
+    }
+}
+
 bool Axis::panByDegrees(float degrees, int speed, uint16_t microstep)
 {
     if (slewActive || goToTarget || (degrees == 0.0f))

@@ -55,6 +55,7 @@ class Axis
     void gotoTarget(uint16_t microstep, uint64_t rate, const Position& current,
                     const Position& target);
     void stopGotoTarget();
+    void resumeGoto(uint64_t rateArg);
 
     bool panByDegrees(float degrees, int speed,
                       uint16_t microstep = TRACKER_MOTOR_MICROSTEPPING / 2);
