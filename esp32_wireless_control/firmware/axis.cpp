@@ -192,6 +192,7 @@ void Axis::gotoTarget(uint64_t rateArg, const Position& current, const Position&
         stepTimer.stop();
         setDirection(directionTmp);
         slewActive = true;
+        currentSlewRate = rateArg;
         stepTimer.start(rateArg, true);
     }
 }
@@ -268,6 +269,7 @@ void Axis::startSlew(uint64_t rate, bool directionArg)
     slewActive = true;
     setMicrostep(TRACKER_MOTOR_MICROSTEPPING / 2);
     slewTimeOut.start(12000, true);
+    currentSlewRate = rate;
     stepTimer.start(rate, true);
 }
 
@@ -279,6 +281,20 @@ void Axis::stopSlew()
     if (trackingActive)
     {
         requestTracking(rate.tracking, direction.tracking);
+    }
+}
+
+void Axis::resumeSlewIfNeeded()
+{
+    // If we are in a goto state but the stepTimer isn't running (e.g., paused by
+    // the intervalometer during capture), restart the stepTimer with the stored
+    // slew rate.
+    if (goToTarget && !slewActive && currentSlewRate != 0)
+    {
+        slewActive = true;
+        // Do not restart the generic slew timeout here; gotoTarget-style moves
+        // should run until the ISR reports the target reached.
+        stepTimer.start(currentSlewRate, true);
     }
 }
 

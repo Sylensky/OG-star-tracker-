@@ -50,6 +50,7 @@ class Axis
     void stopTracking();
     void startSlew(uint64_t rate, bool directionArg);
     void stopSlew();
+    void resumeSlewIfNeeded();
 
     void gotoTarget(uint64_t rate, const Position& current, const Position& target);
     void stopGotoTarget();
@@ -69,6 +70,7 @@ class Axis
     volatile bool counterActive;
 
     Rate rate;
+    uint64_t currentSlewRate = 0;
 
     uint16_t getMicrostep()
     {
