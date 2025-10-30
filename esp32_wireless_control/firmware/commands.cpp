@@ -179,7 +179,8 @@ static void cmdGotoTargetRA()
     print_out("  Current Position: %lld arcseconds", currentRA.arcseconds);
     print_out("  Target Position: %lld arcseconds", targetRA.arcseconds);
 
-    ra_axis.gotoTarget((ra_axis.rate.tracking) / 50, currentRA, targetRA);
+    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentRA,
+                       targetRA);
 }
 
 static void cmdPan()

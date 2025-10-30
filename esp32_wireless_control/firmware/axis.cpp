@@ -155,9 +155,10 @@ void Axis::stopTracking()
     stepTimer.stop();
 }
 
-void Axis::gotoTarget(uint64_t rateArg, const Position& current, const Position& target)
+void Axis::gotoTarget(uint16_t microstep, uint64_t rateArg, const Position& current,
+                      const Position& target)
 {
-    setMicrostep(TRACKER_MOTOR_MICROSTEPPING / 2);
+    setMicrostep(microstep);
     int64_t deltaArcseconds = target.arcseconds - current.arcseconds;
     int64_t stepsPerSecond = trackingRates.getStepsPerSecondSolar();
 

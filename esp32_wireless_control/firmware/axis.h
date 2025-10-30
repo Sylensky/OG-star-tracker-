@@ -51,7 +51,8 @@ class Axis
     void startSlew(uint64_t rate, bool directionArg);
     void stopSlew();
 
-    void gotoTarget(uint64_t rate, const Position& current, const Position& target);
+    void gotoTarget(uint16_t microstep, uint64_t rate, const Position& current,
+                    const Position& target);
     void stopGotoTarget();
 
     bool panByDegrees(float degrees, int speed,
