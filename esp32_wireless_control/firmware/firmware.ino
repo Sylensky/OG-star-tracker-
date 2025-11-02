@@ -558,31 +558,44 @@ void handleStatusRequest()
 {
     if (intervalometer->isActive())
     {
+        // Build status string with progress info
+        String statusMsg;
+        uint16_t currentExp = intervalometer->getExposuresTaken();
+        uint16_t totalExp = intervalometer->getSettings().exposures;
+
         switch (intervalometer->getState())
         {
             case Intervalometer::State::PreDelay:
-                server.send(200, MIME_TYPE_TEXT,
-                            languageMessageStrings[language][MSG_CAP_PREDELAY]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_PREDELAY];
                 break;
             case Intervalometer::State::Capture:
-                server.send(200, MIME_TYPE_TEXT,
-                            languageMessageStrings[language][MSG_CAP_EXPOSING]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_EXPOSING];
+                statusMsg += " (" + String(currentExp + 1) + "/" + String(totalExp) + ")";
                 break;
             case Intervalometer::State::Dither:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DITHER]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_DITHER];
+                statusMsg += " (" + String(currentExp) + "/" + String(totalExp) + ")";
                 break;
             case Intervalometer::State::Pan:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_PANNING]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_PANNING];
+                statusMsg += " (" + String(currentExp) + "/" + String(totalExp) + ")";
                 break;
             case Intervalometer::State::Delay:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DELAY]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_DELAY];
+                statusMsg += " (" + String(currentExp) + "/" + String(totalExp) + ")";
                 break;
             case Intervalometer::State::Rewind:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_REWIND]);
+                statusMsg = languageMessageStrings[language][MSG_CAP_REWIND];
                 break;
             case Intervalometer::State::Inactive:
+            case Intervalometer::State::Complete:
             default:
                 break;
+        }
+
+        if (statusMsg.length() > 0)
+        {
+            server.send(200, MIME_TYPE_TEXT, statusMsg);
         }
     }
     else if (ra_axis.slewActive && !ra_axis.goToTarget)
