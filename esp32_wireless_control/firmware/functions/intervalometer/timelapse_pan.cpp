@@ -134,7 +134,11 @@ void TimelapsePan::executeLoop()
         }
 
         // === DELAY STATE ===
-        if (exposuresTaken < settings.exposures)
+        // In continuous pan mode, we need delay after every exposure (including last) for timing
+        // In incremental mode, we only need delay between exposures (not after last)
+        bool needDelay = settings.continuousPan ? true : (exposuresTaken < settings.exposures);
+
+        if (needDelay)
         {
             currentState = State::Delay;
             print_out("Delay start (%ds)", settings.delayTime);
