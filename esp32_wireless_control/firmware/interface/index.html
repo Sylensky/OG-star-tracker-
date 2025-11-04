@@ -579,6 +579,61 @@
             }
         }
 
+        function validatePanConfiguration() {
+            var modeIndex = document.getElementById('mode').selectedIndex;
+            // Only validate for Timelapse Pan (mode 3)
+            if (modeIndex !== 3) {
+                // Hide warning for non-pan modes
+                var warningDiv = document.getElementById('panWarning');
+                if (warningDiv) {
+                    warningDiv.style.display = 'none';
+                }
+                return true;
+            }
+
+            var panAngle = parseFloat(document.getElementById('panAngle').value);
+            var exposures = parseInt(document.getElementById('exposures').value);
+            var delay = parseFloat(document.getElementById('delay').value);
+
+            if (isNaN(panAngle) || isNaN(exposures) || isNaN(delay) || exposures === 0 || delay === 0) {
+                return true; // Let calculateCaptureTime handle invalid inputs
+            }
+
+            // Calculate degrees per interval
+            var degreesPerInterval = Math.abs(panAngle) / exposures;
+
+            // Reference: 180° with 10 exposures and 5s delay is feasible
+            // That's 18° per 5s = 3.6°/s maximum rate
+            var maxDegreesPerSecond = 3.6;
+            var requiredRate = degreesPerInterval / delay;
+
+            var warningDiv = document.getElementById('panWarning');
+            if (!warningDiv) {
+                // Create warning div if it doesn't exist
+                warningDiv = document.createElement('div');
+                warningDiv.id = 'panWarning';
+                warningDiv.style.color = '#ff6600';
+                warningDiv.style.backgroundColor = '#331100';
+                warningDiv.style.padding = '10px';
+                warningDiv.style.borderRadius = '8px';
+                warningDiv.style.marginTop = '10px';
+                warningDiv.style.border = '1px solid #ff6600';
+                var captureTimeDiv = document.getElementById('captureTime');
+                captureTimeDiv.parentNode.insertBefore(warningDiv, captureTimeDiv);
+            }
+
+            if (requiredRate > maxDegreesPerSecond) {
+                warningDiv.innerHTML = '<strong>⚠ Configuration too fast!</strong><br>' +
+                    'Required: ' + requiredRate.toFixed(2) + '°/s (max: ' + maxDegreesPerSecond + '°/s)<br>' +
+                    'Try: decrease angle, increase delay, or increase exposures';
+                warningDiv.style.display = 'block';
+                return false;
+            } else {
+                warningDiv.style.display = 'none';
+                return true;
+            }
+        }
+
         function changeMode() {
             calculateCaptureTime();
             var mode = document.getElementById('mode').selectedIndex;
@@ -633,7 +688,7 @@
                     break;
                 default:
             }
-
+            validatePanConfiguration();
         }
 
         function calculateCaptureTime() {
@@ -657,9 +712,11 @@
                 seconds = Math.floor(captureTime - 3600 * hours - minutes * 60);
                 document.getElementById('captureTime').innerHTML = '%STR_CAPTURE_TIME%: ' + hours + ' h, ' + minutes + ' m, ' + seconds + ' s';
             }
+
+            var isPanValid = validatePanConfiguration();
             saveButton = document.getElementById('save-button');
             captureButton = document.getElementById('capture-button');
-            if (isNaN(total)) {
+            if (isNaN(total) || !isPanValid) {
                 saveButton.disabled = true;
                 captureButton.disabled = true;
             } else {

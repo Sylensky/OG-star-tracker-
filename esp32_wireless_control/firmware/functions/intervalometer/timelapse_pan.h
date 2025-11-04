@@ -22,20 +22,4 @@ class TimelapsePan : public IntervalometerMode
     {
         return "TIMELAPSE_PAN";
     }
-
-  private:
-    /**
-     * @brief Start continuous pan that runs throughout the capture sequence
-     */
-    bool startContinuousPan();
-
-    /**
-     * @brief Pause the pan during exposure
-     */
-    void pausePan();
-
-    /**
-     * @brief Resume pan after exposure with recalculated speed
-     */
-    bool resumePan();
 };
