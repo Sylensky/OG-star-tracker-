@@ -55,7 +55,7 @@ void IRAM_ATTR stepTimerRA_ISR()
 
     if (ra_axis.counterActive && ra_axis_step_phase)
     { // if counter active
-        int temp = ra_axis.getAxisCount();
+        int64_t temp = ra_axis.getAxisCount();
         if (ra_axis.direction.absolute ^ ra_axis.direction.tracking)
         {
             temp--;
@@ -67,9 +67,8 @@ void IRAM_ATTR stepTimerRA_ISR()
         ra_axis.setAxisCount(temp);
         if (ra_axis.goToTarget && ra_axis.getAxisCount() == ra_axis.getAxisTargetCount())
         {
-            print_out("GotoTarget reached");
-            print_out("GotoTarget axisCountValue: %lld", ra_axis.getAxisCount());
-            print_out("GotoTarget targetCount: %lld", ra_axis.getAxisTargetCount());
+            print_out("axisCountValue: %lld", ra_axis.getAxisCount());
+            print_out("targetCount: %lld", ra_axis.getAxisTargetCount());
             ra_axis.goToTarget = false;
             ra_axis.stopSlew();
         }
@@ -203,6 +202,64 @@ void Axis::stopGotoTarget()
     counterActive = false;
     stepTimer.stop();
     slewTimeOut.start(1, true);
+}
+
+bool Axis::panByDegrees(float degrees, int speed, uint16_t microstep)
+{
+    if (slewActive || goToTarget || (degrees == 0.0f))
+        return false;
+
+    // For a full 360° rotation, the ISR will count to STEPS_PER_TRACKER_FULL_REV_INT /
+    // (MAX_MICROSTEPS / microstep) This is because the ISR increments once per step, regardless of
+    // microstepping
+    int64_t stepsPerFullRotation =
+        STEPS_PER_TRACKER_FULL_REV_INT / (MAX_MICROSTEPS / (microstep ? microstep : 1));
+
+    // Calculate target count for the given degrees
+    int64_t stepsToMove = (int64_t) ((std::abs(degrees) / 360.0f) * stepsPerFullRotation + 0.5f);
+
+    // Apply sign based on pan direction
+    if (degrees < 0)
+        stepsToMove = -stepsToMove;
+
+    // Determine direction based on sign of stepsToMove
+    bool directionTmp = (stepsToMove < 0) ^ direction.tracking;
+
+    print_out("Pan: %.2f degrees => %lld ISR steps (microstep %d)", degrees, stepsToMove,
+              microstep);
+    print_out("stepsPerFullRotation: %lld, STEPS_FULL_REV: %lld", stepsPerFullRotation,
+              (int64_t) STEPS_PER_TRACKER_FULL_REV_INT);
+
+    // Set up the goto directly without Position wrapping
+    setMicrostep(microstep);
+    resetAxisCount();
+    setAxisTargetCount(stepsToMove);
+
+    if (stepsToMove != 0)
+    {
+        counterActive = true;
+        goToTarget = true;
+        stepTimer.stop();
+        setDirection(directionTmp);
+        slewActive = true;
+        stepTimer.start((2 * rate.tracking) / speed, true);
+        print_out("Pan started: counterActive=%d, goToTarget=%d, targetCount=%lld", counterActive,
+                  goToTarget, getAxisTargetCount());
+    }
+
+    return goToTarget;
+}
+
+bool Axis::stopPanByDegrees()
+{
+    if (slewActive || goToTarget)
+    {
+        counterActive = false;
+        goToTarget = false;
+        stopSlew();
+        return true;
+    }
+    return false;
 }
 
 void Axis::startSlew(uint64_t rate, bool directionArg)
