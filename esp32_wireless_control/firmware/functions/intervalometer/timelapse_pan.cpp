@@ -27,21 +27,33 @@ void TimelapsePan::executeLoop()
 
     // Calculate pan angle (apply direction) and the total duration time
     float totalPanAngle = settings.panDirection ? settings.panAngle : -settings.panAngle;
-    int totalDurationTime =
-        settings.preDelay + (settings.exposures * 1) + ((settings.exposures) * settings.delayTime);
+    int totalDurationTime = settings.preDelay + (settings.exposures * 1) +
+                            ((settings.exposures - 1) * settings.delayTime);
 
     // Start continuous pan if enabled
     if (settings.continuousPan && totalPanAngle != 0.0f)
     {
         currentState = State::Pan;
-
-        int maxPanSpeed = MAX_CUSTOM_SLEW_RATE / 4;
-        // Calculate required speed based on angle and time
-        // speed is inversely proportional to time: more time = slower speed needed
-        int panSpeed = (int) std::abs(
-            ((((float) maxPanSpeed * (std::abs(totalPanAngle) / (float) totalDurationTime)) / 2) -
-             maxPanSpeed));
         uint16_t microstep = 8;
+
+        // Calculate exact speed required to complete pan in totalDurationTime
+        // Derived from: currentSlewRate = (2 * rate.tracking) / speed
+        //              duration = stepsToMove * 4 * rate.tracking / (speed * TIMER_APB_CLK_FREQ)
+        // Solving for speed: speed = stepsToMove * 4 * rate.tracking / (duration *
+        // TIMER_APB_CLK_FREQ)
+        float absPanAngle = (totalPanAngle < 0) ? -totalPanAngle : totalPanAngle;
+        int64_t stepsPerFullRotation =
+            STEPS_PER_TRACKER_FULL_REV_INT / (MAX_MICROSTEPS / microstep);
+        int64_t stepsToMove = (int64_t) ((absPanAngle / 360.0f) * stepsPerFullRotation + 0.5f);
+        uint64_t trackingRate = ra_axis.rate.tracking;
+
+        int maxPanSpeed = MAX_CUSTOM_SLEW_RATE / 4; // 100
+        int panSpeed = (int) ((stepsToMove * 4 * trackingRate) /
+                              ((uint64_t) totalDurationTime * TIMER_APB_CLK_FREQ));
+
+        print_out("Speed calculation: %.2f deg, %lld steps, %ds => speed=%d", absPanAngle,
+                  stepsToMove, totalDurationTime, panSpeed);
+        print_out("trackingRate=%llu, stepsPerFullRot=%lld", trackingRate, stepsPerFullRotation);
 
         if (panSpeed > maxPanSpeed)
             panSpeed = maxPanSpeed;
