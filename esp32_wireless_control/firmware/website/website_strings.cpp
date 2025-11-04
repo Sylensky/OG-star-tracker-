@@ -15,6 +15,7 @@ const char* DELAY = "delay";
 const char* FRAMES = "frames";
 const char* PAN_ANGLE = "panAngle";
 const char* PAN_DIRECTION = "panDirection";
+const char* CONTINUOUS_PAN = "continuousPan";
 const char* ENABLE_TRACKING = "enableTracking";
 const char* DITHER_CHOICE = "ditherChoice";
 const char* DITHER_FREQUENCY = "ditherFrequency";

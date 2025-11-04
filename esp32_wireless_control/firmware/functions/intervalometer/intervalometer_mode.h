@@ -36,6 +36,7 @@ class IntervalometerMode
         uint16_t exposureTime = 1;   // seconds per exposure
         float panAngle = 0.0f;       // degrees (for pan modes)
         bool panDirection = true;    // true = forward, false = reverse
+        bool continuousPan = false;  // Continuous pan during entire sequence
         bool dither = false;         // Enable dithering
         uint8_t ditherFrequency = 1; // Dither every N exposures
         bool enableTracking = false; // Enable tracking during capture

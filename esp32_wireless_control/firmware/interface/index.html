@@ -643,6 +643,7 @@
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
@@ -652,6 +653,7 @@
                     document.getElementById('framesDiv').style.display = 'flex';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
@@ -661,6 +663,7 @@
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'none';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
@@ -671,6 +674,7 @@
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'flex';
                     document.getElementById('panDirectionDiv').style.display = 'flex';
+                    document.getElementById('continuousPanDiv').style.display = 'flex';
                     document.getElementById('trackEndDiv').style.display = 'none';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
@@ -681,6 +685,7 @@
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'flex';
                     document.getElementById('panDirectionDiv').style.display = 'flex';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
@@ -814,6 +819,7 @@
                     var frames = "1";
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = document.getElementById('dither').selectedIndex;
                     if (ditherChoice == 1) {
@@ -831,6 +837,7 @@
                     var frames = document.getElementById('frames').value.trim();
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = document.getElementById('dither').selectedIndex;
                     if (ditherChoice == 1) {
@@ -848,6 +855,7 @@
                     var frames = "1";
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = 0;
                     var ditherChoice = 0;
                     var ditherFrequency = "1";
@@ -859,6 +867,7 @@
                     var frames = "1";
                     var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
                     var panDirection = document.getElementById('panDirection').selectedIndex;
+                    var continuousPan = document.getElementById('continuousPan').selectedIndex;
                     var enableTracking = 0;
                     var ditherChoice = 0;
                     var ditherFrequency = 1;
@@ -870,6 +879,7 @@
                     var frames = "1";
                     var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
                     var panDirection = document.getElementById('panDirection').selectedIndex;
+                    var continuousPan = 0;
                     var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = 0;
                     var ditherFrequency = 1;
@@ -882,7 +892,7 @@
             var preDelay = document.getElementById('preDelay').value.trim();
             var delay = document.getElementById('delay').value.trim();
 
-            var intervalometerUrl = '/setCurrent?mode=' + mode + '&preset=' + preset + '&captureMode=' + captureMode + '&exposureTime=' + exposureTime + '&exposures=' + exposures + '&preDelay=' + preDelay + '&delay=' + delay + '&frames=' + frames + '&panAngle=' + panAngle + '&panDirection=' + panDirection + '&enableTracking=' + enableTracking + '&ditherChoice=' + ditherChoice + '&ditherFrequency=' + ditherFrequency + '&focalLength=' + focalLength + '&pixelSize=' + pixelSize;
+            var intervalometerUrl = '/setCurrent?mode=' + mode + '&preset=' + preset + '&captureMode=' + captureMode + '&exposureTime=' + exposureTime + '&exposures=' + exposures + '&preDelay=' + preDelay + '&delay=' + delay + '&frames=' + frames + '&panAngle=' + panAngle + '&panDirection=' + panDirection + '&continuousPan=' + continuousPan + '&enableTracking=' + enableTracking + '&ditherChoice=' + ditherChoice + '&ditherFrequency=' + ditherFrequency + '&focalLength=' + focalLength + '&pixelSize=' + pixelSize;
             sendRequest(intervalometerUrl);
         }
 
@@ -983,6 +993,7 @@
                     document.getElementById('exposureTime').value = settings.exposureTime;
                     document.getElementById('panAngle').value = settings.panAngle / 100;
                     document.getElementById('panDirection').selectedIndex = settings.panDirection;
+                    document.getElementById('continuousPan').selectedIndex = settings.continuousPan || 0;
                     document.getElementById('dither').selectedIndex = settings.ditherChoice;
                     document.getElementById('ditherFrequency').value = settings.ditherFrequency;
                     document.getElementById('enableTracking').selectedIndex = settings.enableTracking;
@@ -1544,6 +1555,14 @@
                     <select aria-label="panDirection" id='panDirection'>
                         <option value='0'>%STR_LEFT%</option>
                         <option value='1'>%STR_RIGHT%</option>
+                    </select>
+                </div>
+
+                <div id='continuousPanDiv'>
+                    <h3>%STR_CONTINUOUS_PAN%:</h3>
+                    <select aria-label="continuousPan" id='continuousPan'>
+                        <option value='0'>%STR_NO%</option>
+                        <option value='1'>%STR_YES%</option>
                     </select>
                 </div>
 

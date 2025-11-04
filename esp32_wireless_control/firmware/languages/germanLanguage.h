@@ -95,6 +95,7 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Schwenkwinkel",                                // STR_PAN_ANGLE
     "in Stunden (z.B. 6)",                          // STR_HOURS
     "Schwenkrichtung",                              // STR_PAN_DIRECTION
+    "Kontinuierliches Schwenken",                   // STR_CONTINUOUS_PAN
     "Links",                                        // STR_LEFT
     "Rechts",                                       // STR_RIGHT
     "Goto RA Control",                              // STR_GOTO_RA_CONTROL

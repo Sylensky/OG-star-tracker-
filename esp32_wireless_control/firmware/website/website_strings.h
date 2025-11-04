@@ -16,6 +16,7 @@ extern const char* DELAY;
 extern const char* FRAMES;
 extern const char* PAN_ANGLE;
 extern const char* PAN_DIRECTION;
+extern const char* CONTINUOUS_PAN;
 extern const char* ENABLE_TRACKING;
 extern const char* DITHER_CHOICE;
 extern const char* DITHER_FREQUENCY;
