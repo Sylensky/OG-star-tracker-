@@ -365,6 +365,9 @@ void handleSetCurrent()
         }
         settings.panDirection = panDirection;
 
+        int continuousPan = server.arg(CONTINUOUS_PAN).toInt();
+        settings.continuousPan = continuousPan;
+
         int enableTracking = server.arg(ENABLE_TRACKING).toInt();
         if (enableTracking < 0 || enableTracking > 1)
         {
@@ -521,6 +524,7 @@ void handleGetPresetExposureSettings()
     settings[EXPOSURE_TIME] = s.exposureTime;
     settings[PAN_ANGLE] = s.panAngle * 100;
     settings[PAN_DIRECTION] = s.panDirection;
+    settings[CONTINUOUS_PAN] = s.continuousPan;
     settings[DITHER_CHOICE] = s.dither;
     settings[DITHER_FREQUENCY] = s.ditherFrequency;
     settings[ENABLE_TRACKING] = s.enableTracking;

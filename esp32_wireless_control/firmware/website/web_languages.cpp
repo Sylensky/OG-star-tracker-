@@ -74,6 +74,7 @@ const char* const HTMLplaceHolders[numberOfHTMLStrings] PROGMEM = {
   "%STR_PAN_ANGLE%",
   "%STR_HOURS%",
   "%STR_PAN_DIRECTION%",
+  "%STR_CONTINUOUS_PAN%",
   "%STR_LEFT%",
   "%STR_RIGHT%",
   "%STR_GOTO_RA_CONTROL%",

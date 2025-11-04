@@ -96,12 +96,14 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Pan Angle",                     // STR_PAN_ANGLE
     "hours (Ex. 6)",                 // STR_HOURS
     "Pan Direction",                 // STR_PAN_DIRECTION
+    "Continuous Pan",                // STR_CONTINUOUS_PAN
     "Left",                          // STR_LEFT
     "Right",                         // STR_RIGHT
     "Goto RA Control",               // STR_GOTO_RA_CONTROL
     "Current",                       // STR_GOTO_RA_CURRENT
     "Target",                        // STR_GOTO_RA_TARGET
-    "Center your camera on\nmemorable star like Deneb, Altair..\nthen enter coordinates of target\n", // STR_GOTO_RA_HINT
+    "Center your camera on\nmemorable star like Deneb, Altair..\nthen enter coordinates of "
+    "target\n",                 // STR_GOTO_RA_HINT
     "Start Goto RA",            // STR_START_GOTO_RA
     "Stop Goto RA",             // STR_STOP_GOTO_RA
     "Disable Tracking On End",  // STR_ENABLE_TRACKING

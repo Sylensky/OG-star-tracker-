@@ -95,6 +95,7 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "平移角度",                                                           // STR_PAN_ANGLE
     "小时 (例如: 6)",                                                     // STR_HOURS
     "平移方向",                                                           // STR_PAN_DIRECTION
+    "连续平移",                                                           // STR_CONTINUOUS_PAN
     "左",                                                                 // STR_LEFT
     "右",                                                                 // STR_RIGHT
     "定位赤经控制",                                                       // STR_GOTO_RA_CONTROL

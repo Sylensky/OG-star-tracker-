@@ -9,8 +9,9 @@ TimelapsePan::TimelapsePan(uint8_t triggerPin, const Settings& settings)
 void TimelapsePan::executeLoop()
 {
     print_out("=== %s Mode Started ===", getModeName());
-    print_out("Settings: %d exposures, pan angle: %.2f degrees, direction: %s", settings.exposures,
-              settings.panAngle, settings.panDirection ? "forward" : "reverse");
+    print_out("Settings: %d exposures, pan angle: %.2f degrees, direction: %s, continuous: %s",
+              settings.exposures, settings.panAngle, settings.panDirection ? "forward" : "reverse",
+              settings.continuousPan ? "yes" : "no");
 
     // Stop tracking if active (pan mode doesn't use normal tracking)
     if (ra_axis.trackingActive)
@@ -24,21 +25,61 @@ void TimelapsePan::executeLoop()
     if (abortRequested)
         return;
 
-    // Calculate degrees per interval if panning
+    // Calculate pan angle (apply direction) and the total duration time
+    float totalPanAngle = settings.panDirection ? settings.panAngle : -settings.panAngle;
+    int totalDurationTime =
+        settings.preDelay + (settings.exposures * 1) + ((settings.exposures) * settings.delayTime);
+
+    // Start continuous pan if enabled
+    if (settings.continuousPan && totalPanAngle != 0.0f)
+    {
+        currentState = State::Pan;
+
+        int maxPanSpeed = MAX_CUSTOM_SLEW_RATE / 4;
+        // Calculate required speed based on angle and time
+        // speed is inversely proportional to time: more time = slower speed needed
+        int panSpeed = (int) std::abs(
+            ((((float) maxPanSpeed * (std::abs(totalPanAngle) / (float) totalDurationTime)) / 2) -
+             maxPanSpeed));
+        uint16_t microstep = 8;
+
+        if (panSpeed > maxPanSpeed)
+            panSpeed = maxPanSpeed;
+        else if (panSpeed < MIN_CUSTOM_SLEW_RATE)
+            panSpeed = MIN_CUSTOM_SLEW_RATE;
+
+        print_out("Starting continuous pan: %.2f degrees at speed=%d, microstepping=%d",
+                  totalPanAngle, panSpeed, microstep);
+
+        // Start continuous pan - it will run throughout the entire sequence
+        if (ra_axis.panByDegrees(totalPanAngle, panSpeed, microstep))
+            print_out("Continuous pan started successfully");
+        else
+            print_out("Warning: Continuous pan failed to start");
+    }
+
+    // Calculate degrees per interval for incremental panning (if not continuous)
     float degreesPerInterval = 0.0f;
-    if (settings.panAngle > 0.0f && settings.exposures > 1)
+    if (!settings.continuousPan && settings.panAngle > 0.0f && settings.exposures > 1)
     {
         degreesPerInterval = settings.panAngle / (settings.exposures - 1);
-        // Apply direction (negative = reverse)
+        // Apply direction: 0 = reverse (negative), 1 = forward (positive)
         if (!settings.panDirection)
             degreesPerInterval = -degreesPerInterval;
 
-        print_out("Pan: %.2f degrees per interval", degreesPerInterval);
+        print_out("Incremental pan: %.2f degrees per interval", degreesPerInterval);
     }
 
     // Main capture loop
     while (exposuresTaken < settings.exposures && !abortRequested)
     {
+        // Check continuous pan is still active (if enabled)
+        if (settings.continuousPan && totalPanAngle != 0.0f)
+        {
+            if (!ra_axis.goToTarget && exposuresTaken < settings.exposures - 1)
+                print_out("Warning: Continuous pan stopped unexpectedly");
+        }
+
         // === CAPTURE STATE ===
         currentState = State::Capture;
         print_out("Capture %d/%d start", exposuresTaken + 1, settings.exposures);
@@ -52,9 +93,10 @@ void TimelapsePan::executeLoop()
         exposuresTaken++;
         print_out("Capture %d/%d complete", exposuresTaken, settings.exposures);
 
-        // === PAN STATE ===
-        // Pan to next position (if not last exposure and pan enabled)
-        if (exposuresTaken < settings.exposures && degreesPerInterval != 0.0f)
+        // === PAN STATE (incremental mode only) ===
+        // Pan to next position (if not continuous, not last exposure, and pan enabled)
+        if (!settings.continuousPan && exposuresTaken < settings.exposures &&
+            degreesPerInterval != 0.0f)
         {
             currentState = State::Pan;
             print_out("Pan start: %.2f degrees over %d seconds", degreesPerInterval,
@@ -92,8 +134,8 @@ void TimelapsePan::executeLoop()
 
             print_out("Delay complete");
 
-            // Wait for pan to complete if still active
-            if (ra_axis.goToTarget)
+            // Wait for incremental pan to complete if still active (not continuous mode)
+            if (!settings.continuousPan && ra_axis.goToTarget)
             {
                 print_out("Waiting for pan to complete...");
                 while (ra_axis.goToTarget && !abortRequested)
@@ -105,8 +147,25 @@ void TimelapsePan::executeLoop()
         }
     }
 
+    // Clean up any remaining pan movement
     if (ra_axis.slewActive || ra_axis.goToTarget)
-        ra_axis.stopPanByDegrees();
+    {
+        if (settings.continuousPan)
+        {
+            print_out("Waiting for continuous pan to complete...");
+            // Wait for continuous pan to finish naturally
+            while (ra_axis.goToTarget && !abortRequested)
+            {
+                vTaskDelay(pdMS_TO_TICKS(100));
+            }
+            print_out("Continuous pan complete");
+        }
+        else
+        {
+            // Stop any remaining incremental pan movement
+            ra_axis.stopPanByDegrees();
+        }
+    }
 
     print_out("=== %s Mode Complete: %d exposures ===", getModeName(), exposuresTaken);
 }
