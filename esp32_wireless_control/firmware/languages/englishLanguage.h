@@ -89,11 +89,11 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "in seconds (Ex. 30)",           // STR_EXPOSURE_HINT
     "Number of exposures",           // STR_NO_EXPOSURES
     "number of photos (Ex. 20)",     // STR_NUM_EXPOSURES_HINT
-    "Pre Delay Time (5s)",           // STR_PRE_DELAY
-    "Delay",                         // STR_DELAY
+    "Pre Delay Time (s)",            // STR_PRE_DELAY
+    "Delay (s)",                     // STR_DELAY
     "Number of Frames",              // STR_FRAMES
     "nº of frames",                  // STR_NO_FRAMES
-    "Pan Angle",                     // STR_PAN_ANGLE
+    "Pan Angle (°)",                 // STR_PAN_ANGLE
     "hours (Ex. 6)",                 // STR_HOURS
     "Pan Direction",                 // STR_PAN_DIRECTION
     "Continuous Pan",                // STR_CONTINUOUS_PAN
@@ -110,10 +110,10 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "No",                       // STR_NO
     "Yes",                      // STR_YES
     "Dither",                   // STR_DITHER
-    "Dither Frequency",         // STR_DITHER_FREQ
+    "Dither Frequency (Ex. 1)", // STR_DITHER_FREQ
     "Lens focal length",        // STR_FOCAL_LENGTH
     "in millimeters (Ex. 135)", // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",        // STR_PIXEL_SIZE
+    "Camera pixel size (µm)",   // STR_PIXEL_SIZE
     "in micrometers (Ex. 4.1)", // STR_PIXEL_SIZE_HINT
     "Start Capture",            // STR_START_CAPTURE
     "Abort Capture",            // STR_ABORT_CAPTURE

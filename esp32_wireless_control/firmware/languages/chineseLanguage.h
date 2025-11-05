@@ -88,8 +88,8 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "单位：秒 (例如: 30)",                                                // STR_EXPOSURE_HINT
     "曝光次数",                                                           // STR_NO_EXPOSURES
     "拍摄张数 (例如: 20)",                                                // STR_NUM_EXPOSURES_HINT
-    "预延迟时间 (5秒)",                                                   // STR_PRE_DELAY
-    "延迟",                                                               // STR_DELAY
+    "预延迟时间 (秒)",                                                    // STR_PRE_DELAY
+    "延迟 (秒)",                                                          // STR_DELAY
     "帧数",                                                               // STR_FRAMES
     "帧数",                                                               // STR_NO_FRAMES
     "平移角度",                                                           // STR_PAN_ANGLE
@@ -108,10 +108,10 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "否",                                                                 // STR_NO
     "是",                                                                 // STR_YES
     "微调",                                                               // STR_DITHER
-    "微调频率",                                                           // STR_DITHER_FREQ
+    "微调频率 (例如: 1)",                                                 // STR_DITHER_FREQ
     "镜头焦距",                                                           // STR_FOCAL_LENGTH
     "单位：毫米 (例如: 135)",                                             // STR_FOCAL_LENGTH_HINT
-    "相机像素大小",                                                       // STR_PIXEL_SIZE
+    "相机像素大小 (µm)",                                                  // STR_PIXEL_SIZE
     "单位：微米 (例如: 4.1)",                                             // STR_PIXEL_SIZE_HINT
     "开始拍摄",                                                           // STR_START_CAPTURE
     "停止拍摄",                                                           // STR_ABORT_CAPTURE
