@@ -196,13 +196,26 @@ bool IntervalometerMode::performDither()
         ra_axis.counterActive = true;
     }
 
+    // Calculate dither parameters
+    float arcsecPerPixel = getArcsecPerPixel();
+    uint16_t stepsPerTenPixels = getStepsPerTenPixels();
+
+    print_out("Dither config: pixelSize=%.2fµm, focalLength=%dmm, arcsec/pixel=%.3f",
+              settings.pixelSize, settings.focalLength, arcsecPerPixel);
+    print_out("Steps per 10 pixels: %d", stepsPerTenPixels);
+
     // Calculate random dither direction and distance
     uint8_t randomDirection = biasedRandomDirection(previousDitherDirection);
     previousDitherDirection = randomDirection;
 
-    int16_t stepsToDither =
-        ((random(100 * DITHER_DISTANCE_X10_PIXELS) + 1) / 100.0) * getStepsPerTenPixels();
+    float randomPixels = (random(100 * DITHER_DISTANCE_X10_PIXELS) + 1) / 100.0;
+    int16_t stepsToDither = randomPixels * getStepsPerTenPixels();
     stepsToDither = randomDirection ? stepsToDither : stepsToDither * -1;
+
+    float ditherArcseconds = randomPixels * arcsecPerPixel;
+
+    print_out("Dithering: %.2f pixels (%.2f arcsec) %s, %d steps", randomPixels, ditherArcseconds,
+              randomDirection ? "right" : "left", randomDirection ? stepsToDither : -stepsToDither);
 
     // Set target and start slew
     ra_axis.setAxisTargetCount(stepsToDither + ra_axis.axisCountValue);
@@ -220,6 +233,9 @@ bool IntervalometerMode::performDither()
     }
 
     print_out("%s: Dither complete", getModeName());
+
+    // Brief delay to ensure status is visible on web interface
+    vTaskDelay(pdMS_TO_TICKS(500));
 
     return !abortRequested;
 }
