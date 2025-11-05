@@ -638,7 +638,7 @@
             calculateCaptureTime();
             var mode = document.getElementById('mode').selectedIndex;
             switch (mode) {
-                case 0:
+                case 0: // Long Exposure Still
                     document.getElementById('exposureDiv').style.display = 'flex';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
@@ -648,7 +648,7 @@
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
                     break;
-                case 1:
+                case 1: // Long Exposure Movie
                     document.getElementById('exposureDiv').style.display = 'flex';
                     document.getElementById('framesDiv').style.display = 'flex';
                     document.getElementById('panAngleDiv').style.display = 'none';
@@ -658,7 +658,7 @@
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
                     break;
-                case 2:
+                case 2: // Timelapse
                     document.getElementById('exposureDiv').style.display = 'none';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
@@ -669,24 +669,13 @@
                     document.getElementById('dither').value = 0;
                     document.getElementById('dither').dispatchEvent(new Event('change'));
                     break;
-                case 3:
+                case 3: // Timelapse Pan
                     document.getElementById('exposureDiv').style.display = 'none';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'flex';
                     document.getElementById('panDirectionDiv').style.display = 'flex';
                     document.getElementById('continuousPanDiv').style.display = 'flex';
                     document.getElementById('trackEndDiv').style.display = 'none';
-                    document.getElementById('ditherChoiceDiv').style.display = 'none';
-                    document.getElementById('dither').value = 0;
-                    document.getElementById('dither').dispatchEvent(new Event('change'));
-                    break;
-                case 4:
-                    document.getElementById('exposureDiv').style.display = 'flex';
-                    document.getElementById('framesDiv').style.display = 'none';
-                    document.getElementById('panAngleDiv').style.display = 'flex';
-                    document.getElementById('panDirectionDiv').style.display = 'flex';
-                    document.getElementById('continuousPanDiv').style.display = 'none';
-                    document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
                     document.getElementById('dither').dispatchEvent(new Event('change'));
@@ -814,7 +803,7 @@
             var preset = document.getElementById('preset-select').selectedIndex;
             var captureMode = document.getElementById('mode').selectedIndex;
             switch (captureMode) {
-                case 0:
+                case 0: // Long Exposure Still
                     var exposureTime = document.getElementById('exposureTime').value.trim();
                     var frames = "1";
                     var panAngle = "1";
@@ -832,7 +821,7 @@
                         var pixelSize = "1";
                     }
                     break;
-                case 1:
+                case 1: // Long Exposure Movie
                     var exposureTime = document.getElementById('exposureTime').value.trim();
                     var frames = document.getElementById('frames').value.trim();
                     var panAngle = "1";
@@ -850,7 +839,7 @@
                         var pixelSize = "1";
                     }
                     break;
-                case 2:
+                case 2: // Timelapse
                     var exposureTime = "1";
                     var frames = "1";
                     var panAngle = "1";
@@ -862,25 +851,13 @@
                     var focalLength = "1";
                     var pixelSize = "1";
                     break;
-                case 3:
+                case 3: // Timelapse Pan
                     var exposureTime = "1";
                     var frames = "1";
                     var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
                     var panDirection = document.getElementById('panDirection').selectedIndex;
                     var continuousPan = document.getElementById('continuousPan').selectedIndex;
                     var enableTracking = 0;
-                    var ditherChoice = 0;
-                    var ditherFrequency = 1;
-                    var focalLength = 1;
-                    var pixelSize = 1;
-                    break;
-                case 4:
-                    var exposureTime = document.getElementById('exposureTime').value.trim();
-                    var frames = "1";
-                    var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
-                    var panDirection = document.getElementById('panDirection').selectedIndex;
-                    var continuousPan = 0;
-                    var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = 0;
                     var ditherFrequency = 1;
                     var focalLength = 1;
