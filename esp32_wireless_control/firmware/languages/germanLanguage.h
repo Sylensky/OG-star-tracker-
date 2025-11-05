@@ -88,11 +88,11 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "in Sekunden (z.B. 30)",                        // STR_EXPOSURE_HINT
     "Anzahl der Belichtungen",                      // STR_NO_EXPOSURES
     "Anzahl der Fotos (z.B. 20)",                   // STR_NUM_EXPOSURES_HINT
-    "Vorlaufzeit (5s)",                             // STR_PRE_DELAY
-    "Verzögerung",                                  // STR_DELAY
+    "Vorlaufzeit (s)",                              // STR_PRE_DELAY
+    "Verzögerung (s)",                              // STR_DELAY
     "Anzahl der Bilder",                            // STR_FRAMES
     "nº der Bilder",                                // STR_NO_FRAMES
-    "Schwenkwinkel",                                // STR_PAN_ANGLE
+    "Schwenkwinkel (°)",                            // STR_PAN_ANGLE
     "in Stunden (z.B. 6)",                          // STR_HOURS
     "Schwenkrichtung",                              // STR_PAN_DIRECTION
     "Kontinuierliches Schwenken",                   // STR_CONTINUOUS_PAN
@@ -110,10 +110,10 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Nein",                                               // STR_NO
     "Ja",                                                 // STR_YES
     "Zittern",                                            // STR_DITHER
-    "Zitterfrequenz",                                     // STR_DITHER_FREQ
+    "Zitterfrequenz (z.B. 1)",                            // STR_DITHER_FREQ
     "Brennweite des Objektivs",                           // STR_FOCAL_LENGTH
     "in Millimetern (z.B. 135)",                          // STR_FOCAL_LENGTH_HINT
-    "Pixelgröße des Bildsensors",                         // STR_PIXEL_SIZE
+    "Pixelgröße des Bildsensors (µm)",                    // STR_PIXEL_SIZE
     "in Mikrometern (z.B. 4.1)",                          // STR_PIXEL_SIZE_HINT
     "Aufnahme Starten",                                   // STR_START_CAPTURE
     "Aufnahme Abbrechen",                                 // STR_ABORT_CAPTURE
