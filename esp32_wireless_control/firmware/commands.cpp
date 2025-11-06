@@ -124,62 +124,71 @@ static void cmdReset()
     resetFunc();
 }
 
-static Position parsePositionFromArgs(SerialTerminal* term)
+static Position parseRAPositionFromArgs(SerialTerminal* term)
 {
-    int degrees = 0, minutes = 0;
-    float seconds = 0.0f;
+    // Parse RA (hours, minutes, seconds)
+    int ra_hours = 0, ra_minutes = 0;
+    float ra_seconds = 0.0f;
 
-    const char* degreesStr = term->getNext();
-    if (degreesStr)
-        degrees = atoi(degreesStr);
+    const char* ra_hoursStr = term->getNext();
+    if (ra_hoursStr)
+        ra_hours = atoi(ra_hoursStr);
     else
     {
-        print_out("Error: Missing degrees for position.");
+        print_out("Error: Missing RA hours for position.");
         return Position();
     }
 
-    const char* minutesStr = term->getNext();
-    if (minutesStr)
-        minutes = atoi(minutesStr);
+    const char* ra_minutesStr = term->getNext();
+    if (ra_minutesStr)
+        ra_minutes = atoi(ra_minutesStr);
     else
     {
-        print_out("Error: Missing minutes for position.");
+        print_out("Error: Missing RA minutes for position.");
         return Position();
     }
 
-    const char* secondsStr = term->getNext();
-    if (secondsStr)
-        seconds = atof(secondsStr);
+    const char* ra_secondsStr = term->getNext();
+    if (ra_secondsStr)
+        ra_seconds = atof(ra_secondsStr);
     else
     {
-        print_out("Error: Missing seconds for position.");
+        print_out("Error: Missing RA seconds for position.");
         return Position();
     }
 
-    return Position(degrees, minutes, seconds);
+    // Parse DEC (degrees, minutes, seconds)
+    /**
+     * TODO: Extend to parse DEC as well
+     */
+    int dec_degrees = 0, dec_minutes = 0;
+    float dec_seconds = 0.0f;
+
+    return Position(ra_hours, ra_minutes, ra_seconds, dec_degrees, dec_minutes, dec_seconds);
 }
 
 static void cmdGotoTargetRA()
 {
-    Position currentRA = parsePositionFromArgs(_term);
-    if (currentRA.arcseconds == 0 && _term->getNext() == NULL)
+    Position currentPos = parseRAPositionFromArgs(_term);
+    if (currentPos.ra_arcseconds == 0 && _term->getNext() == NULL)
     {
         print_out_tbl(CMD_GOTO_TARGET_RA_ARGS);
         return;
     }
 
-    Position targetRA = parsePositionFromArgs(_term);
-    if (targetRA.arcseconds == 0 && _term->getNext() == NULL)
+    Position targetPos = parseRAPositionFromArgs(_term);
+    if (targetPos.ra_arcseconds == 0 && _term->getNext() == NULL)
     {
         print_out_tbl(CMD_GOTO_TARGET_RA_ARGS);
         return;
     }
 
     print_out("GotoTargetRA called with:");
-    print_out("  Current Position: %lld arcseconds", currentRA.arcseconds);
-    print_out("  Target Position: %lld arcseconds", targetRA.arcseconds);
+    print_out("  Current Position: RA=%lld arcsec", currentPos.ra_arcseconds);
+    print_out("  Target Position: RA=%lld arcsec", targetPos.ra_arcseconds);
 
-    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentRA, targetRA);
+    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentPos,
+                       targetPos);
 }
 
 static void cmdPan()

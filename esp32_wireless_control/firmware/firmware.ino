@@ -465,16 +465,25 @@ void handleNotFound()
 }
 #endif
 
-Position calculatePosition(String Arg)
+Position calculatePosition(String raArg, String decArg)
 {
-    Position position(0, 0, 0);
-    position.arcseconds = Arg.toInt();
+    Position position;
+    position.ra_arcseconds = raArg.toInt();
+    position.dec_arcseconds = decArg.toInt();
 
-    if (position.arcseconds == -1)
+    if (position.ra_arcseconds == -1)
     {
-        position.arcseconds = 0;
+        position.ra_arcseconds = 0;
 #if DEBUG == 1
-        print_out("Invalid position input. Defaulting to 0.");
+        print_out("Invalid RA position input. Defaulting to 0.");
+#endif
+    }
+
+    if (position.dec_arcseconds == -1)
+    {
+        position.dec_arcseconds = 0;
+#if DEBUG == 1
+        print_out("Invalid DEC position input. Defaulting to 0.");
 #endif
     }
 
@@ -483,8 +492,8 @@ Position calculatePosition(String Arg)
 
 void handleGotoRA()
 {
-    Position currentPosition = calculatePosition(server.arg("currentRA"));
-    Position targetPosition = calculatePosition(server.arg("targetRA"));
+    Position currentPosition = calculatePosition(server.arg("currentRA"), server.arg("currentDEC"));
+    Position targetPosition = calculatePosition(server.arg("targetRA"), server.arg("targetDEC"));
     int pan_speed = server.arg(SPEED).toInt();
 
     pan_speed = pan_speed > MAX_CUSTOM_SLEW_RATE   ? MAX_CUSTOM_SLEW_RATE
@@ -492,8 +501,10 @@ void handleGotoRA()
                                                    : pan_speed;
 
     print_out("GotoRA called with:");
-    print_out("  Current RA: %lld arcseconds", currentPosition.arcseconds);
-    print_out("  Target RA: %lld arcseconds", targetPosition.arcseconds);
+    print_out("  Current RA: %lld arcseconds, DEC: %lld arcseconds", currentPosition.ra_arcseconds,
+              currentPosition.dec_arcseconds);
+    print_out("  Target RA: %lld arcseconds, DEC: %lld arcseconds", targetPosition.ra_arcseconds,
+              targetPosition.dec_arcseconds);
     print_out("  rate: %lld", (int) ((2 * ra_axis.rate.tracking) / pan_speed));
 
     ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (2 * ra_axis.rate.tracking) / pan_speed,
@@ -503,8 +514,8 @@ void handleGotoRA()
 
 void handleSetPosition()
 {
-    Position currentPosition = calculatePosition(server.arg("currentRA"));
-    int64_t stepPosition = currentPosition.arcseconds * trackingRates.getStepsPerSecondSolar();
+    Position currentPosition = calculatePosition(server.arg("currentRA"), server.arg("currentDEC"));
+    int64_t stepPosition = currentPosition.ra_arcseconds * trackingRates.getStepsPerSecondSolar();
 
     ra_axis.setPosition(stepPosition);
     server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_POSITION_SET_SUCCESS]);

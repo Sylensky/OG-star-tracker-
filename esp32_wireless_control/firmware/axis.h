@@ -13,11 +13,34 @@ extern HardwareTimer slewTimeOut;
 class Position
 {
   public:
-    int64_t arcseconds;
+    int64_t ra_arcseconds;  // Right Ascension in arcseconds (0-86399 for 0-24h)
+    int64_t dec_arcseconds; // Declination in arcseconds (-324000 to +324000 for -90° to +90°)
 
-    Position(int degrees = 0, int minutes = 0, float seconds = 0.0f);
-    float toDegrees() const;
-    static int64_t toArcseconds(int degrees, int minutes, float seconds);
+    // Default constructor
+    Position() : ra_arcseconds(0), dec_arcseconds(0)
+    {
+    }
+
+    // Constructor for RA and DEC in HMS/DMS format
+    Position(int ra_hours, int ra_minutes, float ra_seconds, int dec_degrees, int dec_minutes,
+             float dec_seconds);
+
+    // Constructor for RA and DEC directly in arcseconds
+    Position(int64_t ra_arc, int64_t dec_arc) : ra_arcseconds(ra_arc), dec_arcseconds(dec_arc)
+    {
+    }
+
+    // Convert RA to hours (0-24)
+    float raToHours() const;
+
+    // Convert DEC to degrees (-90 to +90)
+    float decToDegrees() const;
+
+    // Static helper to convert HMS to arcseconds
+    static int64_t hmsToArcseconds(int hours, int minutes, float seconds);
+
+    // Static helper to convert DMS to arcseconds
+    static int64_t dmsToArcseconds(int degrees, int minutes, float seconds);
 };
 
 class Direction

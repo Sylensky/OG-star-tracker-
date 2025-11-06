@@ -83,19 +83,34 @@ void IRAM_ATTR slewTimeOutTimer_ISR()
 HardwareTimer slewTimeOut(2000, &slewTimeOutTimer_ISR);
 
 // Position class implementation
-Position::Position(int degrees, int minutes, float seconds)
+Position::Position(int ra_hours, int ra_minutes, float ra_seconds, int dec_degrees, int dec_minutes,
+                   float dec_seconds)
 {
-    arcseconds = toArcseconds(degrees, minutes, seconds);
+    ra_arcseconds = hmsToArcseconds(ra_hours, ra_minutes, ra_seconds);
+    dec_arcseconds = dmsToArcseconds(dec_degrees, dec_minutes, dec_seconds);
 }
 
-float Position::toDegrees() const
+float Position::raToHours() const
 {
-    return arcseconds / 3600.0f;
+    return ra_arcseconds / 3600.0f; // 86400 arcsec = 24 hours
 }
 
-int64_t Position::toArcseconds(int degrees, int minutes, float seconds)
+float Position::decToDegrees() const
 {
-    return (degrees * 3600) + (minutes * 60) + static_cast<int>(seconds);
+    return dec_arcseconds / 3600.0f;
+}
+
+int64_t Position::hmsToArcseconds(int hours, int minutes, float seconds)
+{
+    // RA: 24 hours = 86400 arcseconds of RA (1 hour = 3600 arcsec of RA)
+    return (hours * 3600) + (minutes * 60) + static_cast<int>(seconds);
+}
+
+int64_t Position::dmsToArcseconds(int degrees, int minutes, float seconds)
+{
+    // DEC: standard arcseconds (1 degree = 3600 arcsec)
+    int64_t total = (abs(degrees) * 3600) + (minutes * 60) + static_cast<int>(seconds);
+    return (degrees < 0) ? -total : total;
 }
 
 void axisTask(void* parameter)
@@ -159,10 +174,14 @@ void Axis::gotoTarget(uint16_t microstep, uint64_t rateArg, const Position& curr
                       const Position& target)
 {
     setMicrostep(microstep);
-    int64_t deltaArcseconds = target.arcseconds - current.arcseconds;
+
+    /**
+     * TODO: implement DEC wrapping aswell
+     */
+    int64_t deltaArcseconds = target.ra_arcseconds - current.ra_arcseconds;
     int64_t stepsPerSecond = trackingRates.getStepsPerSecondSolar();
 
-    print_out_nonl("deltaArcseconds: %lld\n", deltaArcseconds);
+    print_out_nonl("deltaArcseconds (RA): %lld\n", deltaArcseconds);
 
     if (abs(deltaArcseconds) > 86400 / 2)
     {
@@ -182,7 +201,11 @@ void Axis::gotoTarget(uint16_t microstep, uint64_t rateArg, const Position& curr
 
     print_out_nonl("stepsToMove: %lld\n", stepsToMove);
 
-    setPosition(current.arcseconds * stepsPerSecond);
+    /**
+     * TODO: setPosition should take Position object directly
+     * Maybe introducing a axis type enum {RA, DEC} to specify which axis to set
+     */
+    setPosition(current.ra_arcseconds * stepsPerSecond);
     resetAxisCount();
     setAxisTargetCount(stepsToMove);
 
