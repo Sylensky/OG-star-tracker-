@@ -27,23 +27,29 @@ class IntervalometerMode
         Complete
     };
 
-    struct Settings
+    struct Settings // 28 bytes
     {
-        uint8_t mode = 0;            // Mode enum value
-        uint16_t exposures = 1;      // Number of exposures
-        uint16_t delayTime = 1;      // seconds between exposures
-        uint16_t preDelay = 1;       // seconds before first exposure
-        uint16_t exposureTime = 1;   // seconds per exposure
-        float panAngle = 0.0f;       // degrees (for pan modes)
-        bool panDirection = true;    // true = forward, false = reverse
-        bool continuousPan = false;  // Continuous pan during entire sequence
-        bool dither = false;         // Enable dithering
-        uint8_t ditherFrequency = 1; // Dither every N exposures
-        bool enableTracking = false; // Enable tracking during capture
-        uint16_t frames = 1;         // Number of frames (for movie mode)
-        float pixelSize = 1.0f;      // micrometre (um) - for dither calculation
-        uint16_t focalLength = 1;    // mm - for dither calculation
+        float panAngle = 0.0f;       // degrees (for pan modes) (4b)
+        float pixelSize = 1.0f;      // micrometre (um) - for dither calculation (4b)
+
+        uint16_t exposures = 1;      // Number of exposures (2b)
+        uint16_t delayTime = 1;      // seconds between exposures (2b)
+        uint16_t preDelay = 1;       // seconds before first exposure (2b)
+        uint16_t exposureTime = 1;   // seconds per exposure (2b)
+        uint16_t frames = 1;         // Number of frames (for movie mode) (2b)
+        uint16_t focalLength = 1;    // mm - for dither calculation (2b)
+
+        uint8_t mode = 0;            // Mode enum value (1b)
+        uint8_t ditherFrequency = 1; // Dither every N exposures (1b)
+
+        bool panDirection = true;    // true = forward, false = reverse (1b)
+        bool continuousPan = false;  // Continuous pan during entire sequence (1b)
+        bool dither = false;         // Enable dithering (1b)
+        bool enableTracking = false; // Enable tracking during capture (1b)
     };
+
+    // Current packed layout should be 28 bytes (padded to 4-byte boundary).
+    static_assert(sizeof(Settings) == 28, "IntervalometerMode::Settings size changed; update code/comments");
 
     /**
      * @brief Construct a new Intervalometer Mode object
