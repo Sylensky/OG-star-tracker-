@@ -22,6 +22,7 @@ If you like this work, feel free to connect with me on [Github](https://github.c
 ## Table of Contents
 - [PCB](pcb/README.md)
 - [Compiling](docs/compiling.md)
+- [API](firmware/website/API.md)
 - [Wifi Config](docs/wifi_config.md)
 - [Star Catalogue](firmware/catalogues/README.md)
 - [Coding Style](docs/coding-style.md)
