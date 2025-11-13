@@ -1,7 +1,6 @@
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
 #include <ErriezSerialTerminal.h>
-#include <Update.h>
 #include <WebServer.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
@@ -15,7 +14,6 @@
 #include "configs/config.h"
 #include "eeprom_manager.h"
 #include "functions/intervalometer/intervalometer.h"
-#include "functions/ota/ota_handler.h"
 #include "hardwaretimer.h"
 #include "tracking_rates.h"
 #include "uart.h"

@@ -10,6 +10,7 @@
 #include "../uart.h"
 #include "web_languages.h"
 #include "website_strings.h"
+#include <Update.h>
 
 // Forward declarations of external objects
 extern Axis ra_axis;
@@ -23,19 +24,7 @@ extern StarDatabase* handleStarDatabase(StarDatabaseType catalogType);
 extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
 
-<<<<<<< HEAD
-// Global pointer to ApiHandler instance for lambda callbacks
-static ApiHandler* g_apiHandler = nullptr;
-
-ApiHandler::ApiHandler(WebServer& server)
-    : _server(&server) == == ==
-    =
-        // External OTA HTML data
-    extern const uint8_t _interface_ota_html_start[] asm("_binary_interface_ota_html_start");
-extern const uint8_t _interface_ota_html_end[] asm("_binary_interface_ota_html_end");
-
 ApiHandler& ApiHandler::getInstance()
->>>>>>> a8191c5 (firmware: api-handler: convert to c++ singleton class creation)
 {
     static ApiHandler instance;
     return instance;
@@ -117,6 +106,12 @@ void ApiHandler::registerEndpoints()
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
     // Settings
     _server->on("/setlang", HTTP_GET, [api]() { api->handleSetLanguage(); });
+
+    // OTA firmware update
+    _server->on("/ota", HTTP_GET, []() { g_apiHandler->handleOTAPage(); });
+    _server->on(
+        "/update", HTTP_POST, []() { g_apiHandler->handleOTAComplete(); },
+        []() { g_apiHandler->handleOTAUpload(); });
 }
 
 // Handler implementations
@@ -722,5 +717,77 @@ void ApiHandler::handleCatalogSearch()
         print_out("Object not found: %s", objectName.c_str());
 #endif
         _server->send(404, "text/plain", "Object not found");
+    }
+}
+
+// ==================== OTA UPDATE ====================
+
+void ApiHandler::handleOTAPage()
+{
+#if DEBUG == 1
+    logRequest(_server, "/ota");
+#endif
+    size_t htmlSize = _interface_ota_html_end - _interface_ota_html_start;
+    _server->send_P(200, MIME_TYPE_HTML, (const char*) _interface_ota_html_start, htmlSize);
+}
+
+void ApiHandler::handleOTAUpload()
+{
+    HTTPUpload& upload = _server->upload();
+    static size_t lastLoggedKB = 0;
+
+    if (upload.status == UPLOAD_FILE_START)
+    {
+        print_out("OTA Update Start: %s", upload.filename.c_str());
+        lastLoggedKB = 0;
+
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN))
+        {
+            print_out("OTA Update Failed to begin");
+            Update.printError(Serial);
+        }
+    }
+    else if (upload.status == UPLOAD_FILE_WRITE)
+    {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize)
+        {
+            print_out("OTA Update Write Failed");
+            Update.printError(Serial);
+        }
+
+        // Log progress every 10KB
+        size_t currentKB = upload.totalSize / 1024;
+        if (currentKB >= lastLoggedKB + 10)
+        {
+            print_out("OTA Progress: %d KB", currentKB);
+            lastLoggedKB = currentKB;
+        }
+    }
+    else if (upload.status == UPLOAD_FILE_END)
+    {
+        if (Update.end(true))
+        {
+            print_out("OTA Update Success: %u bytes", upload.totalSize);
+        }
+        else
+        {
+            print_out("OTA Update Failed to complete");
+            Update.printError(Serial);
+        }
+    }
+}
+
+void ApiHandler::handleOTAComplete()
+{
+#if DEBUG == 1
+    logRequest(_server, "/update (complete)");
+#endif
+    _server->send(200, MIME_TYPE_TEXT,
+                  (Update.hasError()) ? "Update Failed" : "Update Success! Rebooting...");
+
+    if (!Update.hasError())
+    {
+        delay(1000);
+        ESP.restart();
     }
 }

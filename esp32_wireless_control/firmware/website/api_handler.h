@@ -207,6 +207,10 @@ class ApiHandler
      */
     void handleRoot();
 
+    // ==================== OTA UPDATE ====================
+
+    // check the ota_handler.h for OTA endpoint handlers
+
   private:
     ApiHandler() : _server(nullptr)
     {
