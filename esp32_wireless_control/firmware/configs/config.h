@@ -77,11 +77,13 @@
 #define AXIS2_ADDR 1
 
 /**********************/
-
+// Configure microstepping driver type
 #define USE_MSx_PINS_MICROSTEPPING 1
 #define USE_TMC_DRIVER_MICROSTEPPING 2
 
-#define MICROSTEPPING_MOTOR_DRIVER USE_TMC_DRIVER_MICROSTEPPING
+#ifndef MICROSTEPPING_MOTOR_DRIVER
+#define MICROSTEPPING_MOTOR_DRIVER USE_TMC_DRIVER_MICROSTEPPING // Default to tmc driver
+#endif
 
 /*****DO NOT MODIFY BELOW*****/
 // Set the resolution per step for the stepper motor
