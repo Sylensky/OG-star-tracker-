@@ -387,6 +387,16 @@
             color: var(--text);
             margin-bottom: 10px;
         }
+
+        .firmware-link {
+            color: var(--secondary-text);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .firmware-link:hover {
+            color: var(--text);
+        }
     </style>
     <script>
         var lastClick = 0;
@@ -413,7 +423,7 @@
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById('firmware').innerHTML = '%STR_FIRMWARE_VERSION%: ' + this.responseText;
+                    document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + this.responseText + '</a>';
                 }
             };
             xhr.open('GET', '/version', true);
@@ -1597,7 +1607,8 @@
         </div>
 
         <div class="status-info">
-            <h4 id='firmware'>%STR_FIRMWARE_VERSION%: </h4>
+            <h4 id='firmware'><a href="/ota" class="firmware-link"
+                    title="Click to update firmware">%STR_FIRMWARE_VERSION%: </a></h4>
             <h4 id='local-time'>%STR_LOCAL_TIME%: </h4>
         </div>
     </div>
