@@ -47,9 +47,9 @@ void MSxMotorDriver::print_status()
 #if DEBUG == 1
     print_out("MSx Motor Driver Status:");
     print_out("  Type: External microstepping control");
-    print_out("  MS1 Pin: %d", _ms1Pin);
-    print_out("  MS2 Pin: %d", _ms2Pin);
-    print_out("  DIR Pin: %d", _dirPin);
+    print_out("  MS1 Pin: %d, state: %d", _ms1Pin, digitalRead(_ms1Pin));
+    print_out("  MS2 Pin: %d, state: %d", _ms2Pin, digitalRead(_ms2Pin));
+    print_out("  DIR Pin: %d, state: %d", _dirPin, digitalRead(_dirPin));
     print_out("  Direction: Controlled via external DIR pin");
     print_out("  Communication: GPIO-based (no UART)");
 #endif
