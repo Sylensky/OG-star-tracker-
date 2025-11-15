@@ -72,6 +72,8 @@ class TrackingRates
     void loadTrackingRatePreset(uint8_t preset);
     void saveTrackingRatePresetsToEEPROM();
     void readTrackingRatePresetsFromEEPROM();
+    void printTrackingRatePresets();
+    void debugTrackingRates();
 };
 
 // Global instance for easy access

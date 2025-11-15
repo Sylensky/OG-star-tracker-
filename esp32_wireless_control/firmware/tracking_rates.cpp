@@ -129,5 +129,86 @@ void TrackingRates::readTrackingRatePresetsFromEEPROM()
 #endif
 }
 
+void TrackingRates::printTrackingRatePresets()
+{
+    print_out("Tracking Rate Presets:");
+    for (int i = 0; i < 5; i++)
+    {
+        print_out("Preset %d:", i);
+        print_out("  Type: %d", trackingRatePresets[i].trackingRateType);
+        print_out("  Custom Rate: %llu", trackingRatePresets[i].customTrackingRate);
+    }
+}
+
+void TrackingRates::debugTrackingRates()
+{
+    print_out("\n========================================");
+    print_out("TRACKING RATES DEBUG");
+    print_out("========================================");
+    print_out("Hardware Configuration:");
+    print_out("  TRACKER_MOTOR_MICROSTEPPING: %d", TRACKER_MOTOR_MICROSTEPPING);
+    print_out("  MAX_MICROSTEPS: %d", MAX_MICROSTEPS);
+    print_out("  STEPS_PER_TRACKER_FULL_REV_INT: %llu", (uint64_t) STEPS_PER_TRACKER_FULL_REV_INT);
+    print_out("  TIMER_APB_CLK_FREQ: %lu Hz", (unsigned long) TIMER_APB_CLK_FREQ);
+
+    uint64_t steps_per_rev_at_microstep =
+        STEPS_PER_TRACKER_FULL_REV_INT / (MAX_MICROSTEPS / TRACKER_MOTOR_MICROSTEPPING);
+    print_out("  Steps per rev at %d microstep: %llu", TRACKER_MOTOR_MICROSTEPPING,
+              steps_per_rev_at_microstep);
+
+    print_out("\nAstronomical Constants:");
+    print_out("  SIDEREAL_DAY_MS: %lu ms", (unsigned long) SIDEREAL_DAY_MS);
+    print_out("  SOLAR_DAY_MS:    %lu ms", (unsigned long) SOLAR_DAY_MS);
+    print_out("  LUNAR_DAY_MS:    %lu ms", (unsigned long) LUNAR_DAY_MS);
+
+    print_out("\nCalculated Timer Reload Values:");
+    print_out("  Sidereal rate: %llu", sidereal_rate);
+    print_out("  Solar rate:    %llu", solar_rate);
+    print_out("  Lunar rate:    %llu", lunar_rate);
+
+    print_out("\nSteps Per Second:");
+    print_out("  Sidereal: %llu steps/sec", getStepsPerSecondSidereal());
+    print_out("  Solar:    %llu steps/sec", getStepsPerSecondSolar());
+    print_out("  Lunar:    %llu steps/sec", getStepsPerSecondLunar());
+
+    print_out("\nActual Tracking Speeds:");
+    double sidereal_hz = (double) TIMER_APB_CLK_FREQ / (double) sidereal_rate;
+    double solar_hz = (double) TIMER_APB_CLK_FREQ / (double) solar_rate;
+    double lunar_hz = (double) TIMER_APB_CLK_FREQ / (double) lunar_rate;
+    print_out("  Sidereal: %.6f interrupts/sec", sidereal_hz);
+    print_out("  Solar:    %.6f interrupts/sec", solar_hz);
+    print_out("  Lunar:    %.6f interrupts/sec", lunar_hz);
+
+    double sidereal_steps_sec = sidereal_hz / 2.0;
+    double solar_steps_sec = solar_hz / 2.0;
+    double lunar_steps_sec = lunar_hz / 2.0;
+    print_out("  Sidereal: %.6f steps/sec", sidereal_steps_sec);
+    print_out("  Solar:    %.6f steps/sec", solar_steps_sec);
+    print_out("  Lunar:    %.6f steps/sec", lunar_steps_sec);
+
+    double sidereal_period_sec = (double) steps_per_rev_at_microstep / sidereal_steps_sec;
+    double solar_period_sec = (double) steps_per_rev_at_microstep / solar_steps_sec;
+    double lunar_period_sec = (double) steps_per_rev_at_microstep / lunar_steps_sec;
+    print_out("\nActual Periods Achieved:");
+    print_out("  Sidereal: %.2f seconds (target: %lu)", sidereal_period_sec,
+              (unsigned long) (SIDEREAL_DAY_MS / 1000));
+    print_out("  Solar:    %.2f seconds (target: %lu)", solar_period_sec,
+              (unsigned long) (SOLAR_DAY_MS / 1000));
+    print_out("  Lunar:    %.2f seconds (target: %lu)", lunar_period_sec,
+              (unsigned long) (LUNAR_DAY_MS / 1000));
+
+    double sidereal_error = sidereal_period_sec - (SIDEREAL_DAY_MS / 1000.0);
+    double solar_error = solar_period_sec - (SOLAR_DAY_MS / 1000.0);
+    double lunar_error = lunar_period_sec - (LUNAR_DAY_MS / 1000.0);
+    print_out("\nTracking Errors:");
+    print_out("  Sidereal: %+.3f seconds (%+.6f%%)", sidereal_error,
+              (sidereal_error / (SIDEREAL_DAY_MS / 1000.0)) * 100);
+    print_out("  Solar:    %+.3f seconds (%+.6f%%)", solar_error,
+              (solar_error / (SOLAR_DAY_MS / 1000.0)) * 100);
+    print_out("  Lunar:    %+.3f seconds (%+.6f%%)", lunar_error,
+              (lunar_error / (LUNAR_DAY_MS / 1000.0)) * 100);
+    print_out("========================================\n");
+}
+
 // Global instance of tracking rates
 TrackingRates trackingRates;
