@@ -33,6 +33,7 @@ static const char cmd_help_heap[] PROGMEM = "  heap <all>                     Pr
 static const char cmd_help_reset[] PROGMEM = "  reset                          Reset the controller\r\n";
 static const char cmd_goto_target_ra[] PROGMEM = "  gotoRA <current> <target>      Goto target RA\r\n";
 static const char cmd_help_pan[] PROGMEM = "  pan <+/-deg> <speed> [µstep]   Pan mount (µstep: 8,16,32,64)\r\n";
+static const char cmd_help_debug_tracking[] PROGMEM = "  debugrates                     Print tracking rates debug info\r\n";
 
 // task related
 static const char tsk_not_avail[] PROGMEM = "task not available\r\n";
@@ -79,6 +80,7 @@ static const char* const string_table[] = {
     cmd_help_reset,
     cmd_goto_target_ra,
     cmd_help_pan,
+    cmd_help_debug_tracking,
 
     // task related
     tsk_not_avail,
@@ -126,6 +128,7 @@ enum pgm_table_index_t
     CMD_HELP_RESET,
     CMD_GOTO_TARGET_RA,
     CMD_HELP_PAN,
+    CMD_HELP_DEBUG_TRACKING,
 
     TSK_NOT_AVAIL,
     TSK_CLEAR_SCREEN,

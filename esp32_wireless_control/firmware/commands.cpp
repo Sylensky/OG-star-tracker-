@@ -3,6 +3,7 @@
 #include <axis.h>
 #include <commands.h>
 #include <configs/config.h>
+#include <tracking_rates.h>
 #include <uart.h>
 
 SerialTerminal* _term;
@@ -27,6 +28,7 @@ static void cmdHelp()
     print_out_tbl(CMD_HELP_RESET);
     print_out_tbl(CMD_GOTO_TARGET_RA);
     print_out_tbl(CMD_HELP_PAN);
+    print_out_tbl(CMD_HELP_DEBUG_TRACKING);
 }
 
 static uint16_t get_stack_high_water(const char* task_name)
@@ -122,6 +124,14 @@ static void cmdReset()
 {
     // Reset controller
     resetFunc();
+}
+
+/**
+ * Debug tracking rates
+ */
+static void cmdDebugTrackingRates()
+{
+    trackingRates.debugTrackingRates();
 }
 
 static Position parsePositionFromArgs(SerialTerminal* term)
@@ -276,4 +286,5 @@ void setup_terminal(SerialTerminal* term)
     _term->addCommand("reset", cmdReset);
     _term->addCommand("gotoRA", cmdGotoTargetRA);
     _term->addCommand("pan", cmdPan);
+    _term->addCommand("debugrates", cmdDebugTrackingRates);
 }
