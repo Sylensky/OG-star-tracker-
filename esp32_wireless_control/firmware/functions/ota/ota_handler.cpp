@@ -1,10 +1,13 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <Update.h>
+#include <WiFi.h>
 
 #include <uart.h>
 
+#include "../../configs/config.h"
 #include "../../website/website_strings.h"
+#include "freertos/idf_additions.h"
 #include "ota_handler.h"
 
 extern const uint8_t _interface_ota_html_start[] asm("_binary_interface_ota_html_start");
