@@ -90,8 +90,8 @@ template <class T> inline int EepromManager::writePresets(int address, const T& 
         print_out("EEPROM Write - Address: %d, Data: 0x%02X", address, *p);
 #endif
         EEPROM.write(address++, *p++);
-        EEPROM.commit();
     }
+    EEPROM.commit();
 
 #if DEBUG == 1
     print_out("EEPROM Write completed - %d bytes written", i);
@@ -106,9 +106,10 @@ template <class T> inline int EepromManager::readPresets(int address, T& presets
     unsigned int i = 0;
     for (i = 0; i < sizeof(presets); i++)
     {
-        *p++ = EEPROM.read(address++);
+        byte value = EEPROM.read(address++);
+        *p++ = value;
 #if DEBUG == 1
-        print_out("EEPROM Read - Address: %d, Data: 0x%02X", address, *p);
+        print_out("EEPROM Read - Address: %d, Data: 0x%02X", address - 1, value);
 #endif
     }
 

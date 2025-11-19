@@ -3,6 +3,7 @@
 
 // Include for EEPROM operations (forward declaration in header)
 #include "eeprom_manager.h"
+#include "tools/heap_monitor.h"
 
 // Calculate tracking rate from period in milliseconds
 // Formula: Timer_reload_value = TIMER_APB_CLK_FREQ / timer_interrupts_per_second
@@ -121,9 +122,11 @@ void TrackingRates::saveTrackingRatePresetsToEEPROM()
 void TrackingRates::readTrackingRatePresetsFromEEPROM()
 {
 #if DEBUG == 1
+    HeapMonitor::log("before-read-tracking-presets");
     print_out("Reading tracking rate presets from EEPROM, bytes read: ");
     print_out("%d", EepromManager::readPresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION,
                                                trackingRatePresets));
+    HeapMonitor::log("after-read-tracking-presets");
 #else
     EepromManager::readPresets(TRACKING_RATE_PRESETS_EEPROM_START_LOCATION, trackingRatePresets);
 #endif
