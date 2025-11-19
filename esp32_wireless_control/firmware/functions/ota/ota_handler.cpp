@@ -10,6 +10,8 @@
 #include "freertos/idf_additions.h"
 #include "ota_handler.h"
 
+extern void systemShutdown();
+
 extern const uint8_t _interface_ota_html_start[] asm("_binary_interface_ota_html_start");
 extern const uint8_t _interface_ota_html_end[] asm("_binary_interface_ota_html_end");
 

@@ -31,6 +31,7 @@ void uartTask(void* pvParameters);
 void consoleTask(void* pvParameters);
 void webserverTask(void* pvParameters);
 void intervalometerTask(void* pvParameters);
+void systemShutdown();
 
 extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
@@ -381,4 +382,34 @@ void consoleTask(void* pvParameters)
         term.readSerial();
         vTaskDelay(1);
     }
+}
+
+/**
+ * @brief System shutdown and reset
+ *
+ * Stops motors, cleans up critical resources, and performs hard reset.
+ * The reset() function jump provides more complete memory cleanup than ESP.restart()
+ */
+void (*resetFunc)(void) = 0; // declare reset function at address 0
+
+void systemShutdown()
+{
+    print_out("[SHUTDOWN] System restart initiated...");
+
+    // Stop motors for safety
+    ra_axis.stopTracking();
+    ra_axis.stopSlew();
+    ra_axis.stopGotoTarget();
+    intervalometer->abortCapture();
+    intervalometer->cleanup();
+    server.stop();
+    server.close();
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+
+    vTaskDelay(2000);
+    print_out("[SHUTDOWN] Goodbye!");
+    vTaskDelay(500);
+
+    resetFunc();
 }
