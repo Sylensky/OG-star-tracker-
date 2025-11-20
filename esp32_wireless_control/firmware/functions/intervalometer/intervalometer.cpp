@@ -1,7 +1,7 @@
 #include "intervalometer.h"
+#include "../../tools/heap_monitor.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
-#include "../../tools/heap_monitor.h"
 #include "uart.h"
 
 #include "long_exposure_movie.h"
