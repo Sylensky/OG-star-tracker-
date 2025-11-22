@@ -7,7 +7,7 @@
 
 /**
  * @brief Simple heap monitoring utility for ESP32
- * 
+ *
  * Use this to track heap usage and detect memory leaks.
  * Example usage:
  *   HeapMonitor::log("before-operation");
@@ -27,13 +27,10 @@ class HeapMonitor
         size_t freeHeap = ESP.getFreeHeap();
         size_t minFreeHeap = ESP.getMinFreeHeap();
         size_t heapSize = ESP.getHeapSize();
-        
+
         print_out("[HEAP:%s] Free: %u bytes | Min: %u bytes | Total: %u bytes | Used: %u bytes",
-                  tag,
-                  (unsigned)freeHeap,
-                  (unsigned)minFreeHeap,
-                  (unsigned)heapSize,
-                  (unsigned)(heapSize - freeHeap));
+                  tag, (unsigned) freeHeap, (unsigned) minFreeHeap, (unsigned) heapSize,
+                  (unsigned) (heapSize - freeHeap));
 #endif
     }
 
@@ -46,13 +43,11 @@ class HeapMonitor
     {
 #if DEBUG == 1
         size_t currentFree = ESP.getFreeHeap();
-        int32_t delta = (int32_t)currentFree - (int32_t)previousFree;
-        
-        print_out("[HEAP:%s] Free: %u bytes | Delta: %+d bytes",
-                  tag,
-                  (unsigned)currentFree,
-                  (int)delta);
-        
+        int32_t delta = (int32_t) currentFree - (int32_t) previousFree;
+
+        print_out("[HEAP:%s] Free: %u bytes | Delta: %+d bytes", tag, (unsigned) currentFree,
+                  (int) delta);
+
         previousFree = currentFree;
 #endif
     }
