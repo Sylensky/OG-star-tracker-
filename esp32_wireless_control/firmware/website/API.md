@@ -310,20 +310,33 @@ GET http://192.168.4.1/status
 
 ### Get Version
 **Endpoint:** `GET /version`  
-**Description:** Get firmware version information  
+**Description:** Get firmware version and build information  
 
 **Response:** `200 OK` - JSON object
 ```json
 {
-  "version": "2.0.0",
-  "buildDate": "2025-11-07"
+  "version": "v2.1",
+  "buildDate": "Nov 22 2025 10:30:00",
+  "internalVersion": 210
 }
 ```
+
+**Response Fields:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | string | Firmware version string (from BUILD_VERSION define) |
+| `buildDate` | string | Compilation date and time |
+| `internalVersion` | integer | Internal version number for comparison |
 
 **Example:**
 ```
 GET http://192.168.4.1/version
 ```
+
+**Notes:**
+- `buildDate` format: "MMM DD YYYY HH:MM:SS" (e.g., "Nov 22 2025 10:30:00")
+- `internalVersion` is a numeric value for programmatic version comparison
+- Same data returned by `/checkversion` endpoint in OTA section
 
 ---
 
