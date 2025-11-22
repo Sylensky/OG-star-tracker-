@@ -584,7 +584,13 @@ void ApiHandler::handleStatusRequest()
 
 void ApiHandler::handleVersion()
 {
-    _server->send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
+    String json = "{";
+    json += "\"version\":\"" + String(BUILD_VERSION) + "\",";
+    json += "\"buildDate\":\"" + String(__DATE__) + " " + String(__TIME__) + "\",";
+    json += "\"internalVersion\":" + String(INTERNAL_VERSION);
+    json += "}";
+
+    _server->send(200, MIME_APPLICATION_JSON, json);
 }
 
 void ApiHandler::handleGetTrackingRates()

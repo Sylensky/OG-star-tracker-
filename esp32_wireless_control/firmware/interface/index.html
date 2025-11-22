@@ -423,7 +423,14 @@
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + this.responseText + '</a>';
+                    try {
+                        var versionData = JSON.parse(this.responseText);
+                        var versionText = versionData.version + ' (' + versionData.buildDate + ')';
+                        var internalVersion = versionData.internalVersion ? '<br><small>Internal: ' + versionData.internalVersion + '</small>' : '';
+                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + versionText + internalVersion + '</a>';
+                    } catch (e) {
+                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + this.responseText + + this.internalVersion + '</a>';
+                    }
                 }
             };
             xhr.open('GET', '/version', true);
