@@ -407,7 +407,7 @@
 
         setInterval(function () {
             sendRequest('/status');
-        }, 5000);
+        }, 500);
 
         function requestFirmwareVersion() {
             var xhr = new XMLHttpRequest();
@@ -579,43 +579,102 @@
             }
         }
 
+        function validatePanConfiguration() {
+            var modeIndex = document.getElementById('mode').selectedIndex;
+            // Only validate for Timelapse Pan (mode 3)
+            if (modeIndex !== 3) {
+                // Hide warning for non-pan modes
+                var warningDiv = document.getElementById('panWarning');
+                if (warningDiv) {
+                    warningDiv.style.display = 'none';
+                }
+                return true;
+            }
+
+            var panAngle = parseFloat(document.getElementById('panAngle').value);
+            var exposures = parseInt(document.getElementById('exposures').value);
+            var delay = parseFloat(document.getElementById('delay').value);
+
+            if (isNaN(panAngle) || isNaN(exposures) || isNaN(delay) || exposures === 0 || delay === 0) {
+                return true; // Let calculateCaptureTime handle invalid inputs
+            }
+
+            // Calculate degrees per interval
+            var degreesPerInterval = Math.abs(panAngle) / exposures;
+
+            // Reference: 180° with 10 exposures and 5s delay is feasible
+            // That's 18° per 5s = 3.6°/s maximum rate
+            var maxDegreesPerSecond = 3.6;
+            var requiredRate = degreesPerInterval / delay;
+
+            var warningDiv = document.getElementById('panWarning');
+            if (!warningDiv) {
+                // Create warning div if it doesn't exist
+                warningDiv = document.createElement('div');
+                warningDiv.id = 'panWarning';
+                warningDiv.style.color = '#ff6600';
+                warningDiv.style.backgroundColor = '#331100';
+                warningDiv.style.padding = '10px';
+                warningDiv.style.borderRadius = '8px';
+                warningDiv.style.marginTop = '10px';
+                warningDiv.style.border = '1px solid #ff6600';
+                var captureTimeDiv = document.getElementById('captureTime');
+                captureTimeDiv.parentNode.insertBefore(warningDiv, captureTimeDiv);
+            }
+
+            if (requiredRate > maxDegreesPerSecond) {
+                warningDiv.innerHTML = '<strong>⚠ Configuration too fast!</strong><br>' +
+                    'Required: ' + requiredRate.toFixed(2) + '°/s (max: ' + maxDegreesPerSecond + '°/s)<br>' +
+                    'Try: decrease angle, increase delay, or increase exposures';
+                warningDiv.style.display = 'block';
+                return false;
+            } else {
+                warningDiv.style.display = 'none';
+                return true;
+            }
+        }
+
         function changeMode() {
             calculateCaptureTime();
             var mode = document.getElementById('mode').selectedIndex;
             switch (mode) {
-                case 0:
+                case 0: // Long Exposure Still
                     document.getElementById('exposureDiv').style.display = 'flex';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
                     break;
-                case 1:
+                case 1: // Long Exposure Movie
                     document.getElementById('exposureDiv').style.display = 'flex';
                     document.getElementById('framesDiv').style.display = 'flex';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'flex';
                     document.getElementById('ditherChoiceDiv').style.display = 'flex';
                     chooseDither();
                     break;
-                case 2:
+                case 2: // Timelapse
                     document.getElementById('exposureDiv').style.display = 'none';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'none';
                     document.getElementById('panDirectionDiv').style.display = 'none';
+                    document.getElementById('continuousPanDiv').style.display = 'none';
                     document.getElementById('trackEndDiv').style.display = 'none';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
                     document.getElementById('dither').dispatchEvent(new Event('change'));
                     break;
-                case 3:
+                case 3: // Timelapse Pan
                     document.getElementById('exposureDiv').style.display = 'none';
                     document.getElementById('framesDiv').style.display = 'none';
                     document.getElementById('panAngleDiv').style.display = 'flex';
                     document.getElementById('panDirectionDiv').style.display = 'flex';
+                    document.getElementById('continuousPanDiv').style.display = 'flex';
                     document.getElementById('trackEndDiv').style.display = 'none';
                     document.getElementById('ditherChoiceDiv').style.display = 'none';
                     document.getElementById('dither').value = 0;
@@ -623,19 +682,20 @@
                     break;
                 default:
             }
-
+            validatePanConfiguration();
         }
 
         function calculateCaptureTime() {
-            exposureTime = document.getElementById('mode').selectedIndex < 2 ? document.getElementById('exposureTime').valueAsNumber : 1;
+            var modeIndex = document.getElementById('mode').selectedIndex;
+            exposureTime = (modeIndex < 2 || modeIndex == 4) ? document.getElementById('exposureTime').valueAsNumber : 1;
             exposures = document.getElementById('exposures').valueAsNumber;
             predelay = document.getElementById('preDelay').valueAsNumber;
             delay = document.getElementById('delay').valueAsNumber;
-            frames = document.getElementById('mode').selectedIndex == 1 ? document.getElementById('frames').valueAsNumber : 1;
-            panAngle = document.getElementById('mode').selectedIndex == 3 ? document.getElementById('panAngle').valueAsNumber : 1;
-            ditherFrequency = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('ditherFrequency').valueAsNumber : 1;
-            focalLength = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('focalLength').valueAsNumber : 1;
-            pixelSize = document.getElementById('mode').selectedIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('pixelSize').valueAsNumber : 1;
+            frames = modeIndex == 1 ? document.getElementById('frames').valueAsNumber : 1;
+            panAngle = (modeIndex == 3 || modeIndex == 4) ? document.getElementById('panAngle').valueAsNumber : 1;
+            ditherFrequency = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('ditherFrequency').valueAsNumber : 1;
+            focalLength = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('focalLength').valueAsNumber : 1;
+            pixelSize = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('pixelSize').valueAsNumber : 1;
             total = exposureTime + exposures + predelay + delay + frames + panAngle + ditherFrequency + focalLength + pixelSize;
             captureTime = (((delay + exposureTime) * exposures - delay) * frames) + predelay;
             if (isNaN(captureTime)) {
@@ -646,9 +706,11 @@
                 seconds = Math.floor(captureTime - 3600 * hours - minutes * 60);
                 document.getElementById('captureTime').innerHTML = '%STR_CAPTURE_TIME%: ' + hours + ' h, ' + minutes + ' m, ' + seconds + ' s';
             }
+
+            var isPanValid = validatePanConfiguration();
             saveButton = document.getElementById('save-button');
             captureButton = document.getElementById('capture-button');
-            if (isNaN(total)) {
+            if (isNaN(total) || !isPanValid) {
                 saveButton.disabled = true;
                 captureButton.disabled = true;
             } else {
@@ -741,11 +803,12 @@
             var preset = document.getElementById('preset-select').selectedIndex;
             var captureMode = document.getElementById('mode').selectedIndex;
             switch (captureMode) {
-                case 0:
+                case 0: // Long Exposure Still
                     var exposureTime = document.getElementById('exposureTime').value.trim();
                     var frames = "1";
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = document.getElementById('dither').selectedIndex;
                     if (ditherChoice == 1) {
@@ -758,11 +821,12 @@
                         var pixelSize = "1";
                     }
                     break;
-                case 1:
+                case 1: // Long Exposure Movie
                     var exposureTime = document.getElementById('exposureTime').value.trim();
                     var frames = document.getElementById('frames').value.trim();
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = document.getElementById('enableTracking').selectedIndex;
                     var ditherChoice = document.getElementById('dither').selectedIndex;
                     if (ditherChoice == 1) {
@@ -775,22 +839,24 @@
                         var pixelSize = "1";
                     }
                     break;
-                case 2:
+                case 2: // Timelapse
                     var exposureTime = "1";
                     var frames = "1";
                     var panAngle = "1";
                     var panDirection = "1";
+                    var continuousPan = 0;
                     var enableTracking = 0;
                     var ditherChoice = 0;
                     var ditherFrequency = "1";
                     var focalLength = "1";
                     var pixelSize = "1";
                     break;
-                case 3:
+                case 3: // Timelapse Pan
                     var exposureTime = "1";
                     var frames = "1";
                     var panAngle = Math.floor(parseFloat(document.getElementById('panAngle').value.trim()) * 100);
                     var panDirection = document.getElementById('panDirection').selectedIndex;
+                    var continuousPan = document.getElementById('continuousPan').selectedIndex;
                     var enableTracking = 0;
                     var ditherChoice = 0;
                     var ditherFrequency = 1;
@@ -803,7 +869,7 @@
             var preDelay = document.getElementById('preDelay').value.trim();
             var delay = document.getElementById('delay').value.trim();
 
-            var intervalometerUrl = '/setCurrent?mode=' + mode + '&preset=' + preset + '&captureMode=' + captureMode + '&exposureTime=' + exposureTime + '&exposures=' + exposures + '&preDelay=' + preDelay + '&delay=' + delay + '&frames=' + frames + '&panAngle=' + panAngle + '&panDirection=' + panDirection + '&enableTracking=' + enableTracking + '&ditherChoice=' + ditherChoice + '&ditherFrequency=' + ditherFrequency + '&focalLength=' + focalLength + '&pixelSize=' + pixelSize;
+            var intervalometerUrl = '/setCurrent?mode=' + mode + '&preset=' + preset + '&captureMode=' + captureMode + '&exposureTime=' + exposureTime + '&exposures=' + exposures + '&preDelay=' + preDelay + '&delay=' + delay + '&frames=' + frames + '&panAngle=' + panAngle + '&panDirection=' + panDirection + '&continuousPan=' + continuousPan + '&enableTracking=' + enableTracking + '&ditherChoice=' + ditherChoice + '&ditherFrequency=' + ditherFrequency + '&focalLength=' + focalLength + '&pixelSize=' + pixelSize;
             sendRequest(intervalometerUrl);
         }
 
@@ -904,6 +970,7 @@
                     document.getElementById('exposureTime').value = settings.exposureTime;
                     document.getElementById('panAngle').value = settings.panAngle / 100;
                     document.getElementById('panDirection').selectedIndex = settings.panDirection;
+                    document.getElementById('continuousPan').selectedIndex = settings.continuousPan || 0;
                     document.getElementById('dither').selectedIndex = settings.ditherChoice;
                     document.getElementById('ditherFrequency').value = settings.ditherFrequency;
                     document.getElementById('enableTracking').selectedIndex = settings.enableTracking;
@@ -1421,8 +1488,8 @@
                     <select aria-label="mode" id='mode' onchange="changeMode();">
                         <option value='0'>%STR_LONG_EXPOSURE_STILL%</option>
                         <option value='1'>%STR_LONG_EXPOSURE_MOVIE%</option>
-                        <option value='2'>%STR_DAY_TIME_LAPSE%</option>
-                        <option value='3'>%STR_DAY_TIME_LAPSE_PAN%</option>
+                        <option value='2'>%STR_TIMELAPSE%</option>
+                        <option value='3'>%STR_TIMELAPSE_PAN%</option>
                     </select>
                 </div>
 
@@ -1465,6 +1532,14 @@
                     <select aria-label="panDirection" id='panDirection'>
                         <option value='0'>%STR_LEFT%</option>
                         <option value='1'>%STR_RIGHT%</option>
+                    </select>
+                </div>
+
+                <div id='continuousPanDiv'>
+                    <h3>%STR_CONTINUOUS_PAN%:</h3>
+                    <select aria-label="continuousPan" id='continuousPan'>
+                        <option value='0'>%STR_NO%</option>
+                        <option value='1'>%STR_YES%</option>
                     </select>
                 </div>
 

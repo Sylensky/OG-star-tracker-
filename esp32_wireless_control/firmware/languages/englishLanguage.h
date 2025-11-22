@@ -45,6 +45,7 @@ const char* const englishLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "Invalid Delay Time",            // ERR_MSG_INVALID_DELAY_TIME
     "Invalid Frame Amount",          // ERR_MSG_INVALID_FRAME_AMOUNT
     "Invalid Pan Angle",             // ERR_MSG_INVALID_PAN_ANGLE
+    "Invalid Pan Duration",          // ERR_MSG_INVALID_PAN_DURATION
     "Invalid Pan Direction",         // ERR_MSG_INVALID_PAN_DIRECTION
     "Invalid Enable Tracking Value", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "Invalid Dither Choice",         // ERR_MSG_INVALID_DITHER_CHOICE
@@ -82,25 +83,26 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Mode",                          // STR_MODE
     "Long Exposure Still",           // STR_LONG_EXPOSURE_STILL
     "Long Exposure Movie",           // STR_LONG_EXPOSURE_MOVIE
-    "Day Time Lapse",                // STR_DAY_TIME_LAPSE
-    "Day Time Lapse Pan",            // STR_DAY_TIME_LAPSE_PAN
+    "Timelapse",                     // STR_TIMELAPSE
+    "Timelapse Pan",                 // STR_TIMELAPSE_PAN
     "Exposure Length",               // STR_EXPOSURE_LENGTH
     "in seconds (Ex. 30)",           // STR_EXPOSURE_HINT
     "Number of exposures",           // STR_NO_EXPOSURES
     "number of photos (Ex. 20)",     // STR_NUM_EXPOSURES_HINT
-    "Pre Delay Time (5s)",           // STR_PRE_DELAY
-    "Delay",                         // STR_DELAY
+    "Pre Delay Time (s)",            // STR_PRE_DELAY
+    "Delay (s)",                     // STR_DELAY
     "Number of Frames",              // STR_FRAMES
     "nº of frames",                  // STR_NO_FRAMES
-    "Pan Angle",                     // STR_PAN_ANGLE
+    "Pan Angle (°)",                 // STR_PAN_ANGLE
     "hours (Ex. 6)",                 // STR_HOURS
     "Pan Direction",                 // STR_PAN_DIRECTION
+    "Continuous Pan",                // STR_CONTINUOUS_PAN
     "Left",                          // STR_LEFT
     "Right",                         // STR_RIGHT
     "Goto RA Control",               // STR_GOTO_RA_CONTROL
     "Current",                       // STR_GOTO_RA_CURRENT
     "Target",                        // STR_GOTO_RA_TARGET
-    "Center your camera on\nmemorable star like Deneb,Altair..\nthen enter coordinates of "
+    "Center your camera on\nmemorable star like Deneb, Altair..\nthen enter coordinates of "
     "target\n",                 // STR_GOTO_RA_HINT
     "Start Goto RA",            // STR_START_GOTO_RA
     "Stop Goto RA",             // STR_STOP_GOTO_RA
@@ -108,10 +110,10 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "No",                       // STR_NO
     "Yes",                      // STR_YES
     "Dither",                   // STR_DITHER
-    "Dither Frequency",         // STR_DITHER_FREQ
+    "Dither Frequency (Ex. 1)", // STR_DITHER_FREQ
     "Lens focal length",        // STR_FOCAL_LENGTH
     "in millimeters (Ex. 135)", // STR_FOCAL_LENGTH_HINT
-    "Camera pixel size",        // STR_PIXEL_SIZE
+    "Camera pixel size (µm)",   // STR_PIXEL_SIZE
     "in micrometers (Ex. 4.1)", // STR_PIXEL_SIZE_HINT
     "Start Capture",            // STR_START_CAPTURE
     "Abort Capture",            // STR_ABORT_CAPTURE

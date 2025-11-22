@@ -44,6 +44,7 @@ const char* const chineseLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGM
     "无效的延迟时间",   // ERR_MSG_INVALID_DELAY_TIME
     "无效的帧数量",     // ERR_MSG_INVALID_FRAME_AMOUNT
     "无效的平移角度",   // ERR_MSG_INVALID_PAN_ANGLE
+    "无效的平移时长",   // ERR_MSG_INVALID_PAN_DURATION
     "无效的平移方向",   // ERR_MSG_INVALID_PAN_DIRECTION
     "无效的启用跟踪值", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "无效的抖动选择",   // ERR_MSG_INVALID_DITHER_CHOICE
@@ -81,19 +82,20 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "模式",                                                               // STR_MODE
     "长曝光静态",                                                         // STR_LONG_EXPOSURE_STILL
     "长曝光视频",                                                         // STR_LONG_EXPOSURE_MOVIE
-    "日间延时摄影",                                                       // STR_DAY_TIME_LAPSE
-    "日间延时摄影平移",                                                   // STR_DAY_TIME_LAPSE_PAN
+    "延时摄影",                                                           // STR_TIMELAPSE
+    "延时摄影平移",                                                       // STR_TIMELAPSE_PAN
     "曝光时长",                                                           // STR_EXPOSURE_LENGTH
     "单位：秒 (例如: 30)",                                                // STR_EXPOSURE_HINT
     "曝光次数",                                                           // STR_NO_EXPOSURES
     "拍摄张数 (例如: 20)",                                                // STR_NUM_EXPOSURES_HINT
-    "预延迟时间 (5秒)",                                                   // STR_PRE_DELAY
-    "延迟",                                                               // STR_DELAY
+    "预延迟时间 (秒)",                                                    // STR_PRE_DELAY
+    "延迟 (秒)",                                                          // STR_DELAY
     "帧数",                                                               // STR_FRAMES
     "帧数",                                                               // STR_NO_FRAMES
     "平移角度",                                                           // STR_PAN_ANGLE
     "小时 (例如: 6)",                                                     // STR_HOURS
     "平移方向",                                                           // STR_PAN_DIRECTION
+    "连续平移",                                                           // STR_CONTINUOUS_PAN
     "左",                                                                 // STR_LEFT
     "右",                                                                 // STR_RIGHT
     "定位赤经控制",                                                       // STR_GOTO_RA_CONTROL
@@ -106,10 +108,10 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "否",                                                                 // STR_NO
     "是",                                                                 // STR_YES
     "微调",                                                               // STR_DITHER
-    "微调频率",                                                           // STR_DITHER_FREQ
+    "微调频率 (例如: 1)",                                                 // STR_DITHER_FREQ
     "镜头焦距",                                                           // STR_FOCAL_LENGTH
     "单位：毫米 (例如: 135)",                                             // STR_FOCAL_LENGTH_HINT
-    "相机像素大小",                                                       // STR_PIXEL_SIZE
+    "相机像素大小 (µm)",                                                  // STR_PIXEL_SIZE
     "单位：微米 (例如: 4.1)",                                             // STR_PIXEL_SIZE_HINT
     "开始拍摄",                                                           // STR_START_CAPTURE
     "停止拍摄",                                                           // STR_ABORT_CAPTURE

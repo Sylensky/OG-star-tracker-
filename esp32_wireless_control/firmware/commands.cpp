@@ -2,6 +2,7 @@
 
 #include <axis.h>
 #include <commands.h>
+#include <configs/config.h>
 #include <uart.h>
 
 SerialTerminal* _term;
@@ -25,6 +26,7 @@ static void cmdHelp()
     print_out_tbl(CMD_HELP_HEAP);
     print_out_tbl(CMD_HELP_RESET);
     print_out_tbl(CMD_GOTO_TARGET_RA);
+    print_out_tbl(CMD_HELP_PAN);
 }
 
 static uint16_t get_stack_high_water(const char* task_name)
@@ -177,7 +179,70 @@ static void cmdGotoTargetRA()
     print_out("  Current Position: %lld arcseconds", currentRA.arcseconds);
     print_out("  Target Position: %lld arcseconds", targetRA.arcseconds);
 
-    ra_axis.gotoTarget((ra_axis.rate.tracking) / 50, currentRA, targetRA);
+    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentRA,
+                       targetRA);
+}
+
+static void cmdPan()
+{
+    const char* degreesStr = _term->getNext();
+    if (!degreesStr)
+    {
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    const char* speedStr = _term->getNext();
+    if (!speedStr)
+    {
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    const char* steppingStr = _term->getNext();
+
+    float degrees = atof(degreesStr);
+    int speed = atoi(speedStr);
+    if (speed < MIN_CUSTOM_SLEW_RATE || speed > MAX_CUSTOM_SLEW_RATE)
+    {
+        print_out("Error: Invalid speed '%s'. Must be between %d and %d.", speedStr,
+                  MIN_CUSTOM_SLEW_RATE, MAX_CUSTOM_SLEW_RATE);
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    uint16_t microstep = TRACKER_MOTOR_MICROSTEPPING / 2;
+    if (steppingStr)
+    {
+        microstep = atoi(steppingStr);
+        if (microstep != 8 && microstep != 16 && microstep != 32 && microstep != 64)
+        {
+            print_out("Error: Invalid microstepping '%s'. Must be 8, 16, 32, or 64.", steppingStr);
+            print_out_tbl(CMD_PAN_ARGS);
+            return;
+        }
+    }
+
+    print_out("Pan command:");
+    print_out("  Angle: %.2f degrees (%s)", degrees, (degrees < 0) ? "left" : "right");
+    print_out("  Speed: %d", speed);
+    print_out("  Microstepping: %d", microstep);
+
+    bool success = ra_axis.panByDegrees(degrees, speed, microstep);
+
+    if (success)
+    {
+        print_out("Panning started successfully.");
+    }
+    else
+    {
+        if (ra_axis.slewActive || ra_axis.goToTarget)
+            print_out("Error: Mount is already slewing. Stop current slew first.");
+        else if (degrees == 0.0f)
+            print_out("Error: Degrees cannot be zero.");
+        else
+            print_out("Panning failed to start.");
+    }
 }
 
 static void unknownCommand(const char* command)
@@ -210,4 +275,5 @@ void setup_terminal(SerialTerminal* term)
     _term->addCommand("heap", cmdHeapAvailable);
     _term->addCommand("reset", cmdReset);
     _term->addCommand("gotoRA", cmdGotoTargetRA);
+    _term->addCommand("pan", cmdPan);
 }

@@ -44,6 +44,7 @@ const char* const germanLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGME
     "Ungültige Verzögerungszeit",       // ERR_MSG_INVALID_DELAY_TIME
     "Ungültige Bildmenge",              // ERR_MSG_INVALID_FRAME_AMOUNT
     "Ungültiger Schwenkwinkel",         // ERR_MSG_INVALID_PAN_ANGLE
+    "Ungültige Schwenkdauer",           // ERR_MSG_INVALID_PAN_DURATION
     "Ungültige Schwenkrichtung",        // ERR_MSG_INVALID_PAN_DIRECTION
     "Ungültiger Aktivierungswert",      // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "Ungültige Zitterwahl",             // ERR_MSG_INVALID_DITHER_CHOICE
@@ -81,19 +82,20 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Modus",                                        // STR_MODE
     "Langzeitbelichtung Still",                     // STR_LONG_EXPOSURE_STILL
     "Langzeitbelichtung Film",                      // STR_LONG_EXPOSURE_MOVIE
-    "Tageszeitraffer",                              // STR_DAY_TIME_LAPSE
-    "Tageszeitraffer Schwenken",                    // STR_DAY_TIME_LAPSE_PAN
+    "Zeitraffer",                                   // STR_TIMELAPSE
+    "Zeitraffer Schwenken",                         // STR_TIMELAPSE_PAN
     "Belichtungsdauer",                             // STR_EXPOSURE_LENGTH
     "in Sekunden (z.B. 30)",                        // STR_EXPOSURE_HINT
     "Anzahl der Belichtungen",                      // STR_NO_EXPOSURES
     "Anzahl der Fotos (z.B. 20)",                   // STR_NUM_EXPOSURES_HINT
-    "Vorlaufzeit (5s)",                             // STR_PRE_DELAY
-    "Verzögerung",                                  // STR_DELAY
+    "Vorlaufzeit (s)",                              // STR_PRE_DELAY
+    "Verzögerung (s)",                              // STR_DELAY
     "Anzahl der Bilder",                            // STR_FRAMES
     "nº der Bilder",                                // STR_NO_FRAMES
-    "Schwenkwinkel",                                // STR_PAN_ANGLE
+    "Schwenkwinkel (°)",                            // STR_PAN_ANGLE
     "in Stunden (z.B. 6)",                          // STR_HOURS
     "Schwenkrichtung",                              // STR_PAN_DIRECTION
+    "Kontinuierliches Schwenken",                   // STR_CONTINUOUS_PAN
     "Links",                                        // STR_LEFT
     "Rechts",                                       // STR_RIGHT
     "Goto RA Control",                              // STR_GOTO_RA_CONTROL
@@ -108,10 +110,10 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Nein",                                               // STR_NO
     "Ja",                                                 // STR_YES
     "Zittern",                                            // STR_DITHER
-    "Zitterfrequenz",                                     // STR_DITHER_FREQ
+    "Zitterfrequenz (z.B. 1)",                            // STR_DITHER_FREQ
     "Brennweite des Objektivs",                           // STR_FOCAL_LENGTH
     "in Millimetern (z.B. 135)",                          // STR_FOCAL_LENGTH_HINT
-    "Pixelgröße des Bildsensors",                         // STR_PIXEL_SIZE
+    "Pixelgröße des Bildsensors (µm)",                    // STR_PIXEL_SIZE
     "in Mikrometern (z.B. 4.1)",                          // STR_PIXEL_SIZE_HINT
     "Aufnahme Starten",                                   // STR_START_CAPTURE
     "Aufnahme Abbrechen",                                 // STR_ABORT_CAPTURE
