@@ -207,6 +207,43 @@ class ApiHandler
      */
     void handleRoot();
 
+    // ==================== OTA UPDATE ====================
+
+    // check the ota_handler.h for OTA endpoint handlers
+
+    /**
+     * @endpoint GET /checkversion
+     * @brief Check for firmware updates on GitHub
+     * @response 200 OK with JSON containing version info and update availability
+     * @response JSON format:
+     * {
+     *   "currentVersion": "v2.1",
+     *   "buildDate": "Nov 16 2025 10:30:00",
+     *   "updateAvailable": true/false,
+     *   "latestVersion": "v2.2",  // if update available
+     *   "releaseUrl": "https://...",  // if update available
+     *   "downloadUrl": "https://...",  // if update available
+     *   "releaseNotes": "..."  // if update available
+     * }
+     */
+    void handleCheckVersion();
+
+    /**
+     * @endpoint GET /downloadupdate
+     * @brief Download and install firmware update directly from GitHub
+     * @param url - URL of the firmware.bin file to download
+     * @response 200 OK with status updates
+     * @note Device will reboot automatically after successful update
+     */
+    void handleDownloadUpdate();
+
+    /**
+     * @endpoint GET /otastatus
+     * @brief Get current OTA update progress
+     * @response JSON with {active, percent, bytesWritten, totalBytes, complete}
+     */
+    void handleOTAStatus();
+
   private:
     ApiHandler() : _server(nullptr)
     {

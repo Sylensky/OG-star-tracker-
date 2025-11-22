@@ -117,11 +117,11 @@ static void cmdHeapAvailable()
 /**
  * Software reset
  */
-void (*resetFunc)(void) = 0; // declare reset fuction at address 0
+extern void(systemShutdown)(void);
 static void cmdReset()
 {
     // Reset controller
-    resetFunc();
+    systemShutdown();
 }
 
 static Position parsePositionFromArgs(SerialTerminal* term)

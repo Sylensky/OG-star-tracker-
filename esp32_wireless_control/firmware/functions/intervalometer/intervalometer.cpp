@@ -1,4 +1,5 @@
 #include "intervalometer.h"
+#include "../../tools/heap_monitor.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
 #include "uart.h"
@@ -185,8 +186,12 @@ void Intervalometer::savePresetsToEEPROM()
 void Intervalometer::readPresetsFromEEPROM()
 {
 #if DEBUG == 1
+    HeapMonitor::log("before-read-presets");
     print_out("Reading presets from EEPROM...");
 #endif
     int read = EepromManager::readPresets(PRESETS_EEPROM_START_LOCATION, presets);
+#if DEBUG == 1
+    HeapMonitor::log("after-read-presets");
+#endif
     print_out("Read bytes: %d", read);
 }

@@ -6,6 +6,7 @@
 #include "../eeprom_manager.h"
 #include "../error.h"
 #include "../functions/intervalometer/intervalometer.h"
+#include "../functions/ota/ota_handler.h"
 #include "../tracking_rates.h"
 #include "../uart.h"
 #include "web_languages.h"
@@ -13,7 +14,7 @@
 
 // Forward declarations of external objects
 extern Axis ra_axis;
-extern Intervalometer intervalometer;
+extern Intervalometer* intervalometer;
 extern TrackingRates trackingRates;
 extern Languages language;
 extern StarDatabase* starDatabase;
@@ -23,19 +24,7 @@ extern StarDatabase* handleStarDatabase(StarDatabaseType catalogType);
 extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
 
-<<<<<<< HEAD
-// Global pointer to ApiHandler instance for lambda callbacks
-static ApiHandler* g_apiHandler = nullptr;
-
-ApiHandler::ApiHandler(WebServer& server)
-    : _server(&server) == == ==
-    =
-        // External OTA HTML data
-    extern const uint8_t _interface_ota_html_start[] asm("_binary_interface_ota_html_start");
-extern const uint8_t _interface_ota_html_end[] asm("_binary_interface_ota_html_end");
-
 ApiHandler& ApiHandler::getInstance()
->>>>>>> a8191c5 (firmware: api-handler: convert to c++ singleton class creation)
 {
     static ApiHandler instance;
     return instance;
@@ -117,6 +106,17 @@ void ApiHandler::registerEndpoints()
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
     // Settings
     _server->on("/setlang", HTTP_GET, [api]() { api->handleSetLanguage(); });
+
+    // OTA firmware update
+    _server->on("/ota", HTTP_GET, []() { OTAHandler::getInstance().handleOTAPage(); });
+    _server->on(
+        "/update", HTTP_POST, []() { OTAHandler::getInstance().handleOTAComplete(); },
+        []() { OTAHandler::getInstance().handleOTAUpload(); });
+    _server->on("/checkversion", HTTP_GET,
+                []() { OTAHandler::getInstance().handleCheckVersion(); });
+    _server->on("/downloadupdate", HTTP_GET,
+                []() { OTAHandler::getInstance().handleDownloadUpdate(); });
+    _server->on("/otastatus", HTTP_GET, []() { OTAHandler::getInstance().handleOTAStatus(); });
 }
 
 // Handler implementations
@@ -235,11 +235,11 @@ void ApiHandler::handleOn()
 #endif
     ra_axis.startTracking(trackingRates.getRate(), direction);
 
-    if (intervalometer.getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
+    if (intervalometer->getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
         _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
     else
         _server->send(200, MIME_TYPE_TEXT,
-                      languageErrorMessageStrings[language][intervalometer.getErrorMessage()]);
+                      languageErrorMessageStrings[language][intervalometer->getErrorMessage()]);
 #if DEBUG == 1
     print_out("  Tracking ON response sent");
 #endif
@@ -285,25 +285,25 @@ void ApiHandler::handleSetLanguage()
 
 void ApiHandler::handleSetCurrent()
 {
-    if (!intervalometer.isActive())
+    if (!intervalometer->isActive())
     {
         // Reset the current error message
-        intervalometer.setErrorMessage(ERR_MSG_NONE);
+        intervalometer->setErrorMessage(ERR_MSG_NONE);
 
-        Intervalometer::Settings settings = intervalometer.getSettings();
+        Intervalometer::Settings settings = intervalometer->getSettings();
 
         int modeInt = _server->arg(CAPTURE_MODE).toInt();
         if (modeInt < 0 || modeInt >= static_cast<int>(Intervalometer::Mode::MaxModes))
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_CAPTURE_MODE);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_CAPTURE_MODE);
             return;
         }
-        intervalometer.setMode(static_cast<Intervalometer::Mode>(modeInt));
+        intervalometer->setMode(static_cast<Intervalometer::Mode>(modeInt));
 
         int exposureTime = _server->arg(EXPOSURE_TIME).toInt();
         if (exposureTime <= 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_EXPOSURE_LENGTH);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_EXPOSURE_LENGTH);
             return;
         }
         settings.exposureTime = exposureTime;
@@ -311,7 +311,7 @@ void ApiHandler::handleSetCurrent()
         int exposures = _server->arg(EXPOSURES).toInt();
         if (exposures <= 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_EXPOSURE_AMOUNT);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_EXPOSURE_AMOUNT);
             return;
         }
         settings.exposures = exposures;
@@ -319,7 +319,7 @@ void ApiHandler::handleSetCurrent()
         int preDelay = _server->arg(PREDELAY).toInt();
         if (preDelay < 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_PREDELAY_TIME);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PREDELAY_TIME);
             return;
         }
         else if (preDelay == 0)
@@ -329,7 +329,7 @@ void ApiHandler::handleSetCurrent()
         int delayTime = _server->arg(DELAY).toInt();
         if (delayTime < 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_DELAY_TIME);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DELAY_TIME);
             return;
         }
         settings.delayTime = delayTime;
@@ -337,7 +337,7 @@ void ApiHandler::handleSetCurrent()
         int frames = _server->arg(FRAMES).toInt();
         if (frames <= 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_FRAME_AMOUNT);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_FRAME_AMOUNT);
             return;
         }
         settings.frames = frames;
@@ -345,7 +345,7 @@ void ApiHandler::handleSetCurrent()
         float panAngle = _server->arg(PAN_ANGLE).toFloat() / 100;
         if (panAngle < 0.0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_PAN_ANGLE);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PAN_ANGLE);
             return;
         }
         settings.panAngle = panAngle;
@@ -353,7 +353,7 @@ void ApiHandler::handleSetCurrent()
         int panDirection = _server->arg(PAN_DIRECTION).toInt();
         if (panDirection < 0 || panDirection > 1)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_PAN_DIRECTION);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PAN_DIRECTION);
             return;
         }
         settings.panDirection = panDirection;
@@ -364,7 +364,7 @@ void ApiHandler::handleSetCurrent()
         int enableTracking = _server->arg(ENABLE_TRACKING).toInt();
         if (enableTracking < 0 || enableTracking > 1)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_ENABLE_TRACKING_VALUE);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_ENABLE_TRACKING_VALUE);
             return;
         }
         settings.enableTracking = enableTracking;
@@ -372,7 +372,7 @@ void ApiHandler::handleSetCurrent()
         int dither = _server->arg(DITHER_CHOICE).toInt();
         if (dither < 0 || dither > 1)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_DITHER_CHOICE);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DITHER_CHOICE);
             return;
         }
         settings.dither = dither;
@@ -380,7 +380,7 @@ void ApiHandler::handleSetCurrent()
         int ditherFrequency = _server->arg(DITHER_FREQUENCY).toInt();
         if (ditherFrequency <= 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_DITHER_FREQUENCY);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_DITHER_FREQUENCY);
             return;
         }
         settings.ditherFrequency = ditherFrequency;
@@ -388,7 +388,7 @@ void ApiHandler::handleSetCurrent()
         int focalLength = _server->arg(FOCAL_LENGTH).toInt();
         if (focalLength <= 0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_FOCAL_LENGTH);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_FOCAL_LENGTH);
             return;
         }
         settings.focalLength = focalLength;
@@ -396,23 +396,23 @@ void ApiHandler::handleSetCurrent()
         float pixelSize = _server->arg(PIXEL_SIZE).toFloat() / 100;
         if (pixelSize <= 0.0)
         {
-            intervalometer.setErrorMessage(ERR_MSG_INVALID_PIXEL_SIZE);
+            intervalometer->setErrorMessage(ERR_MSG_INVALID_PIXEL_SIZE);
             return;
         }
         settings.pixelSize = pixelSize;
-        settings.mode = static_cast<uint8_t>(intervalometer.getMode());
-        intervalometer.setSettings(settings);
+        settings.mode = static_cast<uint8_t>(intervalometer->getMode());
+        intervalometer->setSettings(settings);
 
         String currentMode = _server->arg(MODE);
         if (currentMode == "save")
         {
             int preset = _server->arg(PRESET).toInt();
-            intervalometer.saveSettingsToPreset(preset);
+            intervalometer->saveSettingsToPreset(preset);
             _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SAVED_PRESET]);
         }
         else if (currentMode == "start")
         {
-            Intervalometer::Mode mode = intervalometer.getMode();
+            Intervalometer::Mode mode = intervalometer->getMode();
             if ((mode == Intervalometer::Mode::LongExposureMovie ||
                  mode == Intervalometer::Mode::LongExposureStill) &&
                 !ra_axis.trackingActive)
@@ -422,7 +422,7 @@ void ApiHandler::handleSetCurrent()
             }
             else
             {
-                intervalometer.startCapture();
+                intervalometer->startCapture();
                 _server->send(200, MIME_TYPE_TEXT,
                               languageMessageStrings[language][MSG_CAPTURE_ON]);
             }
@@ -467,11 +467,11 @@ void ApiHandler::handleSetPosition()
 void ApiHandler::handleGetPresetExposureSettings()
 {
     int preset = _server->arg(PRESET).toInt();
-    intervalometer.readSettingsFromPreset(preset);
+    intervalometer->readSettingsFromPreset(preset);
     ArduinoJson::JsonDocument settings;
     String json;
-    const Intervalometer::Settings& s = intervalometer.getSettings();
-    settings[MODE] = static_cast<uint8_t>(intervalometer.getMode());
+    const Intervalometer::Settings& s = intervalometer->getSettings();
+    settings[MODE] = static_cast<uint8_t>(intervalometer->getMode());
     settings[EXPOSURES] = s.exposures;
     settings[DELAY] = s.delayTime;
     settings[PREDELAY] = s.preDelay;
@@ -491,9 +491,9 @@ void ApiHandler::handleGetPresetExposureSettings()
 
 void ApiHandler::handleAbortCapture()
 {
-    if (intervalometer.isActive())
+    if (intervalometer->isActive())
     {
-        intervalometer.abortCapture();
+        intervalometer->abortCapture();
         _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_OFF]);
     }
     else
@@ -515,14 +515,14 @@ void ApiHandler::handleAbortGoToRA()
 
 void ApiHandler::handleStatusRequest()
 {
-    if (intervalometer.isActive())
+    if (intervalometer->isActive())
     {
         // Build status string with progress info
         String statusMsg;
-        uint16_t currentExp = intervalometer.getExposuresTaken();
-        uint16_t totalExp = intervalometer.getSettings().exposures;
+        uint16_t currentExp = intervalometer->getExposuresTaken();
+        uint16_t totalExp = intervalometer->getSettings().exposures;
 
-        switch (intervalometer.getState())
+        switch (intervalometer->getState())
         {
             case Intervalometer::State::PreDelay:
                 statusMsg = languageMessageStrings[language][MSG_CAP_PREDELAY];
@@ -572,11 +572,11 @@ void ApiHandler::handleStatusRequest()
     }
     else
     {
-        if (intervalometer.getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
+        if (intervalometer->getErrorMessage() == ErrorMessage::ERR_MSG_NONE)
             _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_IDLE]);
         else
             _server->send(200, MIME_TYPE_TEXT,
-                          languageErrorMessageStrings[language][intervalometer.getErrorMessage()]);
+                          languageErrorMessageStrings[language][intervalometer->getErrorMessage()]);
     }
 
     _server->send(204, MIME_TYPE_TEXT, "dummy");

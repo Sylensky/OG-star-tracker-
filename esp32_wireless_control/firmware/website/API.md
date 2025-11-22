@@ -18,6 +18,7 @@ The OG Star Tracker provides a REST API over HTTP for remote control and monitor
 7. [Status & Info](#status--info)
 8. [Catalog Search](#catalog-search)
 9. [Settings](#settings)
+10. [OTA Firmware Update](#ota-firmware-update)
 
 ---
 
@@ -378,6 +379,239 @@ GET http://192.168.4.1/
 
 ---
 
+## OTA Firmware Update
+
+### Get OTA Update Page
+**Endpoint:** `GET /ota`  
+**Description:** Serve OTA firmware update web interface  
+
+**Response:** `200 OK` - HTML content with firmware update interface
+
+**Example:**
+```
+GET http://192.168.4.1/ota
+```
+
+---
+
+### Check for Updates
+**Endpoint:** `GET /checkversion`  
+**Description:** Check GitHub for latest firmware release and compare with current version  
+
+**Response:** `200 OK` - JSON object
+```json
+{
+  "currentVersion": "v2.1",
+  "buildDate": "Nov 22 2025 10:30:00",
+  "latestVersion": "v2.1-beta03",
+  "releaseUrl": "https://github.com/OG-star-tech/OG-star-tracker-/releases/tag/v2.1-beta03",
+  "downloadUrl": "https://github.com/OG-star-tech/OG-star-tracker-/releases/download/v2.1-beta03/firmware.bin",
+  "releaseNotes": "Bug fixes|Performance improvements|New features"
+}
+```
+
+**Error Response:**
+```json
+{
+  "currentVersion": "v2.1",
+  "buildDate": "Nov 22 2025 10:30:00",
+  "error": "No internet connection. If in AP mode, connect device to WiFi network with internet access."
+}
+```
+
+**Example:**
+```
+GET http://192.168.4.1/checkversion
+```
+
+**Notes:**
+- **Requires internet access:** Device must be connected to a WiFi network with internet access (not AP mode)
+- **AP Mode Limitation:** When device is in Access Point mode, it cannot reach GitHub API. Connect the device to a WiFi network with internet access first
+- Release notes are pipe-separated (|) for multi-line display
+- Returns latest release even if same or older than current version
+
+---
+
+### Download and Install Update
+**Endpoint:** `GET /downloadupdate`  
+**Description:** Download firmware from URL and install automatically (GitHub release or custom URL)  
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | Yes | Direct URL to firmware.bin file (URL-encoded) |
+
+**Response:** `200 OK` - "Starting download..."
+
+**Example:**
+```
+GET http://192.168.4.1/downloadupdate?url=https%3A%2F%2Fgithub.com%2FOG-star-tech%2FOG-star-tracker-%2Freleases%2Fdownload%2Fv2.1-beta03%2Ffirmware.bin
+```
+
+**Process Flow:**
+1. Server validates URL parameter and WiFi connection
+2. Returns immediate response "Starting download..."
+3. Downloads firmware in background (512-byte chunks)
+4. Writes to flash partition with verification
+5. Device reboots automatically after 6 seconds if successful
+
+**Error Responses:**
+- `400 Bad Request` - "Missing URL parameter"
+- `500 Internal Server Error` - "WiFi not connected"
+
+**Notes:**
+- **Requires internet access:** Device must be connected to a WiFi network with internet access (not AP mode)
+- Use `/otastatus` endpoint to monitor download progress
+- Device stays responsive during download (polls every 500ms)
+- Typical download time: 30-60 seconds for ~1.2MB firmware
+- URL must point directly to `.bin` file
+
+---
+
+### Manual Firmware Upload
+**Endpoint:** `POST /update`  
+**Description:** Upload firmware binary file directly via HTTP POST (multipart/form-data)  
+
+**Content-Type:** `multipart/form-data`
+
+**Form Field:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `firmware` | file | Binary firmware file (.bin format) |
+
+**Response:** `200 OK` - "Update Success! Rebooting..." or "Update Failed"
+
+**Example (curl):**
+```bash
+curl -X POST -F "firmware=@firmware.bin" http://192.168.4.1/update
+```
+
+**Process Flow:**
+1. Receives firmware chunks via multipart upload
+2. Writes directly to flash partition during upload
+3. Verifies integrity after upload completes
+4. Device reboots automatically after 6 seconds if successful
+
+**Notes:**
+- Maximum file size: Limited by available flash partition (~2MB typical)
+- Upload progress reported via `/otastatus` endpoint
+- Use `/complete` endpoint to trigger reboot after upload verification
+
+---
+
+### Get OTA Status
+**Endpoint:** `GET /otastatus`  
+**Description:** Get real-time status of ongoing OTA update (upload or download)  
+
+**Response:** `200 OK` - JSON object
+```json
+{
+  "active": true,
+  "complete": false,
+  "error": false,
+  "bytesWritten": 524288,
+  "totalBytes": 1244160,
+  "percent": 42
+}
+```
+
+**Status Fields:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `active` | boolean | Update is actively downloading/uploading |
+| `complete` | boolean | Update completed successfully, ready to reboot |
+| `error` | boolean | Update failed (check serial output for details) |
+| `bytesWritten` | integer | Bytes written to flash so far |
+| `totalBytes` | integer | Total firmware size in bytes |
+| `percent` | integer | Progress percentage (0-100) |
+
+**Example:**
+```
+GET http://192.168.4.1/otastatus
+```
+
+**Polling Pattern:**
+```javascript
+// Poll every 500ms during update
+const interval = setInterval(async () => {
+  const response = await fetch('/otastatus');
+  const data = await response.json();
+  
+  if (data.active) {
+    console.log(`Progress: ${data.percent}%`);
+  } else if (data.complete) {
+    console.log('Update complete, device rebooting...');
+    clearInterval(interval);
+  } else if (data.error) {
+    console.log('Update failed');
+    clearInterval(interval);
+  }
+}, 500);
+```
+
+**Notes:**
+- Poll during `/downloadupdate` or `/update` operations
+- `active=false, complete=false, error=false` at 100% indicates verification phase
+- Verification timeout: 5 seconds (frontend should show error after timeout)
+
+---
+
+### Complete OTA Update
+**Endpoint:** `GET /complete`  
+**Description:** Finalize OTA update and trigger device reboot (called automatically by frontend)  
+
+**Response:** `200 OK` - "Update Success! Rebooting..." or "Update Failed"
+
+**Example:**
+```
+GET http://192.168.4.1/complete
+```
+
+**Notes:**
+- Checks for errors before rebooting
+- 6-second delay before reboot (server stays responsive)
+- Typically called automatically by OTA web interface
+- Returns error status if update verification failed
+
+---
+
+### OTA Update Workflow
+
+**Automatic Update (GitHub):**
+```
+1. GET /checkversion                    -> Get latest release info
+2. User confirms update
+3. GET /downloadupdate?url=<firmware>   -> Start download
+4. Poll GET /otastatus every 500ms      -> Monitor progress (0-100%)
+5. Verification phase (2-5 seconds)     -> active=false, complete waiting
+6. GET /complete called automatically   -> Trigger reboot
+7. Device reboots after 6 seconds
+```
+
+**Manual Upload:**
+```
+1. User selects .bin file
+2. POST /update with multipart form     -> Upload begins
+3. Poll GET /otastatus every 500ms      -> Monitor progress (0-100%)
+4. Verification phase (2-5 seconds)     -> active=false, complete waiting
+5. GET /complete called automatically   -> Trigger reboot
+6. Device reboots after 6 seconds
+```
+
+**Error Handling:**
+- Flash read failures detected during verification
+- Timeout if verification exceeds 5 seconds
+- Write errors reported immediately via `/otastatus` (error=true)
+- Serial output provides detailed error messages
+
+**Safety Features:**
+- Server remains responsive during entire process (non-blocking delays)
+- Progress tracking prevents UI from hanging
+- Automatic rollback on write failures
+- 6-second countdown gives user time to see status
+
+---
+
 ## Error Responses
 
 All endpoints may return error messages in plain text format with appropriate HTTP status codes:
@@ -465,3 +699,6 @@ fetch(`${baseUrl}/startslew?speed=16&direction=1`)
   - Added TIMELAPSE_PAN mode
   - Improved position tracking
   - Enhanced error handling
+  - Added OTA firmware update endpoints
+  - Real-time update progress tracking
+  - Automatic and manual update support
