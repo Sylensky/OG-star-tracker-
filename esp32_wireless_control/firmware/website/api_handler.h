@@ -14,7 +14,9 @@
 class ApiHandler
 {
   public:
-    ApiHandler(WebServer& server);
+    static ApiHandler& getInstance();
+    void init(WebServer* server);
+
     void registerEndpoints();
 
     // ==================== TRACKING CONTROL ====================
@@ -206,6 +208,13 @@ class ApiHandler
     void handleRoot();
 
   private:
+    ApiHandler() : _server(nullptr)
+    {
+    }
+
+    ApiHandler(const ApiHandler&) = delete;
+    ApiHandler& operator=(const ApiHandler&) = delete;
+
     WebServer* _server;
 };
 

@@ -23,11 +23,27 @@ extern StarDatabase* handleStarDatabase(StarDatabaseType catalogType);
 extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
 extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
 
+<<<<<<< HEAD
 // Global pointer to ApiHandler instance for lambda callbacks
 static ApiHandler* g_apiHandler = nullptr;
 
-ApiHandler::ApiHandler(WebServer& server) : _server(&server)
+ApiHandler::ApiHandler(WebServer& server)
+    : _server(&server) == == ==
+    =
+        // External OTA HTML data
+    extern const uint8_t _interface_ota_html_start[] asm("_binary_interface_ota_html_start");
+extern const uint8_t _interface_ota_html_end[] asm("_binary_interface_ota_html_end");
+
+ApiHandler& ApiHandler::getInstance()
+>>>>>>> a8191c5 (firmware: api-handler: convert to c++ singleton class creation)
 {
+    static ApiHandler instance;
+    return instance;
+}
+
+void ApiHandler::init(WebServer* server)
+{
+    _server = server;
 }
 
 #if DEBUG == 1
@@ -64,50 +80,43 @@ static Position calculatePosition(String Arg)
 
 void ApiHandler::registerEndpoints()
 {
-    // Store global pointer for lambda callbacks
-    g_apiHandler = this;
+    ApiHandler* api = this;
 
     // Web interface
-    _server->on("/", HTTP_GET, []() { g_apiHandler->handleRoot(); });
+    _server->on("/", HTTP_GET, [api]() { api->handleRoot(); });
 
     // Tracking control
-    _server->on("/on", HTTP_GET, []() { g_apiHandler->handleOn(); });
-    _server->on("/off", HTTP_GET, []() { g_apiHandler->handleOff(); });
-
+    _server->on("/on", HTTP_GET, [api]() { api->handleOn(); });
+    _server->on("/off", HTTP_GET, [api]() { api->handleOff(); });
     // Slewing control
-    _server->on("/startslew", HTTP_GET, []() { g_apiHandler->handleSlewRequest(); });
-    _server->on("/stopslew", HTTP_GET, []() { g_apiHandler->handleSlewOff(); });
+    _server->on("/startslew", HTTP_GET, [api]() { api->handleSlewRequest(); });
+    _server->on("/stopslew", HTTP_GET, [api]() { api->handleSlewOff(); });
 
     // Goto control
-    _server->on("/gotoRA", HTTP_GET, []() { g_apiHandler->handleGotoRA(); });
-    _server->on("/abort-goto-ra", HTTP_GET, []() { g_apiHandler->handleAbortGoToRA(); });
-
+    _server->on("/gotoRA", HTTP_GET, [api]() { api->handleGotoRA(); });
+    _server->on("/abort-goto-ra", HTTP_GET, [api]() { api->handleAbortGoToRA(); });
     // Position management
-    _server->on("/setPosition", HTTP_GET, []() { g_apiHandler->handleSetPosition(); });
-    _server->on("/getCurrentPosition", HTTP_GET,
-                []() { g_apiHandler->handleGetCurrentPosition(); });
-
+    _server->on("/setPosition", HTTP_GET, [api]() { api->handleSetPosition(); });
+    _server->on("/getCurrentPosition", HTTP_GET, [api]() { api->handleGetCurrentPosition(); });
     // Intervalometer control
-    _server->on("/setCurrent", HTTP_GET, []() { g_apiHandler->handleSetCurrent(); });
-    _server->on("/readPreset", HTTP_GET, []() { g_apiHandler->handleGetPresetExposureSettings(); });
-    _server->on("/abort", HTTP_GET, []() { g_apiHandler->handleAbortCapture(); });
-
+    _server->on("/setCurrent", HTTP_GET, [api]() { api->handleSetCurrent(); });
+    _server->on("/readPreset", HTTP_GET, [api]() { api->handleGetPresetExposureSettings(); });
+    _server->on("/abort", HTTP_GET, [api]() { api->handleAbortCapture(); });
     // Tracking rates
-    _server->on("/getTrackingRates", HTTP_GET, []() { g_apiHandler->handleGetTrackingRates(); });
+    _server->on("/getTrackingRates", HTTP_GET, [api]() { api->handleGetTrackingRates(); });
     _server->on("/saveTrackingRatePreset", HTTP_GET,
-                []() { g_apiHandler->handleSaveTrackingRatePreset(); });
+                [api]() { api->handleSaveTrackingRatePreset(); });
     _server->on("/loadTrackingRatePreset", HTTP_GET,
-                []() { g_apiHandler->handleLoadTrackingRatePreset(); });
+                [api]() { api->handleLoadTrackingRatePreset(); });
 
     // Status & info
-    _server->on("/status", HTTP_GET, []() { g_apiHandler->handleStatusRequest(); });
-    _server->on("/version", HTTP_GET, []() { g_apiHandler->handleVersion(); });
+    _server->on("/status", HTTP_GET, [api]() { api->handleStatusRequest(); });
+    _server->on("/version", HTTP_GET, [api]() { api->handleVersion(); });
 
     // Catalog search
-    _server->on("/starSearch", HTTP_GET, []() { g_apiHandler->handleCatalogSearch(); });
-
+    _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
     // Settings
-    _server->on("/setlang", HTTP_GET, []() { g_apiHandler->handleSetLanguage(); });
+    _server->on("/setlang", HTTP_GET, [api]() { api->handleSetLanguage(); });
 }
 
 // Handler implementations

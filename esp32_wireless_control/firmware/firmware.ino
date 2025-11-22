@@ -26,7 +26,6 @@ WebServer server(WEBSERVER_PORT);
 Languages language = EN;
 StarDatabase* starDatabase = nullptr;
 Intervalometer* intervalometer = nullptr;
-ApiHandler* apiHandler = nullptr;
 
 void uartTask(void* pvParameters);
 void consoleTask(void* pvParameters);
@@ -211,8 +210,8 @@ void setupWireless()
 #endif
 
     // Register all REST API endpoints using ApiHandler
-    apiHandler = new ApiHandler(server);
-    apiHandler->registerEndpoints();
+    ApiHandler::getInstance().init(&server);
+    ApiHandler::getInstance().registerEndpoints();
 
 #if DEBUG == 1
     server.onNotFound(handleNotFound);
