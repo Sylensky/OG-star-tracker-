@@ -7,6 +7,8 @@
 #define SOLAR_DAY_MS 86400000UL
 #define LUNAR_DAY_MS 88253300UL
 
+#define RA_SECONDS_PER_FULL_REV 86400 // 24 hours * 3600 seconds/hour
+
 #define MAX_MICROSTEPS 256UL
 
 #define GEAR_RATIO 101.25
