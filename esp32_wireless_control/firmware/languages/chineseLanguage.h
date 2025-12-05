@@ -135,6 +135,7 @@ const char* const chineseLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "当地时间",       // STR_LOCAL_TIME
     "当前位置",       // STR_CURRENT_POSITION
     "当前赤经位置",   // STR_CURRENT_RA_POSITION
+    "赤纬差异",       // STR_DEC_DIFFERENCE
     "当前时间",       // STR_CURRENT_TIME
     "经度",           // STR_LONGITUDE
     "微调",           // STR_TUNE_RATE

@@ -1013,6 +1013,7 @@
         }
 
         let currentFoundObject = null;
+        let currentDEC = null;  // Store current DEC position when "Set Current" is clicked
 
         function handleCatalogChange() {
             const catalogType = document.getElementById('star-catalog-select').value;
@@ -1022,6 +1023,8 @@
             document.getElementById('star-search-text').textContent = '%STR_STAR_SEARCH%';
             currentFoundObject = null;
             setCurrentButton.style.display = 'none';
+            // Hide target DEC display when catalog changes
+            updateTargetDECFields(null);
         }
 
         function sendSearchRequest() {
@@ -1050,7 +1053,7 @@
                             const foundObject = JSON.parse(this.responseText);
                             currentFoundObject = foundObject;
                             displayObjectInfo(foundObject, catalogType);
-                            updateTargetRAFields(foundObject);
+                            updateTargetPositionFields(foundObject);
                             found = foundObject && foundObject.name;
                         } catch (e) {
                             currentFoundObject = null;
@@ -1060,7 +1063,7 @@
                         currentFoundObject = null;
                         displaySearchError('%STR_STAR_OBJECT_NOT_FOUND%');
                         const nullObject = { name: '', ra: 0, dec: 0 };
-                        updateTargetRAFields(nullObject);
+                        updateTargetPositionFields(nullObject);
                     }
                     searchText.textContent = found ? 'Found' : '%STR_STAR_SEARCH%';
                     searchText.style.display = 'inline';
@@ -1132,7 +1135,42 @@
             return sign + degrees.toString().padStart(2, '0') + '° ' + minutes.toString().padStart(2, '0') + "' " + seconds.toString().padStart(4, '0') + '"';
         }
 
+        function formatDECDifference(diffArcseconds) {
+            const sign = diffArcseconds >= 0 ? '+' : '-';
+            const absDiff = Math.abs(diffArcseconds) / 3600.0;
+            const degrees = Math.floor(absDiff);
+            const minutesFloat = (absDiff - degrees) * 60;
+            const minutes = Math.floor(minutesFloat);
+            const seconds = ((minutesFloat - minutes) * 60).toFixed(1);
+            return sign + degrees.toString().padStart(2, '0') + '° ' + minutes.toString().padStart(2, '0') + "' " + seconds.toString().padStart(4, '0') + '"';
+        }
+
+        function updateTargetDECFields(foundObject) {
+            const decLabel = document.getElementById('decDifference');
+            const decDisplay = document.getElementById('decDifferenceDisplay');
+
+            if (!foundObject || foundObject.dec === undefined || foundObject.dec === null) {
+                decLabel.style.display = 'none';
+                decDisplay.style.display = 'none';
+                return;
+            }
+
+            // If we have a current DEC position, show the difference
+            if (currentDEC !== null) {
+                const decDifference = foundObject.dec - currentDEC;
+                decLabel.style.display = 'block';
+                decDisplay.style.display = 'block';
+                decDisplay.value = formatDECDifference(decDifference);
+            } else {
+                // No current position set, just show target DEC
+                decLabel.style.display = 'block';
+                decDisplay.style.display = 'block';
+                decDisplay.value = formatDEC(foundObject.dec);
+            }
+        }
+
         function updateTargetRAFields(foundObject) {
+
             if (!foundObject || foundObject.ra === undefined || foundObject.ra === null) {
                 return;
             }
@@ -1153,10 +1191,21 @@
             calculateRAInput();
         }
 
+        function updateTargetPositionFields(foundObject) {
+            updateTargetRAFields(foundObject);
+            updateTargetDECFields(foundObject);
+        }
+
         function setCurrentToFoundObject() {
             if (!currentFoundObject || currentFoundObject.ra === undefined || currentFoundObject.ra === null) {
                 return;
             }
+
+            // Store current DEC position for calculating difference later
+            if (currentFoundObject.dec !== undefined && currentFoundObject.dec !== null) {
+                currentDEC = currentFoundObject.dec;
+            }
+
             const totalSeconds = currentFoundObject.ra;
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -1467,6 +1516,9 @@
             <div class="grid">
                 <h3>%STR_CURRENT_RA_POSITION%:</h3>
                 <input type="text" id="raDisplay" placeholder="0" disabled>
+                <h3 id="decDifference" style="display: none;">%STR_DEC_DIFFERENCE%:</h3>
+                <input type="text" id="decDifferenceDisplay" placeholder="--° --' --\"" disabled style=" display:
+                    none;">
                 <h3>%STR_CURRENT_TIME%:</h3>
                 <input type="text" id="timeDisplay" placeholder="--:--:--" disabled>
                 <h3>%STR_LONGITUDE%:</h3>

@@ -137,6 +137,7 @@ const char* const englishLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Local Time",               // STR_LOCAL_TIME
     "Current Position",         // STR_CURRENT_POSITION
     "Current RA Position",      // STR_CURRENT_RA_POSITION
+    "DEC Difference",           // STR_DEC_DIFFERENCE
     "Current Time",             // STR_CURRENT_TIME
     "Longitude",                // STR_LONGITUDE
     "Fine Tune",                // STR_TUNE_RATE
