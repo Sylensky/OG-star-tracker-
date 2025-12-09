@@ -379,6 +379,48 @@ GET http://192.168.4.1/starSearch?catalog=0&query=M31
 GET http://192.168.4.1/setlang?lang=0
 ```
 
+### Get Current Language
+**Endpoint:** `GET /getlang`
+**Description:** Get currently selected language index
+
+**Response:** `200 OK` - JSON object
+```json
+{
+  "lang": 0
+}
+```
+
+**Example:**
+```
+GET http://192.168.4.1/getlang
+```
+
+### Get Language Strings
+**Endpoint:** `GET /langstrings`
+**Description:** Get all translated strings for current language as JSON
+
+**Response:** `200 OK` - JSON object with language strings and language names
+```json
+{
+  "strings": {
+    "%STR_TRACKING%": "Tracking",
+    "%STR_SLEWING%": "Slewing",
+    ...
+  },
+  "langNames": ["English", "Deutsch", "中文"]
+}
+```
+
+**Example:**
+```
+GET http://192.168.4.1/langstrings
+```
+
+**Notes:**
+- Response is streamed using chunked encoding to reduce memory usage
+- Contains all UI string placeholders and their translations
+- Language names array used for building language selector dropdown
+
 ### Get Web Interface
 **Endpoint:** `GET /`  
 **Description:** Serve main web interface HTML  

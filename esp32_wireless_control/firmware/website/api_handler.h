@@ -201,6 +201,20 @@ class ApiHandler
     void handleSetLanguage();
 
     /**
+     * @endpoint GET /getlang
+     * @brief Get current language
+     * @response 200 OK with JSON {lang: number}
+     */
+    void handleGetLanguage();
+
+    /**
+     * @endpoint GET /langstrings
+     * @brief Get all language strings for current language as JSON
+     * @response 200 OK with JSON object containing all translated strings
+     */
+    void handleGetLanguageStrings();
+
+    /**
      * @endpoint GET /
      * @brief Serve main web interface
      * @response 200 OK with HTML content

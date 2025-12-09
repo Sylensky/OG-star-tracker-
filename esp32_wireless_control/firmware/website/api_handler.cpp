@@ -7,6 +7,7 @@
 #include "../error.h"
 #include "../functions/intervalometer/intervalometer.h"
 #include "../functions/ota/ota_handler.h"
+#include "../tools/heap_monitor.h"
 #include "../tracking_rates.h"
 #include "../uart.h"
 #include "web_languages.h"
@@ -106,6 +107,8 @@ void ApiHandler::registerEndpoints()
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
     // Settings
     _server->on("/setlang", HTTP_GET, [api]() { api->handleSetLanguage(); });
+    _server->on("/getlang", HTTP_GET, [api]() { api->handleGetLanguage(); });
+    _server->on("/langstrings", HTTP_GET, [api]() { api->handleGetLanguageStrings(); });
 
     // OTA firmware update
     _server->on("/ota", HTTP_GET, []() { OTAHandler::getInstance().handleOTAPage(); });
@@ -126,95 +129,18 @@ void ApiHandler::handleRoot()
     logRequest(_server, "/");
     print_out("  Client IP: %s", _server->client().remoteIP().toString().c_str());
     print_out("  User-Agent: %s", _server->header("User-Agent").c_str());
+    HeapMonitor::log("handleRoot-start");
 #endif
-    size_t htmlSize = _interface_index_html_end - _interface_index_html_start;
 
-    // Work with raw bytes and avoid String for null-byte handling
-    // Allocate buffer for HTML with extra space for replacements
-    char* htmlBuffer = (char*) pvPortMalloc(htmlSize + 10000);
-    if (!htmlBuffer)
-    {
-        _server->send(500, MIME_TYPE_TEXT, "Internal Server Error: Out of memory");
-        return;
-    }
-
-    memcpy(htmlBuffer, _interface_index_html_start, htmlSize);
-    size_t currentSize = htmlSize;
-
-    for (int placeholder = 0; placeholder < numberOfHTMLStrings; placeholder++)
-    {
-        const char* searchStr = HTMLplaceHolders[placeholder];
-        const char* replaceStr = languageHTMLStrings[language][placeholder];
-
-        size_t searchLen = strlen(searchStr);
-        size_t replaceLen = strlen(replaceStr);
-
-        char* pos = htmlBuffer;
-        while ((pos = strstr(pos, searchStr)) != nullptr)
-        {
-            if (replaceLen > searchLen)
-            {
-                memmove(pos + replaceLen, pos + searchLen,
-                        currentSize - (pos - htmlBuffer) - searchLen);
-            }
-            memcpy(pos, replaceStr, replaceLen);
-            if (replaceLen < searchLen)
-            {
-                memmove(pos + replaceLen, pos + searchLen,
-                        currentSize - (pos - htmlBuffer) - searchLen);
-            }
-            currentSize += replaceLen - searchLen;
-            pos += replaceLen;
-        }
-    }
-
-    char buffer[100];
-    String selectString = "";
-    for (int lang = 0; lang < LANG_COUNT; lang++)
-    {
-        if (lang == language)
-        {
-            snprintf(buffer, sizeof(buffer), "<option value=\"%u\" selected>%s</option>\n", lang,
-                     languageNames[language][lang]);
-        }
-        else
-        {
-            snprintf(buffer, sizeof(buffer), "<option value=\"%u\">%s</option>\n", lang,
-                     languageNames[language][lang]);
-        }
-        selectString.concat(buffer);
-    }
-
-    char* langPos = strstr(htmlBuffer, "%LANG_SELECT%");
-    if (langPos)
-    {
-        const char* langReplacement = selectString.c_str();
-        size_t langSearchLen = 13; // strlen("%LANG_SELECT%")
-        size_t langReplaceLen = selectString.length();
-
-        if (langReplaceLen > langSearchLen)
-        {
-            memmove(langPos + langReplaceLen, langPos + langSearchLen,
-                    currentSize - (langPos - htmlBuffer) - langSearchLen);
-        }
-        memcpy(langPos, langReplacement, langReplaceLen);
-        if (langReplaceLen < langSearchLen)
-        {
-            memmove(langPos + langReplaceLen, langPos + langSearchLen,
-                    currentSize - (langPos - htmlBuffer) - langSearchLen);
-        }
-        currentSize += langReplaceLen - langSearchLen;
-    }
-
-    _server->send_P(200, MIME_TYPE_HTML, htmlBuffer, currentSize);
-    vPortFree(htmlBuffer);
+    // Simply serve the HTML as-is - no server-side processing
+    // Language strings are loaded via JavaScript on the client side
+    _server->send_P(200, MIME_TYPE_HTML, (const char*) _interface_index_html_start,
+                    _interface_index_html_end - _interface_index_html_start);
 
 #if DEBUG == 1
-    print_out("  Raw HTML pointers: start=%p, end=%p, calculated size=%d",
-              _interface_index_html_start, _interface_index_html_end, currentSize);
-    print_out("  Final HTML size: %d bytes", currentSize);
-    print_out("  Language: %d, Placeholders replaced: %d", language, numberOfHTMLStrings);
-    print_out("  Response sent successfully");
+    print_out("  HTML served directly, size: %d bytes",
+              _interface_index_html_end - _interface_index_html_start);
+    HeapMonitor::log("handleRoot-end");
 #endif
 }
 
@@ -281,6 +207,101 @@ void ApiHandler::handleSetLanguage()
     language = static_cast<Languages>(lang);
     EepromManager::writeObject(LANG_EEPROM_ADDR, language);
     _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_OK]);
+}
+
+void ApiHandler::handleGetLanguage()
+{
+    char response[50];
+    snprintf(response, sizeof(response), "{\"lang\":%d}", static_cast<int>(language));
+    _server->send(200, MIME_APPLICATION_JSON, response);
+}
+
+void ApiHandler::handleGetLanguageStrings()
+{
+    // Helper to escape JSON string
+    // TODO: make this more readable / reusable
+    auto escapeJson = [](const char* str) -> String
+    {
+        String result = "";
+        while (*str)
+        {
+            switch (*str)
+            {
+                case '"':
+                    result += "\\\"";
+                    break;
+                case '\\':
+                    result += "\\\\";
+                    break;
+                case '\n':
+                    result += "\\n";
+                    break;
+                case '\r':
+                    result += "\\r";
+                    break;
+                case '\t':
+                    result += "\\t";
+                    break;
+                case '\b':
+                    result += "\\b";
+                    break;
+                case '\f':
+                    result += "\\f";
+                    break;
+                default:
+                    if (*str < 0x20)
+                    {
+                        // Escape control characters
+                        char buf[7];
+                        snprintf(buf, sizeof(buf), "\\u%04x", (unsigned char) *str);
+                        result += buf;
+                    }
+                    else
+                    {
+                        result += *str;
+                    }
+                    break;
+            }
+            str++;
+        }
+        return result;
+    };
+
+    // Build JSON response with all language strings
+    // Use chunked encoding to avoid large buffer allocation
+    _server->setContentLength(CONTENT_LENGTH_UNKNOWN);
+    _server->send(200, MIME_APPLICATION_JSON, "");
+
+    _server->sendContent("{");
+
+    // Language names
+    _server->sendContent("\"langNames\":[");
+    for (int i = 0; i < LANG_COUNT; i++)
+    {
+        if (i > 0)
+            _server->sendContent(",");
+        _server->sendContent("\"");
+        _server->sendContent(escapeJson(languageNames[language][i]).c_str());
+        _server->sendContent("\"");
+    }
+    _server->sendContent("],");
+
+    // HTML strings
+    _server->sendContent("\"strings\":{");
+    for (int i = 0; i < numberOfHTMLStrings; i++)
+    {
+        if (i > 0)
+            _server->sendContent(",");
+        _server->sendContent("\"");
+        _server->sendContent(escapeJson(HTMLplaceHolders[i]).c_str());
+        _server->sendContent("\":\"");
+        _server->sendContent(escapeJson(languageHTMLStrings[language][i]).c_str());
+        _server->sendContent("\"");
+    }
+    _server->sendContent("}");
+
+    _server->sendContent("}");
+    _server->sendContent("");
 }
 
 void ApiHandler::handleSetCurrent()
