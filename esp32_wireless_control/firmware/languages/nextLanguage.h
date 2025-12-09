@@ -138,6 +138,7 @@ const char* const nextLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "", // STR_LOCAL_TIME
     "", // STR_CURRENT_POSITION
     "", // STR_CURRENT_RA_POSITION
+    "", // STR_DEC_DIFFERENCE
     "", // STR_CURRENT_TIME
     "", // STR_LONGITUDE
     "", // STR_TUNE_RATE

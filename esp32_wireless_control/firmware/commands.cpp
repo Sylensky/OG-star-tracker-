@@ -175,12 +175,15 @@ static void cmdGotoTargetRA()
         return;
     }
 
+    bool hemisphereDirection = ra_axis.direction.tracking;
+
     print_out("GotoTargetRA called with:");
     print_out("  Current Position: %lld arcseconds", currentRA.arcseconds);
     print_out("  Target Position: %lld arcseconds", targetRA.arcseconds);
+    print_out("  Hemisphere direction: %d", hemisphereDirection);
 
     ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentRA,
-                       targetRA);
+                       targetRA, hemisphereDirection);
 }
 
 static void cmdPan()

@@ -156,42 +156,74 @@ void Axis::stopTracking()
 }
 
 void Axis::gotoTarget(uint16_t microstep, uint64_t rateArg, const Position& current,
-                      const Position& target)
+                      const Position& target, bool hemisphereDirection)
 {
     setMicrostep(microstep);
-    int64_t deltaArcseconds = target.arcseconds - current.arcseconds;
-    int64_t stepsPerSecond = trackingRates.getStepsPerSecondSolar();
+    // delta in RA seconds-of-time (NOT angular arcseconds) TODO: investigate
+    int64_t deltaRASeconds = target.arcseconds - current.arcseconds;
 
-    print_out_nonl("deltaArcseconds: %lld\n", deltaArcseconds);
+    print_out_nonl("deltaRASeconds: %lld\n", deltaRASeconds);
 
-    if (abs(deltaArcseconds) > 86400 / 2)
+    int64_t absDelta = (deltaRASeconds < 0) ? -deltaRASeconds : deltaRASeconds;
+    if (absDelta > RA_SECONDS_PER_FULL_REV / 2)
     {
-        if (deltaArcseconds > 0)
+        if (deltaRASeconds > 0)
         {
-            deltaArcseconds = (deltaArcseconds - 86400) % 86400;
+            deltaRASeconds = (deltaRASeconds - RA_SECONDS_PER_FULL_REV) % RA_SECONDS_PER_FULL_REV;
         }
         else
         {
-            deltaArcseconds = (deltaArcseconds + 86400) % 86400;
+            deltaRASeconds = (deltaRASeconds + RA_SECONDS_PER_FULL_REV) % RA_SECONDS_PER_FULL_REV;
         }
     }
 
-    int64_t stepsToMove =
-        (deltaArcseconds * stepsPerSecond) / (MAX_MICROSTEPS / (microStep ? microStep : 1));
-    bool directionTmp = (stepsToMove < 0) ^ direction.tracking;
+    int64_t stepsPerRASecondAtMax = STEPS_PER_TRACKER_FULL_REV_INT / RA_SECONDS_PER_FULL_REV;
+    int64_t stepsToMoveAtCurrentMicrostep =
+        (deltaRASeconds * stepsPerRASecondAtMax * microstep) / MAX_MICROSTEPS;
+    int64_t positionDeltaAtMax = deltaRASeconds * stepsPerRASecondAtMax;
 
-    print_out_nonl("stepsToMove: %lld\n", stepsToMove);
+    // Calculate motor direction based on hemisphere and movement direction
+    // North hemisphere: direction=0 is LEFT (increasing RA), direction=1 is RIGHT (decreasing RA)
+    // South hemisphere: direction=1 is LEFT (increasing RA), direction=0 is RIGHT (decreasing RA)
+    bool motorDirection = (positionDeltaAtMax < 0) == hemisphereDirection;
 
-    setPosition(current.arcseconds * stepsPerSecond);
+    // For goto, set direction.absolute to make counter count in the correct direction
+    // The ISR counter uses (direction.absolute XOR direction.tracking)
+    // - XOR = 0: counter increments (for positive target)
+    // - XOR = 1: counter decrements (for negative target)
+    // For positive stepsToMove: want counter to increment, so direction.absolute =
+    // direction.tracking For negative stepsToMove: want counter to decrement, so direction.absolute
+    // != direction.tracking
+    bool positionTrackingDirection =
+        (positionDeltaAtMax >= 0) ? direction.tracking : !direction.tracking;
+
+    print_out_nonl("stepsToMove: %lld (at microstep %d), positionDelta: %lld (at MAX)\n",
+                   stepsToMoveAtCurrentMicrostep, microstep, positionDeltaAtMax);
+    print_out_nonl(
+        "hemisphereDirection: %d, motorDirection: %d, positionTrackingDir: %d (should move %s)\n",
+        hemisphereDirection, motorDirection, positionTrackingDirection,
+        (positionDeltaAtMax >= 0) ? "LEFT/EAST" : "RIGHT/WEST");
+
+    // Set current position (normalized to MAX_MICROSTEPS) and prepare counter for relative movement
+    setPosition(current.arcseconds * stepsPerRASecondAtMax);
     resetAxisCount();
-    setAxisTargetCount(stepsToMove);
+    // Use signed target - counter will count up for positive, down for negative
+    // Counter tracks actual motor steps at current microstep setting
+    setAxisTargetCount(stepsToMoveAtCurrentMicrostep);
 
     if (targetCount != axisCountValue)
     {
         counterActive = true;
         goToTarget = true;
         stepTimer.stop();
-        setDirection(directionTmp);
+
+        // Set direction.absolute equal to direction.tracking to make counter increment
+        // Set physical motor direction
+        // This is a workaround to move the motor in the correct direction while
+        // keeping the counter logic consistent
+        direction.absolute = positionTrackingDirection;
+        driver->setDirection(motorDirection ^ invertDirectionPin);
+
         slewActive = true;
         stepTimer.start(rateArg, true);
     }

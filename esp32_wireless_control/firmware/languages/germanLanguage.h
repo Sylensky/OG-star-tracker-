@@ -137,6 +137,7 @@ const char* const germanLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     "Ortszeit",                                           // STR_LOCAL_TIME
     "Aktuelle Position",                                  // STR_CURRENT_POSITION
     "Aktuelle RA-Position",                               // STR_CURRENT_RA_POSITION
+    "DEC-Differenz",                                      // STR_DEC_DIFFERENCE
     "Aktuelle Zeit",                                      // STR_CURRENT_TIME
     "Längengrad",                                         // STR_LONGITUDE
     "Feinabstimmung",                                     // STR_TUNE_RATE

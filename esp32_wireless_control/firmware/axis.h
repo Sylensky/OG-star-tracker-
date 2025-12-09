@@ -52,7 +52,7 @@ class Axis
     void stopSlew();
 
     void gotoTarget(uint16_t microstep, uint64_t rate, const Position& current,
-                    const Position& target);
+                    const Position& target, bool hemisphereDirection);
     void stopGotoTarget();
 
     bool panByDegrees(float degrees, int speed,

@@ -440,6 +440,7 @@ void ApiHandler::handleGotoRA()
     Position currentPosition = calculatePosition(_server->arg("currentRA"));
     Position targetPosition = calculatePosition(_server->arg("targetRA"));
     int pan_speed = _server->arg(SPEED).toInt();
+    bool hemisphereDirection = ra_axis.direction.tracking;
 
     pan_speed = pan_speed > MAX_CUSTOM_SLEW_RATE   ? MAX_CUSTOM_SLEW_RATE
                 : pan_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
@@ -448,10 +449,11 @@ void ApiHandler::handleGotoRA()
     print_out("GotoRA called with:");
     print_out("  Current RA: %lld arcseconds", currentPosition.arcseconds);
     print_out("  Target RA: %lld arcseconds", targetPosition.arcseconds);
+    print_out("  Hemisphere direction: %d", hemisphereDirection);
     print_out("  rate: %lld", (int) ((2 * ra_axis.rate.tracking) / pan_speed));
 
     ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (2 * ra_axis.rate.tracking) / pan_speed,
-                       currentPosition, targetPosition);
+                       currentPosition, targetPosition, hemisphereDirection);
     _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_GOTO_RA_PANNING_ON]);
 }
 
@@ -636,14 +638,13 @@ void ApiHandler::handleGetCurrentPosition()
     float longitude = _server->arg("longitude").toFloat();
     int64_t currentStepPosition = ra_axis.getPosition();
 
-    const int64_t STEPS_PER_FULL_REV = STEPS_PER_TRACKER_FULL_REV_INT;
-    const int64_t RA_SECONDS_PER_FULL_REV = (SOLAR_DAY_MS / 1000);
-
-    // Calculate current RA position in seconds (0-86399)
+    // Calculate current RA position in arcseconds (0-86399)
     // Normalize position to handle negative values and multiple revolutions
     int64_t normalizedSteps =
-        ((currentStepPosition % STEPS_PER_FULL_REV) + STEPS_PER_FULL_REV) % STEPS_PER_FULL_REV;
-    long raSeconds = (long) ((normalizedSteps * RA_SECONDS_PER_FULL_REV) / STEPS_PER_FULL_REV);
+        ((currentStepPosition % STEPS_PER_TRACKER_FULL_REV_INT) + STEPS_PER_TRACKER_FULL_REV_INT) %
+        STEPS_PER_TRACKER_FULL_REV_INT;
+    long raSeconds =
+        (long) ((normalizedSteps * RA_SECONDS_PER_FULL_REV) / STEPS_PER_TRACKER_FULL_REV_INT);
 
     String response = "{\"ra\":" + String(raSeconds) + ",\"utcTime\":\"" + utcTimeStr + "\"" +
                       ",\"longitude\":" + String(longitude) + "}";
