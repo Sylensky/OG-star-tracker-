@@ -397,12 +397,116 @@
         .firmware-link:hover {
             color: var(--text);
         }
+
+        /* Hide content until language strings are loaded */
+        body.loading {
+            opacity: 0;
+        }
+
+        body.loaded {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
     </style>
     <script>
         var lastClick = 0;
         var delay = 500;
         var currentLangIndex = 0;
         let positionInterval = null;
+        var langStrings = {};
+
+        function loadLanguageStrings() {
+            fetch('/langstrings')
+                .then(response => response.json())
+                .then(data => {
+                    langStrings = data;
+                    applyLanguageStrings();
+                    buildLanguageSelector();
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                })
+                .catch(err => {
+                    console.error('Failed to load language strings:', err);
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                });
+        }
+
+        function applyLanguageStrings() {
+            if (!langStrings.strings) return;
+
+            function replaceInNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.textContent;
+                    let modified = false;
+
+                    for (const [placeholder, translation] of Object.entries(langStrings.strings)) {
+                        if (text.includes(placeholder)) {
+                            text = text.replaceAll(placeholder, translation);
+                            modified = true;
+                        }
+                    }
+
+                    if (modified) {
+                        node.textContent = text;
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    const attrs = ['placeholder', 'title', 'alt', 'aria-label'];
+                    attrs.forEach(attr => {
+                        if (node.hasAttribute(attr)) {
+                            let value = node.getAttribute(attr);
+                            for (const [placeholder, translation] of Object.entries(langStrings.strings)) {
+                                value = value.replaceAll(placeholder, translation);
+                            }
+                            node.setAttribute(attr, value);
+                        }
+                    });
+                    node.childNodes.forEach(child => replaceInNode(child));
+                }
+            }
+            replaceInNode(document.body);
+        }
+
+        function buildLanguageSelector() {
+            const select = document.getElementById('language-select');
+            if (!select || !langStrings.langNames) return;
+
+            select.innerHTML = '';
+            langStrings.langNames.forEach((name, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = name;
+                if (index === currentLangIndex) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        function changeLanguage() {
+            const select = document.getElementById('language-select');
+            const newLang = select.value;
+
+            fetch('/setlang?lang=' + newLang)
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Failed to set language');
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to change language:', err);
+                });
+        }
+
+        fetch('/getlang')
+            .then(response => response.json())
+            .then(data => {
+                currentLangIndex = data.lang;
+                loadLanguageStrings();
+            })
+            .catch(err => console.error('Failed to get language:', err));
 
         function sendRequest(url) {
             var xhr = new XMLHttpRequest();
@@ -427,9 +531,11 @@
                         var versionData = JSON.parse(this.responseText);
                         var versionText = versionData.version + ' (' + versionData.buildDate + ')';
                         var internalVersion = versionData.internalVersion ? '<br><small>Internal: ' + versionData.internalVersion + '</small>' : '';
-                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + versionText + internalVersion + '</a>';
+                        const firmwareStr = langStrings?.strings?.['%STR_FIRMWARE_VERSION%'] || 'Firmware Version';
+                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">' + firmwareStr + ': ' + versionText + internalVersion + '</a>';
                     } catch (e) {
-                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">%STR_FIRMWARE_VERSION%: ' + this.responseText + + this.internalVersion + '</a>';
+                        const firmwareStr = langStrings?.strings?.['%STR_FIRMWARE_VERSION%'] || 'Firmware Version';
+                        document.getElementById('firmware').innerHTML = '<a href="/ota" class="firmware-link" title="Click to update firmware">' + firmwareStr + ': ' + this.responseText + + this.internalVersion + '</a>';
                     }
                 }
             };
@@ -452,18 +558,6 @@
                 }
             };
             xhr.open('GET', '/getTrackingRates?type=' + type, true);
-            xhr.send();
-        }
-
-        function changeLanguage() {
-            var lang = document.getElementById('language-select').value;
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    window.location.reload();
-                }
-            };
-            xhr.open('GET', '/setlang?lang=' + lang, true);
             xhr.send();
         }
 
@@ -715,13 +809,14 @@
             pixelSize = modeIndex < 2 && document.getElementById('dither').selectedIndex == 1 ? document.getElementById('pixelSize').valueAsNumber : 1;
             total = exposureTime + exposures + predelay + delay + frames + panAngle + ditherFrequency + focalLength + pixelSize;
             captureTime = (((delay + exposureTime) * exposures - delay) * frames) + predelay;
+            const captureTimeStr = langStrings?.strings?.['%STR_CAPTURE_TIME%'] || 'Capture Time';
             if (isNaN(captureTime)) {
-                document.getElementById('captureTime').innerHTML = 'Capture Time: 0 h, 0 m, 0 s';
+                document.getElementById('captureTime').innerHTML = captureTimeStr + ': 0 h, 0 m, 0 s';
             } else {
                 hours = Math.floor(captureTime / 3600);
                 minutes = Math.floor((captureTime - 3600 * hours) / 60);
                 seconds = Math.floor(captureTime - 3600 * hours - minutes * 60);
-                document.getElementById('captureTime').innerHTML = '%STR_CAPTURE_TIME%: ' + hours + ' h, ' + minutes + ' m, ' + seconds + ' s';
+                document.getElementById('captureTime').innerHTML = captureTimeStr + ': ' + hours + ' h, ' + minutes + ' m, ' + seconds + ' s';
             }
 
             var isPanValid = validatePanConfiguration();
@@ -1020,7 +1115,8 @@
             const setCurrentButton = document.getElementById('set-current-position');
             document.getElementById('star-object-info').style.display = 'none';
             document.getElementById('star-search-input').value = '';
-            document.getElementById('star-search-text').textContent = '%STR_STAR_SEARCH%';
+            const searchStr = langStrings?.strings?.['%STR_STAR_SEARCH%'] || 'Search';
+            document.getElementById('star-search-text').textContent = searchStr;
             currentFoundObject = null;
             setCurrentButton.style.display = 'none';
             // Hide target DEC display when catalog changes
@@ -1037,7 +1133,8 @@
             }
 
             var searchText = document.getElementById('star-search-text');
-            searchText.textContent = '%STR_STAR_SEARCH%';
+            const searchStr = langStrings?.strings?.['%STR_STAR_SEARCH%'] || 'Search';
+            searchText.textContent = searchStr;
             searchText.style.display = 'none';
             document.getElementById('star-search-spinner').style.display = 'inline-block';
             document.getElementById('star-search-button').disabled = true;
@@ -1061,11 +1158,13 @@
                         }
                     } else {
                         currentFoundObject = null;
-                        displaySearchError('%STR_STAR_OBJECT_NOT_FOUND%');
+                        const notFoundStr = langStrings?.strings?.['%STR_STAR_OBJECT_NOT_FOUND%'] || 'Object not found';
+                        displaySearchError(notFoundStr);
                         const nullObject = { name: '', ra: 0, dec: 0 };
                         updateTargetPositionFields(nullObject);
                     }
-                    searchText.textContent = found ? 'Found' : '%STR_STAR_SEARCH%';
+                    const searchStr = langStrings?.strings?.['%STR_STAR_SEARCH%'] || 'Search';
+                    searchText.textContent = found ? 'Found' : searchStr;
                     searchText.style.display = 'inline';
                 }
             };
@@ -1077,21 +1176,28 @@
         function displayObjectInfo(obj, catalogType) {
             const detailsDiv = document.getElementById('star-object-details');
             if (!obj || !obj.name) {
-                displaySearchError('%STR_STAR_OBJECT_NOT_FOUND%');
+                const notFoundStr = langStrings?.strings?.['%STR_STAR_OBJECT_NOT_FOUND%'] || 'Object not found';
+                displaySearchError(notFoundStr);
                 return;
             }
 
+            const raStr = langStrings?.strings?.['%STR_STAR_RA%'] || 'RA';
+            const decStr = langStrings?.strings?.['%STR_STAR_DEC%'] || 'DEC';
+            const typeStr = langStrings?.strings?.['%STR_STAR_TYPE%'] || 'Type';
+            const magnitudeStr = langStrings?.strings?.['%STR_STAR_MAGNITUDE%'] || 'Magnitude';
+            const constellationStr = langStrings?.strings?.['%STR_STAR_CONSTELLATION%'] || 'Constellation';
+
             let html = '<strong>' + obj.name + '</strong><br>';
             if (obj.ra !== undefined)
-                html += '%STR_STAR_RA%: ' + formatRA(obj.ra) + '<br>';
+                html += raStr + ': ' + formatRA(obj.ra) + '<br>';
             if (obj.dec !== undefined)
-                html += '%STR_STAR_DEC%: ' + formatDEC(obj.dec) + '<br>';
+                html += decStr + ': ' + formatDEC(obj.dec) + '<br>';
             if (obj.type)
-                html += '%STR_STAR_TYPE%: ' + obj.type + '<br>';
+                html += typeStr + ': ' + obj.type + '<br>';
             if (obj.magnitude !== undefined && obj.magnitude !== null)
-                html += '%STR_STAR_MAGNITUDE%: ' + obj.magnitude + '<br>';
+                html += magnitudeStr + ': ' + obj.magnitude + '<br>';
             if (obj.constellation)
-                html += '%STR_STAR_CONSTELLATION%: ' + obj.constellation + '<br>';
+                html += constellationStr + ': ' + obj.constellation + '<br>';
 
             detailsDiv.innerHTML = html;
             document.getElementById('star-object-info').style.display = 'block';
@@ -1252,7 +1358,7 @@
     </script>
 </head>
 
-<body onload="handleLoad()">
+<body class="loading" onload="handleLoad()">
     <div class="content">
         <div class="header">
             <?xml version="1.0" encoding="UTF-8"?>
