@@ -19,10 +19,22 @@ jobs:
           python-version: '3.11'
 
       - name: Install PlatformIO Core
-        run: pip install --upgrade platformio
+        run: pip install --upgrade platformio esptool
 
       - name: Build OGStarTracker
         run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_release
+
+      - name: Bundle OGStarTracker Combined Binary
+        env:
+          tag_name: ${{ github.ref_name }}
+        run: |
+          cd esp32_wireless_control/firmware/.pio/build/ogstartracker_release
+          python -m esptool --chip esp32 merge-bin \
+            -o ogstartracker_${tag_name}_combined.bin \
+            --flash-size 4MB \
+            0x1000 bootloader.bin \
+            0x8000 partitions.bin \
+            0x10000 ogstartracker_${tag_name}.bin
 
       - name: Upload Build Artifact
         if: ${{ success() }}
@@ -30,7 +42,8 @@ jobs:
         with:
           name: binaries
           path: |
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker*.bin
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker_${{ github.ref_name }}.bin
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker_${{ github.ref_name }}_combined.bin
 
       - name: Create release
         if: ${{ success() }}
@@ -43,4 +56,4 @@ jobs:
             --title="Release ${tag_name}" \
             --generate-notes
           gh release upload $tag_name \
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker*.bin 
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker_*.bin

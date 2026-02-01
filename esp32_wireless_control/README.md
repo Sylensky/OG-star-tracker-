@@ -22,6 +22,9 @@ If you like this work, feel free to connect with me on [Github](https://github.c
 ## Table of Contents
 - [PCB](pcb/README.md)
 - [Compiling](docs/compiling.md)
+- [API](firmware/website/API.md)
+- [Wifi Config](docs/wifi_config.md)
+- [Star Catalogue](firmware/catalogues/README.md)
 - [Coding Style](docs/coding-style.md)
 
 
@@ -39,7 +42,9 @@ ssid: OG Star Tracker
 password: password123
 ```
 
-After connection was successful the tracker to actually control it access the ***www.tracker.com** in your browser. The ESP32 provides a webserver for convenient controlling.
+After connection was successful the tracker to actually control it access the **tracker.local** in your browser. The ESP32 provides a webserver for convenient controlling.
+
+If one would like to set it own wifi config, check [Wifi Config](docs/wifi_config.md).
 
 ## App
 

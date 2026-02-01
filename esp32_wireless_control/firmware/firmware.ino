@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
-#include <DNSServer.h>
+#include <ESPmDNS.h>
+#include <ErriezSerialTerminal.h>
 #include <WebServer.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
@@ -7,375 +8,170 @@
 #include <string.h>
 
 #include "axis.h"
-#include "config.h"
+#include "catalogues/star_database.h"
+#include "commands.h"
+#include "common_strings.h"
+#include "configs/config.h"
+#include "eeprom_manager.h"
+#include "functions/intervalometer/intervalometer.h"
+#include "functions/ota/ota_handler.h"
 #include "hardwaretimer.h"
-#include "index_html.h"
-#include "intervalometer.h"
+#include "tracking_rates.h"
 #include "uart.h"
-#include "web_languages.h"
-#include "website_strings.h"
+#include "website/api_handler.h"
+#include "website/web_languages.h"
+#include "website/website_strings.h"
 
+SerialTerminal term(CLI_NEWLINE_CHAR, CLI_DELIMITER_CHAR);
 WebServer server(WEBSERVER_PORT);
-DNSServer dnsServer;
 Languages language = EN;
+StarDatabase* starDatabase = nullptr;
+Intervalometer* intervalometer = nullptr;
 
 void uartTask(void* pvParameters);
+void consoleTask(void* pvParameters);
 void webserverTask(void* pvParameters);
-void dnsserverTask(void* pvParameters);
 void intervalometerTask(void* pvParameters);
+void systemShutdown();
 
-// Handle requests to the root URL ("/")
-void handleRoot()
-{
-    String htmlString = html_content;
-    for (int placeholder = 0; placeholder < numberOfHTMLStrings; placeholder++)
-    {
-        htmlString.replace(HTMLplaceHolders[placeholder],
-                           languageHTMLStrings[language][placeholder]);
-    }
-    char buffer[100];
-    String selectString = "";
-    for (int lang = 0; lang < LANG_COUNT; lang++)
-    {
-        if (lang == language)
-        {
-            sprintf(buffer, "<option value=\"%u\" selected>%s</option>\n", lang,
-                    languageNames[language][lang]);
-        }
-        else
-        {
-            sprintf(buffer, "<option value=\"%u\">%s</option>\n", lang,
-                    languageNames[language][lang]);
-        }
-        // print_out(buffer);
-        selectString.concat(buffer);
-        buffer[0] = '\0';
-    }
-    htmlString.replace("%LANG_SELECT%", selectString);
-    server.send(200, MIME_TYPE_HTML, htmlString);
-}
+extern const uint8_t _interface_index_html_start[] asm("_binary_interface_index_html_start");
+extern const uint8_t _interface_index_html_end[] asm("_binary_interface_index_html_end");
 
-void handleOn()
+extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_start[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_bin_start");
+extern const uint8_t _catalogues_ngc_converted_ngc2000_bin_end[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_bin_end");
+
+extern const uint8_t _catalogues_ngc_converted_ngc2000_compact_bin_start[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_compact_bin_start");
+extern const uint8_t _catalogues_ngc_converted_ngc2000_compact_bin_end[] asm(
+    "_binary_catalogues_ngc_converted_ngc2000_compact_bin_end");
+
+extern const uint8_t _catalogues_bsc5_converted_bsc5ra_bin_start[] asm(
+    "_binary_catalogues_bsc5_converted_bsc5ra_bin_start");
+extern const uint8_t _catalogues_bsc5_converted_bsc5ra_bin_end[] asm(
+    "_binary_catalogues_bsc5_converted_bsc5ra_bin_end");
+
+extern const uint8_t _catalogues_bsc5_converted_bsc5ra_compact_bin_start[] asm(
+    "_binary_catalogues_bsc5_converted_bsc5ra_compact_bin_start");
+extern const uint8_t _catalogues_bsc5_converted_bsc5ra_compact_bin_end[] asm(
+    "_binary_catalogues_bsc5_converted_bsc5ra_compact_bin_end");
+
+StarDatabase* handleStarDatabase(StarDatabaseType type)
 {
-    int tracking_speed = server.arg(TRACKING_SPEED).toInt();
-    trackingRateS rate;
-    switch (tracking_speed)
+    StarDatabase* db = nullptr;
+    const uint8_t* bin_start = nullptr;
+    const uint8_t* bin_end = nullptr;
+    size_t len = 0;
+
+    if (starDatabase != nullptr && starDatabase->getDatabaseType() == type)
+        return starDatabase; // Return existing instance if already loaded
+
+    if (starDatabase != nullptr)
     {
-        case 0: // sidereal rate
-            rate = TRACKING_SIDEREAL;
+        starDatabase->unloadDatabase();
+        delete starDatabase;
+        starDatabase = nullptr;
+    }
+
+    switch (type)
+    {
+        case DB_NGC2000:
+            bin_start = _catalogues_ngc_converted_ngc2000_bin_start;
+            bin_end = _catalogues_ngc_converted_ngc2000_bin_end;
+            len = bin_end - bin_start;
             break;
-        case 1: // solar rate
-            rate = TRACKING_SOLAR;
+        case DB_NGC2000_COMPACT:
+            bin_start = _catalogues_ngc_converted_ngc2000_compact_bin_start;
+            bin_end = _catalogues_ngc_converted_ngc2000_compact_bin_end;
+            len = bin_end - bin_start;
             break;
-        case 2: // lunar rate
-            rate = TRACKING_LUNAR;
+        case DB_BSC5:
+            bin_start = _catalogues_bsc5_converted_bsc5ra_bin_start;
+            bin_end = _catalogues_bsc5_converted_bsc5ra_bin_end;
+            len = bin_end - bin_start;
+            break;
+        case DB_BSC5_COMPACT:
+            bin_start = _catalogues_bsc5_converted_bsc5ra_compact_bin_start;
+            bin_end = _catalogues_bsc5_converted_bsc5ra_compact_bin_end;
+            len = bin_end - bin_start;
             break;
         default:
-            rate = TRACKING_SIDEREAL;
-            break;
+            print_out("Error: Unsupported database type %d", type);
+            return nullptr;
     }
-    int direction = server.arg(DIRECTION).toInt();
-    ra_axis.startTracking(rate, direction);
 
-    if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
-    else
-        server.send(200, MIME_TYPE_TEXT,
-                    languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
-}
-
-void handleOff()
-{
-    ra_axis.stopTracking();
-    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_OFF]);
-}
-
-void handleSlewRequest()
-{
-    if (!ra_axis.slewActive)
-    { // if slew is not active - needed for ipad (passes multiple touchon events)
-        int slew_speed = server.arg(SPEED).toInt();
-        int direction = server.arg(DIRECTION).toInt();
-        // limit custom slew speed to 2-400
-        slew_speed = slew_speed > MAX_CUSTOM_SLEW_RATE   ? MAX_CUSTOM_SLEW_RATE
-                     : slew_speed < MIN_CUSTOM_SLEW_RATE ? MIN_CUSTOM_SLEW_RATE
-                                                         : slew_speed;
-        ra_axis.startSlew((2 * ra_axis.trackingRate) / slew_speed, direction);
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEWING]);
-    }
-}
-
-void handleSlewOff()
-{
-    if (ra_axis.slewActive)
-    { // if slew is active needed for ipad (passes multiple touchoff events)
-        ra_axis.stopSlew();
-    }
-    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEW_CANCELLED]);
-}
-
-void handleSetLanguage()
-{
-    int lang = server.arg("lang").toInt();
-    language = static_cast<Languages>(lang);
-    EEPROM.write(LANG_EEPROM_ADDR, language);
-    EEPROM.commit();
-    server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_OK]);
-}
-
-void handleSetCurrent()
-{
-    if (!intervalometer.intervalometerActive)
+    db = new StarDatabase(type, bin_start, bin_end);
+    if (!db->loadDatabase((const char*) bin_start, len))
     {
-        // Reset the current error message
-        intervalometer.currentErrorMessage = ERR_MSG_NONE;
-
-        int modeInt = server.arg(CAPTURE_MODE).toInt();
-        if (modeInt < 0 || modeInt >= Intervalometer::Mode::MAX_MODES)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_CAPTURE_MODE;
-            return;
-        }
-        Intervalometer::Mode captureMode = static_cast<Intervalometer::Mode>(modeInt);
-        intervalometer.currentSettings.mode = captureMode;
-
-        int exposureTime = server.arg(EXPOSURE_TIME).toInt();
-        if (exposureTime <= 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_LENGTH;
-            return;
-        }
-        intervalometer.currentSettings.exposureTime = exposureTime;
-
-        int exposures = server.arg(EXPOSURES).toInt();
-        if (exposures <= 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_EXPOSURE_AMOUNT;
-            return;
-        }
-        intervalometer.currentSettings.exposures = exposures;
-
-        int preDelay = server.arg(PREDELAY).toInt();
-        if (preDelay < 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PREDELAY_TIME;
-            return;
-        }
-        else if (preDelay == 0)
-            preDelay = 5;
-        intervalometer.currentSettings.preDelay = preDelay;
-
-        int delayTime = server.arg(DELAY).toInt();
-        if (delayTime < 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DELAY_TIME;
-            return;
-        }
-        intervalometer.currentSettings.delayTime = delayTime;
-
-        int frames = server.arg(FRAMES).toInt();
-        if (frames <= 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FRAME_AMOUNT;
-            return;
-        }
-        intervalometer.currentSettings.frames = frames;
-
-        float panAngle = server.arg(PAN_ANGLE).toFloat() / 100;
-        if (panAngle < 0.0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_ANGLE;
-            return;
-        }
-        intervalometer.currentSettings.panAngle = panAngle;
-
-        int panDirection = server.arg(PAN_DIRECTION).toInt();
-        if (panDirection < 0 || panDirection > 1)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PAN_DIRECTION;
-            return;
-        }
-        intervalometer.currentSettings.panDirection = panDirection;
-
-        int enableTracking = server.arg(ENABLE_TRACKING).toInt();
-        if (enableTracking < 0 || enableTracking > 1)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_ENABLE_TRACKING_VALUE;
-            return;
-        }
-        intervalometer.currentSettings.enableTracking = enableTracking;
-
-        int dither = server.arg(DITHER_CHOICE).toInt();
-        if (dither < 0 || dither > 1)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_CHOICE;
-            return;
-        }
-        intervalometer.currentSettings.dither = dither;
-
-        int ditherFrequency = server.arg(DITHER_FREQUENCY).toInt();
-        if (ditherFrequency <= 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_DITHER_FREQUENCY;
-            return;
-        }
-        intervalometer.currentSettings.ditherFrequency = ditherFrequency;
-
-        int focalLength = server.arg(FOCAL_LENGTH).toInt();
-        if (focalLength <= 0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_FOCAL_LENGTH;
-            return;
-        }
-        intervalometer.currentSettings.focalLength = focalLength;
-
-        float pixelSize = server.arg(PIXEL_SIZE).toFloat() / 100;
-        if (pixelSize <= 0.0)
-        {
-            intervalometer.currentErrorMessage = ERR_MSG_INVALID_PIXEL_SIZE;
-            return;
-        }
-        intervalometer.currentSettings.pixelSize = pixelSize;
-
-        String currentMode = server.arg(MODE);
-        if (currentMode == "save")
-        {
-            int preset = server.arg(PRESET).toInt();
-            intervalometer.saveSettingsToPreset(preset);
-            server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SAVED_PRESET]);
-        }
-        else if (currentMode == "start")
-        {
-            if ((intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_MOVIE ||
-                 intervalometer.currentSettings.mode == Intervalometer::LONG_EXPOSURE_STILL) &&
-                !ra_axis.trackingActive)
-            {
-                server.send(200, MIME_TYPE_TEXT,
-                            languageMessageStrings[language][MSG_TRACKING_NOT_ACTIVE]);
-            }
-            else
-            {
-                intervalometer.startCapture();
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ON]);
-            }
-        }
+        delete db;
+        return nullptr;
     }
-    else
-    {
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ALREADY_ON]);
-    }
+
+    return db;
 }
 
-void handleGetPresetExposureSettings()
+String getChipID()
 {
-    int preset = server.arg(PRESET).toInt();
-    intervalometer.readSettingsFromPreset(preset);
-    JsonDocument settings;
-    String json;
-    settings[MODE] = intervalometer.currentSettings.mode;
-    settings[EXPOSURES] = intervalometer.currentSettings.exposures;
-    settings[DELAY] = intervalometer.currentSettings.delayTime;
-    settings[PREDELAY] = intervalometer.currentSettings.preDelay;
-    settings[EXPOSURE_TIME] = intervalometer.currentSettings.exposureTime;
-    settings[PAN_ANGLE] = intervalometer.currentSettings.panAngle * 100;
-    settings[PAN_DIRECTION] = intervalometer.currentSettings.panDirection;
-    settings[DITHER_CHOICE] = intervalometer.currentSettings.dither;
-    settings[DITHER_FREQUENCY] = intervalometer.currentSettings.ditherFrequency;
-    settings[ENABLE_TRACKING] = intervalometer.currentSettings.enableTracking;
-    settings[FRAMES] = intervalometer.currentSettings.frames;
-    settings[PIXEL_SIZE] = intervalometer.currentSettings.pixelSize * 100;
-    settings[FOCAL_LENGTH] = intervalometer.currentSettings.focalLength;
-    serializeJson(settings, json);
-    // print_out(json);
-    server.send(200, "application/json", json);
+    uint64_t chipid = ESP.getEfuseMac();
+    uint8_t baseMac[6];
+
+    // Extract each byte of the MAC address from the chipid
+    baseMac[0] = (chipid >> 40) & 0xFF;
+    baseMac[1] = (chipid >> 32) & 0xFF;
+    baseMac[2] = (chipid >> 24) & 0xFF;
+    baseMac[3] = (chipid >> 16) & 0xFF;
+    baseMac[4] = (chipid >> 8) & 0xFF;
+    baseMac[5] = chipid & 0xFF;
+
+    // Create a String object to hold the formatted ID
+    String id = String(baseMac[4], HEX) + String(baseMac[5], HEX);
+    return id;
 }
 
-void handleAbortCapture()
+#if DEBUG == 1
+void handleNotFound()
 {
-    if (intervalometer.intervalometerActive)
-    {
-        intervalometer.abortCapture();
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_OFF]);
-    }
-    else
-    {
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAPTURE_ALREADY_OFF]);
-    }
+    print_out("HTTP 404: %s %s", server.method() == HTTP_GET ? "GET" : "POST",
+              server.uri().c_str());
+    print_out("  Client: %s", server.client().remoteIP().toString().c_str());
+    print_out("  User-Agent: %s", server.header("User-Agent").c_str());
+    server.send(404, MIME_TYPE_TEXT, "Not Found");
 }
-
-void handleStatusRequest()
-{
-    if (intervalometer.intervalometerActive)
-    {
-        switch (intervalometer.currentState)
-        {
-            case Intervalometer::PRE_DELAY:
-                server.send(200, MIME_TYPE_TEXT,
-                            languageMessageStrings[language][MSG_CAP_PREDELAY]);
-                break;
-            case Intervalometer::CAPTURE:
-                server.send(200, MIME_TYPE_TEXT,
-                            languageMessageStrings[language][MSG_CAP_EXPOSING]);
-                break;
-            case Intervalometer::DITHER:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DITHER]);
-                break;
-            case Intervalometer::PAN:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_PANNING]);
-                break;
-            case Intervalometer::DELAY:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_DELAY]);
-                break;
-            case Intervalometer::REWIND:
-                server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_CAP_REWIND]);
-                break;
-            case Intervalometer::INACTIVE:
-            default:
-                break;
-        }
-    }
-    else if (ra_axis.slewActive)
-    {
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEWING]);
-    }
-    else if (ra_axis.trackingActive)
-    {
-        server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_TRACKING_ON]);
-    }
-    else
-    {
-        if (intervalometer.currentErrorMessage == ErrorMessage::ERR_MSG_NONE)
-            server.send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_IDLE]);
-        else
-            server.send(200, MIME_TYPE_TEXT,
-                        languageErrorMessageStrings[language][intervalometer.currentErrorMessage]);
-    }
-
-    if (ra_axis.slewActive)
-    {
-        slewTimeOut.setCountValue(0); // reset timeout counter
-    }
-
-    server.send(204, MIME_TYPE_TEXT, "dummy");
-}
-
-void handleVersion()
-{
-    server.send(200, MIME_TYPE_TEXT, (String) INTERNAL_VERSION);
-}
+#endif
 
 void setupWireless()
 {
-#ifdef AP
+#if AP_MODE == 1
+    // Create unique SSID for each device
+    String chipID = getChipID();
+    char ssid[32];
+    sprintf(ssid, "%s#%s", WIFI_SSID, chipID.c_str());
+
     WiFi.mode(WIFI_MODE_AP);
-    WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
-    vTaskDelay(500);
-    print_out("Creating Wifi Network");
+    print_out("Creating Wifi Network: %s", ssid);
+
+    // Configure AP with specific IP settings
+    IPAddress local_IP(192, 168, 4, 1);
+    IPAddress gateway(192, 168, 4, 1);
+    IPAddress subnet(255, 255, 255, 0);
+
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to configure AP IP settings");
+    }
+
+    if (!WiFi.softAP(ssid, WIFI_PASSWORD))
+    {
+        print_out("Failed to start AP");
+    }
+
+    vTaskDelay(1000); // Give more time for AP to initialize
 
     // ANDROID 10 WORKAROUND==================================================
     // set new WiFi configurations
+    print_out("Applying Android 10 compatibility workaround...");
     WiFi.disconnect();
-    print_out("reconfig WiFi...");
     /*Stop wifi to change config parameters*/
     esp_wifi_stop();
     esp_wifi_deinit();
@@ -385,11 +181,28 @@ void setupWireless()
     print_out("WiFi: Disabled AMPDU...");
     esp_wifi_init(&my_config); // set the new config = "Disable AMPDU"
     esp_wifi_start();          // Restart WiFi
-    vTaskDelay(500);
+
+    // Restart AP after workaround
+    WiFi.mode(WIFI_MODE_AP);
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet))
+    {
+        print_out("Failed to reconfigure AP IP settings after workaround");
+    }
+    if (!WiFi.softAP(ssid, WIFI_PASSWORD))
+    {
+        print_out("Failed to restart AP after workaround");
+    }
+
+    vTaskDelay(1000);
     // ANDROID 10 WORKAROUND==================================================
+
+    print_out("AP setup complete. Checking status...");
+    print_out("AP Status: %s", WiFi.softAPgetStationNum() >= 0 ? "Active" : "Inactive");
+    print_out("WiFi Mode: %d", WiFi.getMode());
 #else
     WiFi.mode(WIFI_MODE_STA); // Set ESP32 in station mode
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    print_out("Connecting to SSID: %s with password: %s", WIFI_SSID, WIFI_PASSWORD);
     print_out("Connecting to Network in STA mode");
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -398,38 +211,73 @@ void setupWireless()
     }
 #endif
 
-    server.on("/", HTTP_GET, handleRoot);
-    server.on("/on", HTTP_GET, handleOn);
-    server.on("/off", HTTP_GET, handleOff);
-    server.on("/startslew", HTTP_GET, handleSlewRequest);
-    server.on("/stopslew", HTTP_GET, handleSlewOff);
-    server.on("/setCurrent", HTTP_GET, handleSetCurrent);
-    server.on("/readPreset", HTTP_GET, handleGetPresetExposureSettings);
-    server.on("/abort", HTTP_GET, handleAbortCapture);
-    server.on("/status", HTTP_GET, handleStatusRequest);
-    server.on("/version", HTTP_GET, handleVersion);
-    server.on("/setlang", HTTP_GET, handleSetLanguage);
+    // Initialize OTA Handler (singleton)
+    OTAHandler::getInstance().init(&server);
+
+    // Register all REST API endpoints using ApiHandler
+    ApiHandler::getInstance().init(&server);
+    ApiHandler::getInstance().registerEndpoints();
+
+#if DEBUG == 1
+    server.onNotFound(handleNotFound);
+    print_out("Web server debug logging enabled");
+#endif
 
     // Start the server
     server.begin();
 
-#ifdef AP
-    print_out("%s", WiFi.softAPIP().toString().c_str());
+#if AP_MODE == 1
+    IPAddress apIP = WiFi.softAPIP();
+    print_out("AP IP address: %s", apIP.toString().c_str());
+    if (apIP == IPAddress(0, 0, 0, 0))
+    {
+        print_out("ERROR: AP IP is 0.0.0.0 - AP may not be configured correctly");
+        print_out("WiFi Mode: %d", WiFi.getMode());
+        print_out("AP Status: %d", WiFi.status());
+    }
 #else
-    print_out("%s", WiFi.localIP().toString().c_str());
+    print_out("STA IP address: %s", WiFi.localIP().toString().c_str());
 #endif
 
-    dnsServer.setTTL(300);
-    dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-    dnsServer.start(DNS_PORT, WEBSITE_NAME, WiFi.softAPIP());
+    print_out("Starting mDNS responder");
+    if (!MDNS.begin(MDNS_NAME))
+    {
+        print_out("Error starting mDNS responder");
+        return;
+    }
+    print_out("mDNS responder started");
+
+    MDNS.addService("http", "tcp", WEBSERVER_PORT);
+    MDNS.addServiceTxt("http", "tcp", "ogtracker", "1");
+    MDNS.addServiceTxt("http", "tcp", "version", BUILD_VERSION);
+
+    MDNS.addService("ogtracker", "tcp", WEBSERVER_PORT);
+    MDNS.addServiceTxt("ogtracker", "tcp", "version", BUILD_VERSION);
 }
 
 void setup()
 {
     // Start the debug serial connection
     setup_uart(&Serial, 115200);
-    EEPROM.begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
-    uint8_t langNum = EEPROM.read(LANG_EEPROM_ADDR);
+
+    // start UART task before any usage of print_out
+    if (xTaskCreatePinnedToCore(uartTask, "uart", 4096, NULL, 1, NULL, 1))
+    {
+        print_out_tbl(TSK_CLEAR_SCREEN);
+        print_out_tbl(TSK_START_UART);
+    }
+
+    print_out_tbl(HEAD_LINE);
+    print_out_tbl(HEAD_LINE_TRACKER);
+    print_out("***         Running on %d MHz         ***", getCpuFrequencyMhz());
+    print_out("***     Dual Core Setup: ISR Core 0    ***");
+    print_out("***     Application Tasks on Core 1    ***");
+    print_out_tbl(HEAD_LINE_VERSION);
+
+    // Initialize EEPROM manager
+    EepromManager::begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
+    uint8_t langNum = 0;
+    EepromManager::readObject(LANG_EEPROM_ADDR, langNum);
 
     if (langNum >= LANG_COUNT)
         language = static_cast<Languages>(0);
@@ -442,8 +290,6 @@ void setup()
     pinMode(AXIS1_STEP, OUTPUT);
     pinMode(AXIS1_DIR, OUTPUT);
     pinMode(EN12_n, OUTPUT);
-    pinMode(MS1, OUTPUT);
-    pinMode(MS2, OUTPUT);
     digitalWrite(AXIS1_STEP, LOW);
     digitalWrite(EN12_n, LOW);
     // handleExposureSettings();
@@ -451,22 +297,35 @@ void setup()
     // Initialize Wifi and web server
     setupWireless();
 
-    if (xTaskCreate(uartTask, "UartTask", 4096, NULL, 1, NULL))
-    {
-        print_out("\033c");
-        print_out("Starting uart task");
-    }
-    if (xTaskCreate(intervalometerTask, "intervalometerTask", 4096, NULL, 1, NULL))
-        print_out("Starting intervalometer task");
-    if (xTaskCreatePinnedToCore(webserverTask, "webserverTask", 4096, NULL, 1, NULL, 0))
-        print_out("Starting webserver task");
-    if (xTaskCreate(dnsserverTask, "dnsserverTask", 2048, NULL, 1, NULL))
-        print_out("Starting dnsserver task");
+    // Initialize the console serial
+    setup_terminal(&term);
+
+    if (xTaskCreatePinnedToCore(consoleTask, "console", 4096, NULL, 1, NULL, 1))
+        print_out_tbl(TSK_START_CONSOLE);
+
+    if (xTaskCreatePinnedToCore(intervalometerTask, "intervalometer", 4096, NULL, 1, NULL, 1))
+        print_out_tbl(TSK_START_INTERVALOMETER);
+    // Increase webserver task stack size to handle large HTML responses and concurrent connections
+    if (xTaskCreatePinnedToCore(webserverTask, "webserver", 8192, NULL, 1, NULL, 1))
+        print_out_tbl(TSK_START_WEBSERVER);
+
+    // Give tasks time to fully initialize before starting axis
+    vTaskDelay(100);
+    print_out("Initializing axis with TMC driver...");
+
+    ra_axis.begin();
 }
 
 void loop()
 {
     int delay_ticks = 0;
+    trackingRates.readTrackingRatePresetsFromEEPROM();
+
+    if (DEFAULT_ENABLE_TRACKING == 1)
+    {
+        ra_axis.startTracking(ra_axis.rate.tracking, ra_axis.direction.tracking);
+    }
+
     for (;;)
     {
         if (ra_axis.slewActive)
@@ -481,6 +340,7 @@ void loop()
             digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
             delay_ticks = 1000; // Delay for 1 second
         }
+        ra_axis.print_status();
         vTaskDelay(delay_ticks);
     }
 }
@@ -494,23 +354,15 @@ void webserverTask(void* pvParameters)
     }
 }
 
-void dnsserverTask(void* pvParameters)
-{
-    for (;;)
-    {
-        dnsServer.processNextRequest();
-        vTaskDelay(1);
-    }
-}
-
 void intervalometerTask(void* pvParameters)
 {
-    intervalometer.readPresetsFromEEPROM();
+    intervalometer = new Intervalometer(INTERV_PIN);
+    intervalometer->readPresetsFromEEPROM();
 
     for (;;)
     {
-        if (intervalometer.intervalometerActive)
-            intervalometer.run();
+        if (intervalometer->isActive())
+            intervalometer->cleanup();
         vTaskDelay(1);
     }
 }
@@ -522,4 +374,43 @@ void uartTask(void* pvParameters)
         uart_task();
         vTaskDelay(1);
     }
+}
+
+void consoleTask(void* pvParameters)
+{
+    for (;;)
+    {
+        term.readSerial();
+        vTaskDelay(1);
+    }
+}
+
+/**
+ * @brief System shutdown and reset
+ *
+ * Stops motors, cleans up critical resources, and performs hard reset.
+ * The reset() function jump provides more complete memory cleanup than ESP.restart()
+ */
+void (*resetFunc)(void) = 0; // declare reset function at address 0
+
+void systemShutdown()
+{
+    print_out("[SHUTDOWN] System restart initiated...");
+
+    // Stop motors for safety
+    ra_axis.stopTracking();
+    ra_axis.stopSlew();
+    ra_axis.stopGotoTarget();
+    intervalometer->abortCapture();
+    intervalometer->cleanup();
+    server.stop();
+    server.close();
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+
+    vTaskDelay(2000);
+    print_out("[SHUTDOWN] Goodbye!");
+    vTaskDelay(500);
+
+    resetFunc();
 }

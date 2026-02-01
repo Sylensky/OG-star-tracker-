@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>OTA Firmware Update</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --text: #b10000;
+      --secondary-text: #d63900;
+      --disabled-text: #444444;
+      --background: #000;
+      --border: #b10000;
+      --button: #b10000;
+      --disabled-button: #8f3939;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      text-align: center;
+      font-family: system-ui;
+      margin: 0;
+      width: 100%;
+      user-select: none;
+    }
+
+    html {
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .content {
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      max-width: 450px;
+      width: 100%;
+      background-color: #000000;
+    }
+
+    .card {
+      display: block;
+      background-color: #000000;
+      padding: 16px;
+      border-radius: 32px;
+      margin-top: 20px;
+      border: 1px solid #3a0000;
+      box-shadow: inset -3px -3px 4px rgba(177, 0, 0, 0.9),
+        inset 3px 3px 4px rgba(177, 0, 0, 0.9),
+        inset 3px -3px 4px rgba(80, 0, 0, 0.5),
+        inset -3px 3px 4px rgba(80, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 26px;
+      font-family: system-ui;
+      color: var(--text);
+    }
+
+    h2 {
+      font-size: 20px;
+      font-family: system-ui;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 16px;
+      font-family: system-ui;
+      color: var(--secondary-text);
+    }
+
+    h4 {
+      font-size: 10px;
+      font-family: system-ui;
+      color: var(--secondary-text);
+    }
+
+    button {
+      display: inline-block;
+      background-color: var(--button);
+      color: black;
+      border: none;
+      padding: 10px 10px;
+      margin-top: 10px;
+      border-radius: 16px;
+      font-size: 14px;
+      text-align: center;
+      text-decoration: none;
+      font-family: system-ui;
+      font-weight: bold;
+      width: 50%;
+      min-width: 120px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: var(--disabled-button);
+      color: #262626;
+    }
+
+    input[type="file"] {
+      color: var(--text);
+      background-color: var(--background);
+      border: 2px solid var(--border);
+      font-size: 16px;
+      padding: 10px;
+      font-family: system-ui;
+      border-radius: 8px;
+      box-sizing: border-box;
+      text-align: center;
+      width: 100%;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background-color: var(--button);
+      color: black;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: system-ui;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .upload-form {
+      margin: 20px 0;
+    }
+
+    .progress-container {
+      display: none;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background-color: #1a0000;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #3a0000;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--button);
+      width: 0%;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      font-weight: bold;
+      font-family: system-ui;
+    }
+
+    .message {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 16px;
+      display: none;
+      font-family: system-ui;
+    }
+
+    .message.success {
+      background-color: #1a4000;
+      color: #4caf50;
+      border: 1px solid #3a0000;
+    }
+
+    .message.error {
+      background-color: #400000;
+      color: #ff6666;
+      border: 1px solid #3a0000;
+    }
+
+    .info {
+      background-color: #1a0000;
+      padding: 15px;
+      border-left: 4px solid var(--border);
+      margin: 20px 0;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+      color: var(--secondary-text);
+    }
+
+    .info strong {
+      color: var(--text);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--secondary-text);
+      text-decoration: none;
+      font-family: system-ui;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content">
+    <h1>OTA Firmware Update</h1>
+
+    <div class="card">
+      <h2>Current Version: <span id="currentVersion">Loading...</span></h2>
+      <h4 id="buildDate">Build Date: Loading...</h4>
+
+      <div style="text-align: center; margin: 15px 0;">
+        <button id="checkUpdateBtn" style="width: 80%; max-width: 300px;">Check for Updates</button>
+      </div>
+
+      <div class="message" id="updateMessage"></div>
+
+      <div id="updateInfo"
+        style="display:none; margin: 20px 0; padding: 15px; background-color: #1a0000; border-radius: 8px; text-align: left;">
+        <h3 style="margin-top: 0; text-align: center;">Latest Release</h3>
+        <p style="text-align: center;"><strong>Version:</strong> <span id="latestVersion"></span></p>
+
+        <div style="margin: 15px 0;">
+          <strong>Release Notes:</strong>
+          <ul id="releaseNotes"
+            style="color: var(--secondary-text); margin-top: 8px; padding-left: 20px; list-style-type: disc;"></ul>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; margin: 20px 0;">
+          <button id="downloadBtn" style="width: 100%; max-width: 350px; margin: 0;">Download & Install Update</button>
+          <button id="manualDownloadBtn"
+            style="width: 100%; max-width: 350px; margin: 0; background-color: #5a0000;">Manual Download from
+            GitHub</button>
+        </div>
+      </div>
+
+      <div id="downloadProgress" style="display: none; margin-top: 15px;">
+        <h4 style="margin: 5px 0; color: var(--text); text-align: center;">Installing Update...</h4>
+        <div class="progress-bar" style="margin: 10px 0;">
+          <div class="progress-fill" id="otaProgressFill">0%</div>
+        </div>
+        <p style="color: var(--secondary-text); font-size: 12px; margin: 5px 0; text-align: center;">Do not close this
+          page or power off the device!</p>
+      </div>
+
+      <div id="otaResultMessage"
+        style="display: none; margin: 20px 0; padding: 15px; border-radius: 16px; font-family: system-ui;"></div>
+
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ul>
+          <li>Click "Check for Updates" to see if a new version is available</li>
+          <li>Use "Download & Install Update" for automatic installation</li>
+          <li>Or manually download the latest firmware.bin from GitHub</li>
+          <li>Select the firmware.bin file below for manual upload</li>
+          <li>Click "Upload Firmware" and wait for completion</li>
+          <li>Device will reboot automatically</li>
+        </ul>
+      </div>
+
+      <form id="otaForm" class="upload-form" method="POST" action="/update" enctype="multipart/form-data">
+        <input type="file" name="firmware" id="fileInput" accept=".bin" required />
+        <div style="text-align: center;">
+          <button type="submit" id="uploadBtn" style="width: 80%; max-width: 300px;">Upload Firmware</button>
+        </div>
+      </form>
+    </div>
+
+    <a href="/" class="back-link">← Back to Main Page</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("otaForm");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const checkUpdateBtn = document.getElementById("checkUpdateBtn");
+    const updateMessage = document.getElementById("updateMessage");
+    const updateInfo = document.getElementById("updateInfo");
+
+    // Check version on page load
+    checkForUpdates();
+
+    checkUpdateBtn.addEventListener("click", () => {
+      checkForUpdates();
+    });
+
+    let updateData = null;
+
+    async function checkForUpdates() {
+      checkUpdateBtn.disabled = true;
+      checkUpdateBtn.textContent = "Checking...";
+      updateMessage.style.display = "none";
+      updateInfo.style.display = "none";
+
+      try {
+        const response = await fetch("/checkversion");
+        const data = await response.json();
+        updateData = data;
+
+        document.getElementById("currentVersion").textContent = data.currentVersion || "Unknown";
+        document.getElementById("buildDate").textContent = "Build Date: " + (data.buildDate || "Unknown");
+
+        if (data.error) {
+          showUpdateMessage("Error: " + data.error, "error");
+        } else if (data.latestVersion) {
+          // Show available release (let user decide if they want it)
+          document.getElementById("latestVersion").textContent = data.latestVersion;
+
+          // Format release notes as list
+          const notesContainer = document.getElementById("releaseNotes");
+          notesContainer.innerHTML = "";
+
+          if (data.releaseNotes) {
+            const lines = data.releaseNotes.split("|").filter(line => line.trim().length > 0);
+            lines.forEach(line => {
+              const li = document.createElement("li");
+              li.textContent = line.trim();
+              li.style.marginBottom = "5px";
+              notesContainer.appendChild(li);
+            });
+          } else {
+            const li = document.createElement("li");
+            li.textContent = "No release notes available";
+            notesContainer.appendChild(li);
+          }
+
+          // Setup download buttons
+          const downloadBtn = document.getElementById("downloadBtn");
+          const manualBtn = document.getElementById("manualDownloadBtn");
+
+          if (data.downloadUrl) {
+            downloadBtn.style.display = "block";
+            downloadBtn.onclick = () => downloadAndInstall(data.downloadUrl);
+          } else {
+            downloadBtn.style.display = "none";
+          }
+
+          manualBtn.onclick = () => window.open(data.releaseUrl, "_blank");
+
+          updateInfo.style.display = "block";
+          showUpdateMessage("Latest available: " + data.latestVersion + " (Current: " + data.currentVersion + ")", "success");
+        } else {
+          showUpdateMessage("Could not retrieve release information", "error");
+        }
+      } catch (error) {
+        showUpdateMessage("Failed to check for updates: " + error.message, "error");
+      } finally {
+        checkUpdateBtn.disabled = false;
+        checkUpdateBtn.textContent = "Check for Updates";
+      }
+    }
+
+    // Utility functions
+    const getElement = (id) => document.getElementById(id);
+    const updateProgress = (fill, percent) => {
+      fill.style.width = `${percent}%`;
+      fill.textContent = `${percent}%`;
+    };
+
+    function showMessage(elementId, text, type) {
+      const element = getElement(elementId);
+      element.textContent = text;
+      element.style.display = "block";
+      element.className = elementId === "updateMessage" ? `message ${type}` : "";
+      element.style.textAlign = "center";
+      element.style.fontWeight = "bold";
+
+      const colors = {
+        success: { bg: "#1a4000", text: "#4caf50", border: "#3a0000" },
+        error: { bg: "#400000", text: "#ff6666", border: "#3a0000" },
+        info: { bg: "#1a1a00", text: "#d63900", border: "#3a0000" }
+      };
+
+      if (colors[type]) {
+        element.style.backgroundColor = colors[type].bg;
+        element.style.color = colors[type].text;
+        element.style.border = `1px solid ${colors[type].border}`;
+      }
+    }
+
+    const showUpdateMessage = (text, type) => showMessage("updateMessage", text, type);
+    const showOTAResultMessage = (text, type) => showMessage("otaResultMessage", text, type);
+
+    // Common error handler for OTA operations
+    const handleOTAError = (progressFill, errorMsg, resetFn, delay = 2000) => {
+      updateProgress(progressFill, 0);
+      showOTAResultMessage(errorMsg, "error");
+      if (resetFn) setTimeout(resetFn, delay);
+    };
+
+    // OTA status polling (500ms interval)
+    function pollOTAStatus(onProgress, onComplete, onError) {
+      let lastKB = 0;
+      let verificationStartTime = null;
+      const VERIFICATION_TIMEOUT_MS = 5000; // 5 second timeout for verification
+
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch("/otastatus");
+          if (!response.ok) return;
+
+          const data = await response.json();
+          if (data.active && onProgress) {
+            onProgress(data);
+            lastKB = Math.floor(data.bytesWritten / 1024);
+            verificationStartTime = null; // Reset timeout if still actively uploading
+          } else if (data.complete || data.error) {
+            clearInterval(interval);
+            (data.error && onError ? onError : onComplete)();
+          } else if (!data.active && !data.complete && !data.error && data.percent >= 100) {
+            // Upload finished but not active/complete/error - verification phase
+            if (verificationStartTime === null) {
+              verificationStartTime = Date.now();
+            } else if (Date.now() - verificationStartTime > VERIFICATION_TIMEOUT_MS) {
+              // Verification taking too long - assume failure
+              clearInterval(interval);
+              if (onError) onError();
+            }
+          }
+        } catch (e) {
+          if (lastKB > 50 && onComplete) {
+            clearInterval(interval);
+            onComplete();
+          }
+        }
+      }, 500);
+      return interval;
+    }
+
+    function startRebootCountdown(callback, initialDelay = 5) {
+      let countdown = initialDelay;
+      const updateMessage = () => showOTAResultMessage(
+        countdown > 0 ? `Update successful! Device will reboot in ${countdown} seconds...` : "Rebooting now...",
+        "success"
+      );
+
+      updateMessage();
+      const interval = setInterval(() => {
+        countdown--;
+        updateMessage();
+        if (countdown <= 0) {
+          clearInterval(interval);
+          setTimeout(callback, 3000);
+        }
+      }, 1000);
+    } function resetUIState(btn1, btn2, btnText, progress) {
+      btn1.disabled = false;
+      btn2.disabled = false;
+      btn1.textContent = btnText;
+      progress.style.display = "none";
+    }
+
+    async function downloadAndInstall(downloadUrl) {
+      const downloadBtn = getElement("downloadBtn");
+      const manualBtn = getElement("manualDownloadBtn");
+      const downloadProgress = getElement("downloadProgress");
+      const otaProgressFill = getElement("otaProgressFill");
+
+      if (!confirm("This will download and install the update. The device will reboot automatically. Continue?")) return;
+
+      downloadBtn.disabled = true;
+      manualBtn.disabled = true;
+      downloadBtn.textContent = "Installing...";
+      downloadProgress.style.display = "block";
+      updateMessage.style.display = "none";
+      getElement("otaResultMessage").style.display = "none";
+      updateProgress(otaProgressFill, 0);
+
+      const statusInterval = pollOTAStatus(
+        (data) => {
+          const { percent = 0 } = data;
+          updateProgress(otaProgressFill, percent);
+        },
+        () => {
+          updateProgress(otaProgressFill, 100);
+          showOTAResultMessage("Verifying update...", "info");
+          setTimeout(() => startRebootCountdown(() => window.location.reload()), 500);
+        },
+        () => handleOTAError(otaProgressFill, "Update failed! Check serial output for details.",
+          () => resetUIState(downloadBtn, manualBtn, "Download & Install Update", downloadProgress))
+      );
+
+      try {
+        const response = await fetch("/downloadupdate?url=" + encodeURIComponent(downloadUrl));
+        if (!response.ok) {
+          clearInterval(statusInterval);
+          showUpdateMessage("Update failed: " + await response.text(), "error");
+          resetUIState(downloadBtn, manualBtn, "Download & Install Update", downloadProgress);
+        }
+      } catch (error) {
+        clearInterval(statusInterval);
+        showUpdateMessage("Update failed: " + error.message, "error");
+        resetUIState(downloadBtn, manualBtn, "Download & Install Update", downloadProgress);
+      }
+    } form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const file = fileInput.files[0];
+      if (!file) return showUpdateMessage("Please select a firmware file", "error");
+      if (!file.name.endsWith(".bin")) return showUpdateMessage("Please select a valid .bin file", "error");
+
+      const downloadProgress = getElement("downloadProgress");
+      const otaProgressFill = getElement("otaProgressFill");
+
+      const resetUploadForm = () => {
+        uploadBtn.disabled = false;
+        fileInput.disabled = false;
+        uploadBtn.textContent = "Upload Firmware";
+        downloadProgress.style.display = "none";
+        updateProgress(otaProgressFill, 0);
+      };
+
+      uploadBtn.disabled = true;
+      fileInput.disabled = true;
+      uploadBtn.textContent = "Uploading...";
+      downloadProgress.style.display = "block";
+      updateMessage.style.display = "none";
+      updateInfo.style.display = "none";
+      updateProgress(otaProgressFill, 0);
+      getElement("otaResultMessage").style.display = "none";
+
+      const formData = new FormData();
+      formData.append("firmware", file);
+
+      try {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            updateProgress(otaProgressFill, percent);
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          if (xhr.status === 200) {
+            updateProgress(otaProgressFill, 100);
+            showOTAResultMessage("Verifying update...", "info");
+
+            pollOTAStatus(
+              (data) => updateProgress(otaProgressFill, data.percent || 100),
+              () => startRebootCountdown(() => window.location.href = "/"),
+              () => handleOTAError(otaProgressFill, "Update failed! Check serial output for details.", resetUploadForm)
+            );
+          } else {
+            handleOTAError(otaProgressFill, "Upload failed: " + xhr.responseText, resetUploadForm);
+          }
+        });
+
+        xhr.addEventListener("error", () =>
+          handleOTAError(otaProgressFill, "Upload error. Please try again.", resetUploadForm)
+        );
+
+        xhr.open("POST", "/update");
+        xhr.send(formData);
+      } catch (error) {
+        handleOTAError(otaProgressFill, "Error: " + error.message, resetUploadForm);
+      }
+    });
+
+
+  </script>
+</body>
+
+</html>

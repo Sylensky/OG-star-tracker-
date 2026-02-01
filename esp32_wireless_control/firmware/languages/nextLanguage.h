@@ -1,18 +1,19 @@
 #ifndef NEXT_LANG_H
 #define NEXT_LANG_H
-#include "web_languages.h"
+#include "../website/web_languages.h"
+#include <pgmspace.h>
 
 /*Use this template to add an additional lamguage.
 After finishing adjust web_languages.h and .cpp to include the new language
 */
 
-const char* nextLanguageStrings[LANG_COUNT] = {
+const char* const nextLanguageStrings[LANG_COUNT] PROGMEM = {
     // LANGUAGE NAMES
     "", // ENGLISH
     "", // CHINESE
 };
 
-const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
+const char* const nextLangMessageStrings[NUMBER_OF_MESSAGES] PROGMEM = {
     // MESSAGE STRINSS
     "", // MSG_TRACKING_ON
     "", // MSG_TRACKING_OFF
@@ -31,10 +32,13 @@ const char* nextLangMessageStrings[NUMBER_OF_MESSAGES] = {
     "", // MSG_CAP_PANNING
     "", // MSG_CAP_DELAY
     "", // MSG_CAP_REWIND
+    "", // MSG_GOTO_RA_PANNING_ON
+    "", // MSG_GOTO_RA_PANNING_OFF
+    "", // MSG_POSITION_SET_SUCCESS
     "", // MSG_IDLE
 };
 
-const char* nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
+const char* const nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] PROGMEM = {
     // ERROR MESSAGE STRINGS
     "", // ERR_MSG_INVALID_CAPTURE_MODE
     "", // ERR_MSG_INVALID_EXPOSURE_LENGTH
@@ -43,6 +47,7 @@ const char* nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
     "", // ERR_MSG_INVALID_DELAY_TIME
     "", // ERR_MSG_INVALID_FRAME_AMOUNT
     "", // ERR_MSG_INVALID_PAN_ANGLE
+    "", // ERR_MSG_INVALID_PAN_DURATION
     "", // ERR_MSG_INVALID_PAN_DIRECTION
     "", // ERR_MSG_INVALID_ENABLE_TRACKING_VALUE
     "", // ERR_MSG_INVALID_DITHER_CHOICE
@@ -51,7 +56,7 @@ const char* nextLangErrorMessageStrings[NUMBER_OF_ERROR_MESSAGES] = {
     ""  // ERR_MSG_INVALID_PIXEL_SIZE
 };
 
-const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
+const char* const nextLangHTMLStrings[numberOfHTMLStrings] PROGMEM = {
     // HTML STRINGS
     "", // STR_TITLE
     "", // STR_TRACKER_CONTOLLER
@@ -80,8 +85,8 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_MODE
     "", // STR_LONG_EXPOSURE_STILL
     "", // STR_LONG_EXPOSURE_MOVIE
-    "", // STR_DAY_TIME_LAPSE
-    "", // STR_DAY_TIME_LAPSE_PAN
+    "", // STR_TIMELAPSE
+    "", // STR_TIMELAPSE_PAN
     "", // STR_EXPOSURE_LENGTH
     "", // STR_EXPOSURE_HINT
     "", // STR_NO_EXPOSURES
@@ -91,10 +96,17 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_FRAMES
     "", // STR_NO_FRAMES
     "", // STR_PAN_ANGLE
-    "", // STR_DEGREES
+    "", // STR_HOURS
     "", // STR_PAN_DIRECTION
+    "", // STR_CONTINUOUS_PAN
     "", // STR_LEFT
     "", // STR_RIGHT
+    "", // STR_GOTO_RA_CONTROL
+    "", // STR_GOTO_RA_CURRENT
+    "", // STR_GOTO_RA_TARGET
+    "", // STR_GOTO_RA_HINT
+    "", // STR_START_GOTO_RA
+    "", // STR_STOP_GOTO_RA
     "", // STR_ENABLE_TRACKING
     "", // STR_NO
     "", // STR_YES
@@ -109,7 +121,30 @@ const char* nextLangHTMLStrings[numberOfHTMLStrings] = {
     "", // STR_CAPTURE_TIME
     "", // STR_STATUS
     "", // STR_STATUS_MSG
-    ""  // STR_FIRMWARE_VERSION
+    "", // STR_FIRMWARE_VERSION
+    "", // STR_STAR_CATALOG
+    "", // STR_STAR_OBJECT_NAME
+    "", // STR_STAR_SEARCH_PLACEHOLDER
+    "", // STR_STAR_SEARCH
+    "", // STR_STAR_SET_CURRENT
+    "", // STR_STAR_OBJECT_DETAILS
+    "", // STR_STAR_SEARCH_ERROR
+    "", // STR_STAR_OBJECT_NOT_FOUND
+    "", // STR_STAR_RA
+    "", // STR_STAR_DEC
+    "", // STR_STAR_TYPE
+    "", // STR_STAR_MAGNITUDE
+    "", // STR_STAR_CONSTELLATION
+    "", // STR_LOCAL_TIME
+    "", // STR_CURRENT_POSITION
+    "", // STR_CURRENT_RA_POSITION
+    "", // STR_DEC_DIFFERENCE
+    "", // STR_CURRENT_TIME
+    "", // STR_LONGITUDE
+    "", // STR_TUNE_RATE
+    "", // STR_RATE_PRESET
+    "", // STR_SAVE_RATE_PRESET
+    ""  // STR_LOAD_RATE_PRESET
 };
 
 #endif

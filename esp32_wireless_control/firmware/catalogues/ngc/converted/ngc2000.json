@@ -1,0 +1,4592 @@
+[
+  {
+    "id": "NGC7822",
+    "type": "Nb",
+    "ra": 0.060000000000000005,
+    "dec": 68.61666666666666,
+    "constellation": "Cep",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "! eeF, eeL"
+  },
+  {
+    "id": "NGC55",
+    "type": "Gx",
+    "ra": 0.24833333333333335,
+    "dec": -39.18333333333333,
+    "constellation": "Scl",
+    "size_arcmin": 32.4,
+    "magnitude": 8.0,
+    "description": "vB, vL, vmE, triN"
+  },
+  {
+    "id": "NGC104",
+    "type": "Gb",
+    "ra": 0.40166666666666667,
+    "dec": -72.08333333333333,
+    "constellation": "Tuc",
+    "size_arcmin": 30.9,
+    "magnitude": 4.0,
+    "description": "glob. cl.  !! vB, vL, vmCM"
+  },
+  {
+    "id": "NGC129",
+    "type": "OC",
+    "ra": 0.4983333333333333,
+    "dec": 60.233333333333334,
+    "constellation": "Cas",
+    "size_arcmin": 21.0,
+    "magnitude": 6.5,
+    "description": "Cl, vL, pR, lC, st 9...13"
+  },
+  {
+    "id": "NGC205",
+    "type": "Gx",
+    "ra": 0.6733333333333333,
+    "dec": 41.68333333333333,
+    "constellation": "And",
+    "size_arcmin": 17.4,
+    "magnitude": 8.0,
+    "description": "vB, vL, mE 165deg , vgvmbM; = M110"
+  },
+  {
+    "id": "NGC224",
+    "type": "Gx",
+    "ra": 0.7116666666666667,
+    "dec": 41.266666666666666,
+    "constellation": "And",
+    "size_arcmin": 178.0,
+    "magnitude": 3.5,
+    "description": "!!! eeB, eL, vmE (Andromeda); = M31"
+  },
+  {
+    "id": "NGC225",
+    "type": "OC",
+    "ra": 0.7233333333333333,
+    "dec": 61.78333333333333,
+    "constellation": "Cas",
+    "size_arcmin": 12.0,
+    "magnitude": 7.0,
+    "description": "Cl, L, lC, st 9...10"
+  },
+  {
+    "id": "NGC248",
+    "type": "Nb",
+    "ra": 0.7566666666666666,
+    "dec": -73.38333333333334,
+    "constellation": "Tuc",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, S, E or biN, vglbM"
+  },
+  {
+    "id": "NGC249",
+    "type": "Nb",
+    "ra": 0.7566666666666666,
+    "dec": -73.08333333333333,
+    "constellation": "Tuc",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, pL, vlE, r"
+  },
+  {
+    "id": "NGC261",
+    "type": "Nb",
+    "ra": 0.775,
+    "dec": -73.11666666666666,
+    "constellation": "Tuc",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, pL, R, gbM *13"
+  },
+  {
+    "id": "NGC246",
+    "type": "Pl",
+    "ra": 0.7833333333333333,
+    "dec": -11.883333333333333,
+    "constellation": "Cet",
+    "size_arcmin": 3.8,
+    "magnitude": 8.0,
+    "description": "vF, L, 4 st in dif neb"
+  },
+  {
+    "id": "NGC253",
+    "type": "Gx",
+    "ra": 0.7933333333333333,
+    "dec": -25.283333333333335,
+    "constellation": "Scl",
+    "size_arcmin": 25.1,
+    "magnitude": 7.1,
+    "description": "!! vvB, vvL, vmE 54deg , gbM"
+  },
+  {
+    "id": "NGC294",
+    "type": "Nb",
+    "ra": 0.8683333333333334,
+    "dec": -73.35,
+    "constellation": "Tuc",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, pL, R, vglbM, r"
+  },
+  {
+    "id": "IC59",
+    "type": "Nb",
+    "ra": 0.9450000000000001,
+    "dec": 61.06666666666667,
+    "constellation": "Cas",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "pF, eL! (nf gamma Cas)"
+  },
+  {
+    "id": "IC63",
+    "type": "Nb",
+    "ra": 0.9916666666666667,
+    "dec": 60.81666666666667,
+    "constellation": "Cas",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "pF, eL! conn with np one"
+  },
+  {
+    "id": "NGC362",
+    "type": "Gb",
+    "ra": 1.0533333333333332,
+    "dec": -70.85,
+    "constellation": "Tuc",
+    "size_arcmin": 12.9,
+    "magnitude": 6.6,
+    "description": "glob. cl. , vB, vL, vC, vmbM st 13-14"
+  },
+  {
+    "id": "NGC456",
+    "type": "Nb",
+    "ra": 1.24,
+    "dec": -73.28333333333333,
+    "constellation": "Tuc",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "pF, pL, iR, r, 1st of sev"
+  },
+  {
+    "id": "NGC457",
+    "type": "OC",
+    "ra": 1.3183333333333334,
+    "dec": 58.333333333333336,
+    "constellation": "Cas",
+    "size_arcmin": 13.0,
+    "magnitude": 6.4,
+    "description": "Cl, B, L, pRi, st 7, 8, 10"
+  },
+  {
+    "id": "NGC581",
+    "type": "OC",
+    "ra": 1.5533333333333332,
+    "dec": 60.7,
+    "constellation": "Cas",
+    "size_arcmin": 6.0,
+    "magnitude": 7.4,
+    "description": "Cl, pL, B, R, Ri, st 10...11; = M103"
+  },
+  {
+    "id": "IC131",
+    "type": "Nb",
+    "ra": 1.5533333333333332,
+    "dec": 30.75,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, close to *13.5"
+  },
+  {
+    "id": "IC135",
+    "type": "Nb",
+    "ra": 1.5533333333333332,
+    "dec": 30.466666666666665,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF"
+  },
+  {
+    "id": "IC136",
+    "type": "Nb",
+    "ra": 1.5533333333333332,
+    "dec": 30.5,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, diffic, *10 np 3'"
+  },
+  {
+    "id": "IC132",
+    "type": "Nb",
+    "ra": 1.555,
+    "dec": 30.95,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, D* (13, 13) close"
+  },
+  {
+    "id": "IC133",
+    "type": "Nb",
+    "ra": 1.555,
+    "dec": 30.883333333333333,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, S, vlb south, dif"
+  },
+  {
+    "id": "IC137",
+    "type": "Nb",
+    "ra": 1.56,
+    "dec": 30.516666666666666,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, pL, dif"
+  },
+  {
+    "id": "NGC598",
+    "type": "Gx",
+    "ra": 1.565,
+    "dec": 30.65,
+    "constellation": "Tri",
+    "size_arcmin": 62.0,
+    "magnitude": 5.7,
+    "description": "! eB, eL, R, vgbMN; = M33"
+  },
+  {
+    "id": "IC142",
+    "type": "Nb",
+    "ra": 1.565,
+    "dec": 30.75,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, stellar, or *13 inv"
+  },
+  {
+    "id": "IC143",
+    "type": "Nb",
+    "ra": 1.5683333333333334,
+    "dec": 30.783333333333335,
+    "constellation": "Tri",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, S, dif, *13 f 0'.6"
+  },
+  {
+    "id": "NGC654",
+    "type": "OC",
+    "ra": 1.7349999999999999,
+    "dec": 61.88333333333333,
+    "constellation": "Cas",
+    "size_arcmin": 5.0,
+    "magnitude": 6.5,
+    "description": "Cl, iF, Ri, one *6-7, st 11...14"
+  },
+  {
+    "id": "NGC659",
+    "type": "OC",
+    "ra": 1.7366666666666668,
+    "dec": 60.7,
+    "constellation": "Cas",
+    "size_arcmin": 5.0,
+    "magnitude": 7.9,
+    "description": "Cl, lRi, st B"
+  },
+  {
+    "id": "NGC663",
+    "type": "OC",
+    "ra": 1.7666666666666666,
+    "dec": 61.25,
+    "constellation": "Cas",
+    "size_arcmin": 16.0,
+    "magnitude": 7.1,
+    "description": "Cl, B, L, eRi, st pL"
+  },
+  {
+    "id": "IC172",
+    "type": "Nb",
+    "ra": 1.915,
+    "dec": 0.8166666666666667,
+    "constellation": "Cet",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "pB, S, R, bM"
+  },
+  {
+    "id": "IC175",
+    "type": "Nb",
+    "ra": 1.9383333333333332,
+    "dec": 1.3333333333333333,
+    "constellation": "Cet",
+    "size_arcmin": 0.2,
+    "magnitude": 0,
+    "description": "vF, dif, diffic"
+  },
+  {
+    "id": "NGC752",
+    "type": "OC",
+    "ra": 1.9633333333333334,
+    "dec": 37.68333333333333,
+    "constellation": "And",
+    "size_arcmin": 50.0,
+    "magnitude": 5.7,
+    "description": "Cl, vvL, Ri, st L & sc"
+  },
+  {
+    "id": "NGC744",
+    "type": "OC",
+    "ra": 1.9733333333333332,
+    "dec": 55.483333333333334,
+    "constellation": "Per",
+    "size_arcmin": 11.0,
+    "magnitude": 7.9,
+    "description": "Cl, pL, pRi, iF, st 11...13"
+  },
+  {
+    "id": "NGC869",
+    "type": "OC",
+    "ra": 2.3166666666666664,
+    "dec": 57.15,
+    "constellation": "Per",
+    "size_arcmin": 30.0,
+    "magnitude": 4.0,
+    "description": "! Cl, vvL, vRi, st 7...14"
+  },
+  {
+    "id": "IC1794",
+    "type": "Nb",
+    "ra": 2.3583333333333334,
+    "dec": 15.766666666666667,
+    "constellation": "Ari",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, vS, dif, r"
+  },
+  {
+    "id": "NGC884",
+    "type": "OC",
+    "ra": 2.373333333333333,
+    "dec": 57.11666666666667,
+    "constellation": "Per",
+    "size_arcmin": 30.0,
+    "magnitude": 4.0,
+    "description": "! Cl, vL, vRi, ruby * M"
+  },
+  {
+    "id": "NGC896",
+    "type": "Nb",
+    "ra": 2.413333333333333,
+    "dec": 61.9,
+    "constellation": "Cas",
+    "size_arcmin": 27.0,
+    "magnitude": 0,
+    "description": "eF, pL, iF"
+  },
+  {
+    "id": "IC1795",
+    "type": "Nb",
+    "ra": 2.4416666666666664,
+    "dec": 62.06666666666667,
+    "constellation": "Cas",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "patch of neby"
+  },
+  {
+    "id": "NGC957",
+    "type": "OC",
+    "ra": 2.56,
+    "dec": 57.53333333333333,
+    "constellation": "Per",
+    "size_arcmin": 11.0,
+    "magnitude": 7.6,
+    "description": "Cl, pL, pRi, st 13...15"
+  },
+  {
+    "id": "NGC1039",
+    "type": "OC",
+    "ra": 2.7,
+    "dec": 42.78333333333333,
+    "constellation": "Per",
+    "size_arcmin": 35.0,
+    "magnitude": 5.2,
+    "description": "Cl, B, vL, lC, sc st 9; = M34"
+  },
+  {
+    "id": "NGC1027",
+    "type": "OC",
+    "ra": 2.711666666666667,
+    "dec": 61.55,
+    "constellation": "Cas",
+    "size_arcmin": 20.0,
+    "magnitude": 6.7,
+    "description": "Cl, L, sc st, one 10m"
+  },
+  {
+    "id": "NGC1333",
+    "type": "Nb",
+    "ra": 3.4883333333333333,
+    "dec": 31.416666666666668,
+    "constellation": "Per",
+    "size_arcmin": 9.0,
+    "magnitude": 0,
+    "description": "F, L, *10 nf"
+  },
+  {
+    "id": "NGC1342",
+    "type": "OC",
+    "ra": 3.526666666666667,
+    "dec": 37.333333333333336,
+    "constellation": "Per",
+    "size_arcmin": 14.0,
+    "magnitude": 6.7,
+    "description": "Cl, vL, ab 60 st"
+  },
+  {
+    "id": "NGC1360",
+    "type": "Pl",
+    "ra": 3.5549999999999997,
+    "dec": -25.85,
+    "constellation": "For",
+    "size_arcmin": 6.5,
+    "magnitude": 0,
+    "description": "*8 in B, L neb, E ns"
+  },
+  {
+    "id": "NGC1432",
+    "type": "Nb",
+    "ra": 3.763333333333333,
+    "dec": 24.366666666666667,
+    "constellation": "Tau",
+    "size_arcmin": 30.0,
+    "magnitude": 0,
+    "description": "eF, vL, dif (Maia,  in Pleiades)"
+  },
+  {
+    "id": "NGC1435",
+    "type": "Nb",
+    "ra": 3.7683333333333335,
+    "dec": 23.783333333333335,
+    "constellation": "Tau",
+    "size_arcmin": 30.0,
+    "magnitude": 0,
+    "description": "vF, vL, dif (Merope)"
+  },
+  {
+    "id": "IC349",
+    "type": "Nb",
+    "ra": 3.7716666666666665,
+    "dec": 23.933333333333334,
+    "constellation": "Tau",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, vS, pos 165deg , dist 36\" from Merope"
+  },
+  {
+    "id": "NGC1444",
+    "type": "OC",
+    "ra": 3.8233333333333333,
+    "dec": 52.666666666666664,
+    "constellation": "Per",
+    "size_arcmin": 4.0,
+    "magnitude": 6.6,
+    "description": "Cl of ab 30 st 12...14"
+  },
+  {
+    "id": "IC353",
+    "type": "Nb",
+    "ra": 3.9166666666666665,
+    "dec": 25.483333333333334,
+    "constellation": "Tau",
+    "size_arcmin": 180.0,
+    "magnitude": 0,
+    "description": "vF, eeL, v dif"
+  },
+  {
+    "id": "NGC1499",
+    "type": "Nb",
+    "ra": 4.011666666666667,
+    "dec": 36.61666666666667,
+    "constellation": "Per",
+    "size_arcmin": 145.0,
+    "magnitude": 0,
+    "description": "vF, vL, E ns, dif"
+  },
+  {
+    "id": "NGC1491",
+    "type": "Nb",
+    "ra": 4.056666666666667,
+    "dec": 51.31666666666667,
+    "constellation": "Per",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "vB, S, iF, bM, r, * inv"
+  },
+  {
+    "id": "NGC1502",
+    "type": "OC",
+    "ra": 4.128333333333333,
+    "dec": 62.333333333333336,
+    "constellation": "Cam",
+    "size_arcmin": 8.0,
+    "magnitude": 5.7,
+    "description": "Cl, pRi, cC, iF"
+  },
+  {
+    "id": "IC360",
+    "type": "Nb",
+    "ra": 4.216666666666667,
+    "dec": 25.633333333333333,
+    "constellation": "Tau",
+    "size_arcmin": 180.0,
+    "magnitude": 0,
+    "description": "vF, eeL, v dif"
+  },
+  {
+    "id": "NGC1528",
+    "type": "OC",
+    "ra": 4.256666666666667,
+    "dec": 51.233333333333334,
+    "constellation": "Per",
+    "size_arcmin": 24.0,
+    "magnitude": 6.4,
+    "description": "Cl, B, vRi, cC"
+  },
+  {
+    "id": "IC359",
+    "type": "Nb",
+    "ra": 4.316666666666666,
+    "dec": 28.2,
+    "constellation": "Tau",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "eeF, pL, R"
+  },
+  {
+    "id": "NGC1545",
+    "type": "OC",
+    "ra": 4.348333333333334,
+    "dec": 50.25,
+    "constellation": "Per",
+    "size_arcmin": 18.0,
+    "magnitude": 6.2,
+    "description": "Cl, pRi, lC, st L"
+  },
+  {
+    "id": "NGC1554",
+    "type": "Nb",
+    "ra": 4.363333333333333,
+    "dec": 19.533333333333335,
+    "constellation": "Tau",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "!!! var, S, R, Nn = *13"
+  },
+  {
+    "id": "NGC1555",
+    "type": "Nb",
+    "ra": 4.381666666666667,
+    "dec": 19.533333333333335,
+    "constellation": "Tau",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "!!! vF, S, variable"
+  },
+  {
+    "id": "NGC1579",
+    "type": "Nb",
+    "ra": 4.503333333333333,
+    "dec": 35.266666666666666,
+    "constellation": "Per",
+    "size_arcmin": 12.0,
+    "magnitude": 0,
+    "description": "pB, vL, iR, mbM, *8 350deg , 2'"
+  },
+  {
+    "id": "NGC1582",
+    "type": "OC",
+    "ra": 4.533333333333333,
+    "dec": 43.85,
+    "constellation": "Per",
+    "size_arcmin": 37.0,
+    "magnitude": 7.0,
+    "description": "Cl, vL, pRi, lC, st L"
+  },
+  {
+    "id": "IC2087",
+    "type": "Nb",
+    "ra": 4.666666666666667,
+    "dec": 25.733333333333334,
+    "constellation": "Tau",
+    "size_arcmin": 4.0,
+    "magnitude": 0,
+    "description": "eeF, in hole of eL neby"
+  },
+  {
+    "id": "NGC1647",
+    "type": "OC",
+    "ra": 4.766666666666667,
+    "dec": 19.066666666666666,
+    "constellation": "Tau",
+    "size_arcmin": 45.0,
+    "magnitude": 6.4,
+    "description": "Cl, vL, st L, sc"
+  },
+  {
+    "id": "NGC1662",
+    "type": "OC",
+    "ra": 4.808333333333334,
+    "dec": 10.933333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 20.0,
+    "magnitude": 6.4,
+    "description": "Cl of L & S sc st"
+  },
+  {
+    "id": "NGC1698",
+    "type": "Nb",
+    "ra": 4.823333333333333,
+    "dec": -69.16666666666667,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB, pS, R, glbM"
+  },
+  {
+    "id": "IC2105",
+    "type": "Nb",
+    "ra": 4.823333333333333,
+    "dec": -69.2,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "NGC1664",
+    "type": "OC",
+    "ra": 4.851666666666667,
+    "dec": 43.7,
+    "constellation": "Aur",
+    "size_arcmin": 18.0,
+    "magnitude": 7.6,
+    "description": "Cl, lRi, lC, pL"
+  },
+  {
+    "id": "IC2111",
+    "type": "Nb",
+    "ra": 4.865,
+    "dec": -69.4,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "NGC1714",
+    "type": "Nb",
+    "ra": 4.868333333333333,
+    "dec": -66.93333333333334,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vB, S, E or biN, bM, sp of 2"
+  },
+  {
+    "id": "NGC1715",
+    "type": "Nb",
+    "ra": 4.868333333333333,
+    "dec": -66.91666666666667,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, S, R, sbM, 2 st nr, nf of 2"
+  },
+  {
+    "id": "NGC1736",
+    "type": "Nb",
+    "ra": 4.885,
+    "dec": -68.06666666666666,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "B, R, r"
+  },
+  {
+    "id": "NGC1763",
+    "type": "Nb",
+    "ra": 4.946666666666666,
+    "dec": -66.4,
+    "constellation": "Dor",
+    "size_arcmin": 25.0,
+    "magnitude": 0,
+    "description": "vB, vL, vimE"
+  },
+  {
+    "id": "IC2115",
+    "type": "Nb",
+    "ra": 4.951666666666666,
+    "dec": -66.4,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "IC2117",
+    "type": "Nb",
+    "ra": 4.953333333333333,
+    "dec": -68.45,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "IC2116",
+    "type": "Nb",
+    "ra": 4.956666666666667,
+    "dec": -66.41666666666667,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "NGC1791",
+    "type": "Nb",
+    "ra": 4.983333333333333,
+    "dec": -70.16666666666667,
+    "constellation": "Men",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, S, R"
+  },
+  {
+    "id": "NGC1746",
+    "type": "OC",
+    "ra": 5.06,
+    "dec": 23.816666666666666,
+    "constellation": "Tau",
+    "size_arcmin": 42.0,
+    "magnitude": 6.0,
+    "description": "Cl, P"
+  },
+  {
+    "id": "NGC1788",
+    "type": "Nb",
+    "ra": 5.115,
+    "dec": -3.35,
+    "constellation": "Ori",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "B, cL, R, bM *** ; *10 inv in the neby"
+  },
+  {
+    "id": "IC2118",
+    "type": "Nb",
+    "ra": 5.115,
+    "dec": -7.216666666666667,
+    "constellation": "Eri",
+    "size_arcmin": 180.0,
+    "magnitude": 0,
+    "description": "F, eL, iF, 1779 inv s"
+  },
+  {
+    "id": "NGC1778",
+    "type": "OC",
+    "ra": 5.135,
+    "dec": 37.05,
+    "constellation": "Aur",
+    "size_arcmin": 7.0,
+    "magnitude": 7.7,
+    "description": "Cl, pC, lRi, iF, st L"
+  },
+  {
+    "id": "NGC1807",
+    "type": "OC",
+    "ra": 5.178333333333334,
+    "dec": 16.533333333333335,
+    "constellation": "Tau",
+    "size_arcmin": 17.0,
+    "magnitude": 7.0,
+    "description": "Cl, pRi, st L & S"
+  },
+  {
+    "id": "NGC1817",
+    "type": "OC",
+    "ra": 5.201666666666666,
+    "dec": 16.7,
+    "constellation": "Tau",
+    "size_arcmin": 16.0,
+    "magnitude": 7.7,
+    "description": "Cl, L, Ri, lC, st 11...14"
+  },
+  {
+    "id": "NGC1851",
+    "type": "Gb",
+    "ra": 5.235,
+    "dec": -40.05,
+    "constellation": "Col",
+    "size_arcmin": 11.0,
+    "magnitude": 7.3,
+    "description": "glob. cl. ! vB, vL, R, vsvvbM, rrr"
+  },
+  {
+    "id": "IC405",
+    "type": "Nb",
+    "ra": 5.27,
+    "dec": 34.266666666666666,
+    "constellation": "Aur",
+    "size_arcmin": 30.0,
+    "magnitude": 0,
+    "description": "*6.7 with pB, vL neb"
+  },
+  {
+    "id": "NGC1895",
+    "type": "Nb",
+    "ra": 5.281666666666666,
+    "dec": -67.31666666666666,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pF, pL, R, gvlbM"
+  },
+  {
+    "id": "NGC1899",
+    "type": "Nb",
+    "ra": 5.296666666666667,
+    "dec": -67.88333333333334,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, pS, R, vglbM, 3 st 10 p"
+  },
+  {
+    "id": "IC2120",
+    "type": "Pl",
+    "ra": 5.303333333333334,
+    "dec": 37.6,
+    "constellation": "Aur",
+    "size_arcmin": 0.8,
+    "magnitude": 0,
+    "description": "eF"
+  },
+  {
+    "id": "NGC1921",
+    "type": "Nb",
+    "ra": 5.321666666666666,
+    "dec": -69.8,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, pS, lE, r"
+  },
+  {
+    "id": "NGC1857",
+    "type": "OC",
+    "ra": 5.336666666666667,
+    "dec": 39.35,
+    "constellation": "Aur",
+    "size_arcmin": 6.0,
+    "magnitude": 7.0,
+    "description": "Cl, pRi, pC, st 7..."
+  },
+  {
+    "id": "NGC1920",
+    "type": "Nb",
+    "ra": 5.343333333333334,
+    "dec": -66.8,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB, pL, R, vgbM"
+  },
+  {
+    "id": "NGC1893",
+    "type": "OC",
+    "ra": 5.378333333333333,
+    "dec": 33.4,
+    "constellation": "Aur",
+    "size_arcmin": 11.0,
+    "magnitude": 7.5,
+    "description": "Cl, L, Ri, lC"
+  },
+  {
+    "id": "IC2128",
+    "type": "Nb",
+    "ra": 5.38,
+    "dec": -68.05,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "Cl, few st and neb (in LMC)"
+  },
+  {
+    "id": "NGC1941",
+    "type": "Nb",
+    "ra": 5.385,
+    "dec": -66.38333333333334,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vS, neb + st"
+  },
+  {
+    "id": "NGC1904",
+    "type": "Gb",
+    "ra": 5.408333333333333,
+    "dec": -24.55,
+    "constellation": "Lep",
+    "size_arcmin": 8.7,
+    "magnitude": 8.0,
+    "description": "glob. cl. , pL, eRi, eC, rrr; = M79"
+  },
+  {
+    "id": "NGC1949",
+    "type": "Nb",
+    "ra": 5.418333333333333,
+    "dec": -68.48333333333333,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB, S, R, psbM"
+  },
+  {
+    "id": "NGC1945",
+    "type": "Nb",
+    "ra": 5.423333333333333,
+    "dec": -66.35,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eeeF, vvL, irr dif"
+  },
+  {
+    "id": "NGC1966",
+    "type": "Nb",
+    "ra": 5.446666666666666,
+    "dec": -68.81666666666666,
+    "constellation": "Dor",
+    "size_arcmin": 13.0,
+    "magnitude": 0,
+    "description": "pB, R, pslbM, 3rd of 4, in pL, irr Cl"
+  },
+  {
+    "id": "IC417",
+    "type": "Nb",
+    "ra": 5.468333333333334,
+    "dec": 34.43333333333333,
+    "constellation": "Aur",
+    "size_arcmin": 13.0,
+    "magnitude": 0,
+    "description": "vL, dif, *6 inv"
+  },
+  {
+    "id": "NGC1912",
+    "type": "OC",
+    "ra": 5.4783333333333335,
+    "dec": 35.833333333333336,
+    "constellation": "Aur",
+    "size_arcmin": 21.0,
+    "magnitude": 6.4,
+    "description": "Cl, B, vL, vRi, iF, st L & S; = M38"
+  },
+  {
+    "id": "NGC2018",
+    "type": "Nb",
+    "ra": 5.51,
+    "dec": -71.06666666666666,
+    "constellation": "Men",
+    "size_arcmin": 25.0,
+    "magnitude": 0,
+    "description": "pB, pL, R, pglbM, *10 p inv"
+  },
+  {
+    "id": "NGC2020",
+    "type": "Nb",
+    "ra": 5.551666666666667,
+    "dec": -67.7,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, vL, vlE, vglbM"
+  },
+  {
+    "id": "IC423",
+    "type": "Nb",
+    "ra": 5.556666666666667,
+    "dec": -0.6166666666666667,
+    "constellation": "Ori",
+    "size_arcmin": 6.0,
+    "magnitude": 0,
+    "description": "vF, L, oval ring"
+  },
+  {
+    "id": "NGC1973",
+    "type": "Nb",
+    "ra": 5.585,
+    "dec": -4.733333333333333,
+    "constellation": "Ori",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "*8-9 inv in neb (1977)"
+  },
+  {
+    "id": "NGC1981",
+    "type": "OC",
+    "ra": 5.586666666666667,
+    "dec": -4.433333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 25.0,
+    "magnitude": 4.6,
+    "description": "Cl, vB, lRi, st L, sc"
+  },
+  {
+    "id": "NGC2048",
+    "type": "Nb",
+    "ra": 5.586666666666667,
+    "dec": -69.76666666666667,
+    "constellation": "Dor",
+    "size_arcmin": 18.0,
+    "magnitude": 0,
+    "description": "vF, L, pmE"
+  },
+  {
+    "id": "NGC1975",
+    "type": "Nb",
+    "ra": 5.59,
+    "dec": -4.683333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "B**  inv in neb (1977)"
+  },
+  {
+    "id": "NGC1976",
+    "type": "Nb",
+    "ra": 5.59,
+    "dec": -5.45,
+    "constellation": "Ori",
+    "size_arcmin": 66.0,
+    "magnitude": 4.0,
+    "description": "!!! theta1 Ori and the great neb; = M42"
+  },
+  {
+    "id": "NGC1980",
+    "type": "Nb",
+    "ra": 5.59,
+    "dec": -5.9,
+    "constellation": "Ori",
+    "size_arcmin": 14.0,
+    "magnitude": 0,
+    "description": "vF, vvL, 44 Ori inv"
+  },
+  {
+    "id": "NGC1977",
+    "type": "Nb",
+    "ra": 5.591666666666667,
+    "dec": -4.866666666666667,
+    "constellation": "Ori",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "!!, 42 Ori and neb"
+  },
+  {
+    "id": "NGC1960",
+    "type": "OC",
+    "ra": 5.601666666666667,
+    "dec": 34.13333333333333,
+    "constellation": "Aur",
+    "size_arcmin": 12.0,
+    "magnitude": 6.0,
+    "description": "Cl, B, vL, vRi, lC, st 9...11 sc; = M36"
+  },
+  {
+    "id": "NGC1990",
+    "type": "Nb",
+    "ra": 5.6033333333333335,
+    "dec": -1.2,
+    "constellation": "Ori",
+    "size_arcmin": 50.0,
+    "magnitude": 0,
+    "description": "!!!, eL, E, epsilon Ori inv p"
+  },
+  {
+    "id": "NGC1999",
+    "type": "Nb",
+    "ra": 5.608333333333333,
+    "dec": -6.7,
+    "constellation": "Ori",
+    "size_arcmin": 16.0,
+    "magnitude": 0,
+    "description": "*10-11 inv in neb"
+  },
+  {
+    "id": "IC426",
+    "type": "Nb",
+    "ra": 5.613333333333333,
+    "dec": -0.25,
+    "constellation": "Ori",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "vF, 5' diam"
+  },
+  {
+    "id": "NGC2052",
+    "type": "Nb",
+    "ra": 5.621666666666666,
+    "dec": -69.75,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, vvS, vglbM"
+  },
+  {
+    "id": "NGC1985",
+    "type": "Nb",
+    "ra": 5.628333333333334,
+    "dec": 32.0,
+    "constellation": "Aur",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "cF, S, R, psbM"
+  },
+  {
+    "id": "NGC2069",
+    "type": "Nb",
+    "ra": 5.641666666666667,
+    "dec": -69.08333333333333,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, L, E"
+  },
+  {
+    "id": "IC430",
+    "type": "Nb",
+    "ra": 5.641666666666667,
+    "dec": -7.083333333333333,
+    "constellation": "Ori",
+    "size_arcmin": 11.0,
+    "magnitude": 0,
+    "description": "neb band 10' l, np *5"
+  },
+  {
+    "id": "IC431",
+    "type": "Nb",
+    "ra": 5.671666666666667,
+    "dec": -1.45,
+    "constellation": "Ori",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "neb *8.6"
+  },
+  {
+    "id": "IC2145",
+    "type": "Nb",
+    "ra": 5.673333333333334,
+    "dec": -69.66666666666667,
+    "constellation": "Dor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "IC432",
+    "type": "Nb",
+    "ra": 5.681666666666667,
+    "dec": -1.4833333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "neb, lE, *8.4 inv"
+  },
+  {
+    "id": "IC434",
+    "type": "Nb",
+    "ra": 5.683333333333334,
+    "dec": -2.4,
+    "constellation": "Ori",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "neb, 60' l, south from zeta Ori"
+  },
+  {
+    "id": "NGC2023",
+    "type": "Nb",
+    "ra": 5.693333333333333,
+    "dec": -2.2333333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "B* in M of L, lE neb"
+  },
+  {
+    "id": "NGC2024",
+    "type": "Nb",
+    "ra": 5.698333333333333,
+    "dec": -1.85,
+    "constellation": "Ori",
+    "size_arcmin": 30.0,
+    "magnitude": 0,
+    "description": "! irr, B, vvL, black sp incl"
+  },
+  {
+    "id": "IC435",
+    "type": "Nb",
+    "ra": 5.716666666666667,
+    "dec": -2.3166666666666664,
+    "constellation": "Ori",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "neb,  *8.5"
+  },
+  {
+    "id": "NGC2064",
+    "type": "Nb",
+    "ra": 5.7716666666666665,
+    "dec": 0.0,
+    "constellation": "Ori",
+    "size_arcmin": 12.0,
+    "magnitude": 0,
+    "description": "eF, vS, *9-10 np 4'"
+  },
+  {
+    "id": "NGC2067",
+    "type": "Nb",
+    "ra": 5.775,
+    "dec": 0.1,
+    "constellation": "Ori",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "F, pL, M78 s"
+  },
+  {
+    "id": "NGC2068",
+    "type": "Nb",
+    "ra": 5.778333333333333,
+    "dec": 0.05,
+    "constellation": "Ori",
+    "size_arcmin": 8.0,
+    "magnitude": 8.0,
+    "description": "B, L, wisp, gmbN, 3 st inv, r; = M78"
+  },
+  {
+    "id": "NGC2071",
+    "type": "Nb",
+    "ra": 5.786666666666667,
+    "dec": 0.3,
+    "constellation": "Ori",
+    "size_arcmin": 4.0,
+    "magnitude": 0,
+    "description": "D* (10 & 14m) with vF, L chev"
+  },
+  {
+    "id": "NGC2099",
+    "type": "OC",
+    "ra": 5.873333333333333,
+    "dec": 32.55,
+    "constellation": "Aur",
+    "size_arcmin": 24.0,
+    "magnitude": 5.6,
+    "description": "Cl, Ri, pCM, st L & S; = M37"
+  },
+  {
+    "id": "NGC2129",
+    "type": "OC",
+    "ra": 6.016666666666667,
+    "dec": 23.3,
+    "constellation": "Gem",
+    "size_arcmin": 7.0,
+    "magnitude": 6.7,
+    "description": "Cl, pL, 40 or 50 st 8...15"
+  },
+  {
+    "id": "NGC2149",
+    "type": "Nb",
+    "ra": 6.058333333333334,
+    "dec": -9.733333333333333,
+    "constellation": "Mon",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "F, *12 inv"
+  },
+  {
+    "id": "NGC2170",
+    "type": "Nb",
+    "ra": 6.125,
+    "dec": -6.4,
+    "constellation": "Mon",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "*9 in vF, pL neb, E 170deg"
+  },
+  {
+    "id": "NGC2169",
+    "type": "OC",
+    "ra": 6.14,
+    "dec": 13.95,
+    "constellation": "Ori",
+    "size_arcmin": 7.0,
+    "magnitude": 5.9,
+    "description": "Cl, S, lRi, pmC, **  (ADS 4728)"
+  },
+  {
+    "id": "NGC2168",
+    "type": "OC",
+    "ra": 6.148333333333333,
+    "dec": 24.333333333333332,
+    "constellation": "Gem",
+    "size_arcmin": 28.0,
+    "magnitude": 5.1,
+    "description": "Cl, vL, cRi, pC, st 9...16; = M35"
+  },
+  {
+    "id": "NGC2182",
+    "type": "Nb",
+    "ra": 6.158333333333333,
+    "dec": -6.333333333333333,
+    "constellation": "Mon",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "pB** , L* neb, E 90deg +/-"
+  },
+  {
+    "id": "NGC2174",
+    "type": "Nb",
+    "ra": 6.161666666666667,
+    "dec": 20.5,
+    "constellation": "Ori",
+    "size_arcmin": 40.0,
+    "magnitude": 0,
+    "description": "eF, bet 3 vF st"
+  },
+  {
+    "id": "NGC2175",
+    "type": "OC",
+    "ra": 6.163333333333333,
+    "dec": 20.316666666666666,
+    "constellation": "Ori",
+    "size_arcmin": 18.0,
+    "magnitude": 6.8,
+    "description": "*8 in neb"
+  },
+  {
+    "id": "IC2159",
+    "type": "Nb",
+    "ra": 6.165,
+    "dec": 20.4,
+    "constellation": "Ori",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, vL, dif"
+  },
+  {
+    "id": "NGC2183",
+    "type": "Nb",
+    "ra": 6.18,
+    "dec": -6.216666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "eF, S, lE, *11-12 sp"
+  },
+  {
+    "id": "NGC2185",
+    "type": "Nb",
+    "ra": 6.185,
+    "dec": -6.216666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "*11 and 4 S st in vF, L neb"
+  },
+  {
+    "id": "IC2162",
+    "type": "Nb",
+    "ra": 6.215,
+    "dec": 17.983333333333334,
+    "constellation": "Ori",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "vF, pL, R, *10 inv p"
+  },
+  {
+    "id": "NGC2195",
+    "type": "Nb",
+    "ra": 6.24,
+    "dec": 17.65,
+    "constellation": "Ori",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, S, 2 S st inv, *10 n 31\""
+  },
+  {
+    "id": "IC443",
+    "type": "Nb",
+    "ra": 6.281666666666666,
+    "dec": 22.783333333333335,
+    "constellation": "Gem",
+    "size_arcmin": 50.0,
+    "magnitude": 0,
+    "description": "F, narrow, curved"
+  },
+  {
+    "id": "IC444",
+    "type": "Nb",
+    "ra": 6.34,
+    "dec": 23.266666666666666,
+    "constellation": "Gem",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "neb, *9.5 inv"
+  },
+  {
+    "id": "NGC2232",
+    "type": "OC",
+    "ra": 6.443333333333333,
+    "dec": -4.75,
+    "constellation": "Mon",
+    "size_arcmin": 30.0,
+    "magnitude": 3.9,
+    "description": "B* (10 Mon) + Cl"
+  },
+  {
+    "id": "NGC2237",
+    "type": "Nb",
+    "ra": 6.505,
+    "dec": 5.05,
+    "constellation": "Mon",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB, vvL, dif, part of eL nebs ring ar 2239"
+  },
+  {
+    "id": "IC446",
+    "type": "Nb",
+    "ra": 6.516666666666667,
+    "dec": 10.45,
+    "constellation": "Mon",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "neb *10; = IC 2167"
+  },
+  {
+    "id": "IC2169",
+    "type": "Nb",
+    "ra": 6.52,
+    "dec": 9.9,
+    "constellation": "Mon",
+    "size_arcmin": 25.0,
+    "magnitude": 0,
+    "description": "F, L, dif, sev st 9-10 inv"
+  },
+  {
+    "id": "NGC2244",
+    "type": "OC",
+    "ra": 6.54,
+    "dec": 4.866666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 24.0,
+    "magnitude": 4.8,
+    "description": "Cl, beautiful, st sc (12 Mon)"
+  },
+  {
+    "id": "NGC2246",
+    "type": "Nb",
+    "ra": 6.54,
+    "dec": 5.116666666666666,
+    "constellation": "Mon",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eeF, L, irr R, e diffic"
+  },
+  {
+    "id": "NGC2245",
+    "type": "Nb",
+    "ra": 6.545,
+    "dec": 10.166666666666666,
+    "constellation": "Mon",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "pL, com, mbN sf alm *, *7-8 nf"
+  },
+  {
+    "id": "IC448",
+    "type": "Nb",
+    "ra": 6.545,
+    "dec": 7.316666666666666,
+    "constellation": "Mon",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "neby,  np *5"
+  },
+  {
+    "id": "NGC2247",
+    "type": "Nb",
+    "ra": 6.553333333333334,
+    "dec": 10.333333333333334,
+    "constellation": "Mon",
+    "size_arcmin": 4.0,
+    "magnitude": 0,
+    "description": "neb* in eF, eL neby, nf 2245"
+  },
+  {
+    "id": "NGC2251",
+    "type": "OC",
+    "ra": 6.578333333333333,
+    "dec": 8.366666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 10.0,
+    "magnitude": 7.3,
+    "description": "Cl, vL, E, Ri, lC"
+  },
+  {
+    "id": "NGC2252",
+    "type": "OC",
+    "ra": 6.583333333333333,
+    "dec": 5.383333333333334,
+    "constellation": "Mon",
+    "size_arcmin": 20.0,
+    "magnitude": 8.0,
+    "description": "Cl, vL, pRi, lC, st S"
+  },
+  {
+    "id": "NGC2261",
+    "type": "Nb",
+    "ra": 6.653333333333333,
+    "dec": 8.733333333333333,
+    "constellation": "Mon",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "B, vmE 330deg , N com = *11"
+  },
+  {
+    "id": "NGC2282",
+    "type": "Nb",
+    "ra": 6.781666666666666,
+    "dec": 1.3166666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "*10 in F, R neby"
+  },
+  {
+    "id": "NGC2287",
+    "type": "OC",
+    "ra": 6.783333333333333,
+    "dec": -20.733333333333334,
+    "constellation": "CMa",
+    "size_arcmin": 38.0,
+    "magnitude": 4.5,
+    "description": "Cl, vL, B, lC, st 8...; = M41"
+  },
+  {
+    "id": "NGC2286",
+    "type": "OC",
+    "ra": 6.793333333333333,
+    "dec": -3.1666666666666665,
+    "constellation": "Mon",
+    "size_arcmin": 15.0,
+    "magnitude": 7.5,
+    "description": "Cl, L, C, ab 100 st 9...15"
+  },
+  {
+    "id": "NGC2281",
+    "type": "OC",
+    "ra": 6.821666666666666,
+    "dec": 41.06666666666667,
+    "constellation": "Aur",
+    "size_arcmin": 15.0,
+    "magnitude": 5.4,
+    "description": "Cl, pRi, vlC, st pL"
+  },
+  {
+    "id": "NGC2301",
+    "type": "OC",
+    "ra": 6.863333333333333,
+    "dec": 0.4666666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 12.0,
+    "magnitude": 6.0,
+    "description": "Cl, Ri, L, iF, st L & S"
+  },
+  {
+    "id": "NGC2313",
+    "type": "Nb",
+    "ra": 6.966666666666667,
+    "dec": -7.95,
+    "constellation": "Mon",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, vS, R"
+  },
+  {
+    "id": "NGC2316",
+    "type": "Nb",
+    "ra": 6.995,
+    "dec": -7.766666666666667,
+    "constellation": "Mon",
+    "size_arcmin": 4.0,
+    "magnitude": 0,
+    "description": "pF, S, R, r, S st inv"
+  },
+  {
+    "id": "NGC2323",
+    "type": "OC",
+    "ra": 7.053333333333334,
+    "dec": -8.333333333333334,
+    "constellation": "Mon",
+    "size_arcmin": 16.0,
+    "magnitude": 5.9,
+    "description": "! Cl, vL, Ri, pC, E, st 12...16; = M50"
+  },
+  {
+    "id": "NGC2327",
+    "type": "Nb",
+    "ra": 7.071666666666666,
+    "dec": -11.3,
+    "constellation": "CMa",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB**  inv in S, vF, neb"
+  },
+  {
+    "id": "IC2177",
+    "type": "Nb",
+    "ra": 7.085,
+    "dec": -10.7,
+    "constellation": "Mon",
+    "size_arcmin": 120.0,
+    "magnitude": 0,
+    "description": "pB, eL, iR, v dif"
+  },
+  {
+    "id": "NGC2335",
+    "type": "OC",
+    "ra": 7.11,
+    "dec": -10.083333333333334,
+    "constellation": "Mon",
+    "size_arcmin": 12.0,
+    "magnitude": 7.2,
+    "description": "Cl, L, lC"
+  },
+  {
+    "id": "NGC2343",
+    "type": "OC",
+    "ra": 7.138333333333334,
+    "dec": -10.65,
+    "constellation": "Mon",
+    "size_arcmin": 7.0,
+    "magnitude": 6.7,
+    "description": "Cl, cL, P, lC"
+  },
+  {
+    "id": "NGC2345",
+    "type": "OC",
+    "ra": 7.138333333333334,
+    "dec": -13.166666666666666,
+    "constellation": "CMa",
+    "size_arcmin": 12.0,
+    "magnitude": 7.7,
+    "description": "Cl, pL, pRi, gbM, st 10...14"
+  },
+  {
+    "id": "IC466",
+    "type": "Nb",
+    "ra": 7.1433333333333335,
+    "dec": -4.316666666666666,
+    "constellation": "Mon",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "*11.5 in vF neb"
+  },
+  {
+    "id": "NGC2346",
+    "type": "Pl",
+    "ra": 7.156666666666666,
+    "dec": -0.8,
+    "constellation": "Mon",
+    "size_arcmin": 0.9,
+    "magnitude": 0,
+    "description": "*10 att with S, vF, neb"
+  },
+  {
+    "id": "NGC2354",
+    "type": "OC",
+    "ra": 7.238333333333333,
+    "dec": -25.733333333333334,
+    "constellation": "CMa",
+    "size_arcmin": 20.0,
+    "magnitude": 6.5,
+    "description": "Cl, cRi, lC"
+  },
+  {
+    "id": "NGC2353",
+    "type": "OC",
+    "ra": 7.243333333333333,
+    "dec": -10.3,
+    "constellation": "Mon",
+    "size_arcmin": 20.0,
+    "magnitude": 7.1,
+    "description": "Cl, L, lC, one vB*"
+  },
+  {
+    "id": "IC468",
+    "type": "Nb",
+    "ra": 7.291666666666667,
+    "dec": -13.15,
+    "constellation": "CMa",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "vF neby,  perhaps 2 or 3 st inv"
+  },
+  {
+    "id": "NGC2360",
+    "type": "OC",
+    "ra": 7.296666666666667,
+    "dec": -15.616666666666667,
+    "constellation": "CMa",
+    "size_arcmin": 13.0,
+    "magnitude": 7.2,
+    "description": "Cl, vL, Ri, pC, st 9...12"
+  },
+  {
+    "id": "NGC2359",
+    "type": "Nb",
+    "ra": 7.31,
+    "dec": -13.2,
+    "constellation": "CMa",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "!!, vF, vvL, viF"
+  },
+  {
+    "id": "NGC2367",
+    "type": "OC",
+    "ra": 7.335,
+    "dec": -21.933333333333334,
+    "constellation": "CMa",
+    "size_arcmin": 4.0,
+    "magnitude": 7.9,
+    "description": "Cl, S, P, lC"
+  },
+  {
+    "id": "NGC2374",
+    "type": "OC",
+    "ra": 7.4,
+    "dec": -13.266666666666667,
+    "constellation": "CMa",
+    "size_arcmin": 19.0,
+    "magnitude": 8.0,
+    "description": "Cl, vL, pRi, lC, st L"
+  },
+  {
+    "id": "NGC2384",
+    "type": "OC",
+    "ra": 7.418333333333333,
+    "dec": -21.033333333333335,
+    "constellation": "CMa",
+    "size_arcmin": 3.0,
+    "magnitude": 7.4,
+    "description": "Cl, lC, bifid, **"
+  },
+  {
+    "id": "NGC2372",
+    "type": "Pl",
+    "ra": 7.426666666666667,
+    "dec": 29.5,
+    "constellation": "Gem",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "pB, S, R, bMN, f of Dneb"
+  },
+  {
+    "id": "NGC2395",
+    "type": "OC",
+    "ra": 7.451666666666667,
+    "dec": 13.583333333333334,
+    "constellation": "Gem",
+    "size_arcmin": 12.0,
+    "magnitude": 8.0,
+    "description": "Cl, pRi, C"
+  },
+  {
+    "id": "NGC2396",
+    "type": "OC",
+    "ra": 7.468333333333334,
+    "dec": -11.733333333333333,
+    "constellation": "Pup",
+    "size_arcmin": 10.0,
+    "magnitude": 7.0,
+    "description": "Cl, vL, vlC"
+  },
+  {
+    "id": "NGC2414",
+    "type": "OC",
+    "ra": 7.555,
+    "dec": -15.45,
+    "constellation": "Pup",
+    "size_arcmin": 4.0,
+    "magnitude": 7.9,
+    "description": "Cl, P, lC, st 9..."
+  },
+  {
+    "id": "NGC2422",
+    "type": "OC",
+    "ra": 7.61,
+    "dec": -14.5,
+    "constellation": "Pup",
+    "size_arcmin": 30.0,
+    "magnitude": 4.4,
+    "description": "Cl, B, vL, pRi, st L and S; = M47"
+  },
+  {
+    "id": "NGC2423",
+    "type": "OC",
+    "ra": 7.618333333333333,
+    "dec": -13.866666666666667,
+    "constellation": "Pup",
+    "size_arcmin": 19.0,
+    "magnitude": 6.7,
+    "description": "Cl, vL, Ri, pC, st vS"
+  },
+  {
+    "id": "NGC2439",
+    "type": "OC",
+    "ra": 7.68,
+    "dec": -31.65,
+    "constellation": "Pup",
+    "size_arcmin": 10.0,
+    "magnitude": 6.9,
+    "description": "Cl, B, pRi, pL, lC,  st 9, 12...14"
+  },
+  {
+    "id": "NGC2437",
+    "type": "OC",
+    "ra": 7.696666666666666,
+    "dec": -14.816666666666666,
+    "constellation": "Pup",
+    "size_arcmin": 27.0,
+    "magnitude": 6.1,
+    "description": "!, Cl, vB, vRi, vL, inv PN ; = M46"
+  },
+  {
+    "id": "NGC2447",
+    "type": "OC",
+    "ra": 7.743333333333333,
+    "dec": -23.866666666666667,
+    "constellation": "Pup",
+    "size_arcmin": 22.0,
+    "magnitude": 6.2,
+    "description": "Cl, L, pRi, lC, st 8...13; = M93"
+  },
+  {
+    "id": "NGC2451",
+    "type": "OC",
+    "ra": 7.756666666666667,
+    "dec": -37.96666666666667,
+    "constellation": "Pup",
+    "size_arcmin": 45.0,
+    "magnitude": 2.8,
+    "description": "Cl, vvL, vlC, one *4.5"
+  },
+  {
+    "id": "NGC2477",
+    "type": "OC",
+    "ra": 7.871666666666666,
+    "dec": -38.55,
+    "constellation": "Pup",
+    "size_arcmin": 27.0,
+    "magnitude": 5.8,
+    "description": "!, Cl, B, Ri, L, lC, st 12"
+  },
+  {
+    "id": "NGC2482",
+    "type": "OC",
+    "ra": 7.915,
+    "dec": -24.3,
+    "constellation": "Pup",
+    "size_arcmin": 12.0,
+    "magnitude": 7.3,
+    "description": "Cl, L, cRi, vlC"
+  },
+  {
+    "id": "NGC2483",
+    "type": "OC",
+    "ra": 7.931666666666667,
+    "dec": -27.933333333333334,
+    "constellation": "Pup",
+    "size_arcmin": 10.0,
+    "magnitude": 7.6,
+    "description": "Cl, L, lC"
+  },
+  {
+    "id": "NGC2489",
+    "type": "OC",
+    "ra": 7.9366666666666665,
+    "dec": -30.066666666666666,
+    "constellation": "Pup",
+    "size_arcmin": 8.0,
+    "magnitude": 7.9,
+    "description": "Cl, pL, cRi, pC, st 11...13"
+  },
+  {
+    "id": "IC2220",
+    "type": "Nb",
+    "ra": 7.946666666666666,
+    "dec": -59.11666666666667,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "!! L, E, spiral, * inv"
+  },
+  {
+    "id": "NGC2516",
+    "type": "OC",
+    "ra": 7.971666666666667,
+    "dec": -60.86666666666667,
+    "constellation": "Car",
+    "size_arcmin": 30.0,
+    "magnitude": 3.8,
+    "description": "Cl, vB, vL, pRi, st 7...13"
+  },
+  {
+    "id": "NGC2506",
+    "type": "OC",
+    "ra": 8.003333333333334,
+    "dec": -10.783333333333333,
+    "constellation": "Mon",
+    "size_arcmin": 7.0,
+    "magnitude": 7.6,
+    "description": "Cl, pL, vRi, C, st 11...20"
+  },
+  {
+    "id": "NGC2527",
+    "type": "OC",
+    "ra": 8.088333333333333,
+    "dec": -28.166666666666668,
+    "constellation": "Pup",
+    "size_arcmin": 22.0,
+    "magnitude": 6.5,
+    "description": "Cl, vL, pRi, lC, st 10...15"
+  },
+  {
+    "id": "NGC2533",
+    "type": "OC",
+    "ra": 8.116666666666667,
+    "dec": -29.9,
+    "constellation": "Pup",
+    "size_arcmin": 4.0,
+    "magnitude": 7.6,
+    "description": "Cl, pL, Ri, C, st 9, 13...14"
+  },
+  {
+    "id": "NGC2539",
+    "type": "OC",
+    "ra": 8.178333333333333,
+    "dec": -12.833333333333334,
+    "constellation": "Pup",
+    "size_arcmin": 22.0,
+    "magnitude": 6.5,
+    "description": "Cl, vL, Ri, lC, st 11...13"
+  },
+  {
+    "id": "NGC2547",
+    "type": "OC",
+    "ra": 8.178333333333333,
+    "dec": -49.266666666666666,
+    "constellation": "Vel",
+    "size_arcmin": 20.0,
+    "magnitude": 4.7,
+    "description": "Cl, B, L, lC, st 7...16"
+  },
+  {
+    "id": "NGC2546",
+    "type": "OC",
+    "ra": 8.206666666666667,
+    "dec": -37.63333333333333,
+    "constellation": "Pup",
+    "size_arcmin": 41.0,
+    "magnitude": 6.3,
+    "description": "Cl, B, L, lC, iE, st 9...12"
+  },
+  {
+    "id": "NGC2548",
+    "type": "OC",
+    "ra": 8.23,
+    "dec": -5.8,
+    "constellation": "Hya",
+    "size_arcmin": 54.0,
+    "magnitude": 5.8,
+    "description": "Cl, vL, pRi, pmC, st 9...13; = M48"
+  },
+  {
+    "id": "NGC2567",
+    "type": "OC",
+    "ra": 8.31,
+    "dec": -30.633333333333333,
+    "constellation": "Pup",
+    "size_arcmin": 10.0,
+    "magnitude": 7.4,
+    "description": "Cl, pL, pRi, lC, iR, st 11...14"
+  },
+  {
+    "id": "NGC2571",
+    "type": "OC",
+    "ra": 8.315,
+    "dec": -29.733333333333334,
+    "constellation": "Pup",
+    "size_arcmin": 13.0,
+    "magnitude": 7.0,
+    "description": "Cl, vL, cRi, lC, st 9..."
+  },
+  {
+    "id": "NGC2626",
+    "type": "Nb",
+    "ra": 8.593333333333334,
+    "dec": -40.666666666666664,
+    "constellation": "Vel",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "*9 inv in pB, pL, R neb"
+  },
+  {
+    "id": "NGC2627",
+    "type": "OC",
+    "ra": 8.621666666666666,
+    "dec": -29.95,
+    "constellation": "Pyx",
+    "size_arcmin": 11.0,
+    "magnitude": 8.0,
+    "description": "Cl, cL, pRi, pC, st 11...13"
+  },
+  {
+    "id": "NGC2632",
+    "type": "OC",
+    "ra": 8.668333333333333,
+    "dec": 19.983333333333334,
+    "constellation": "Cnc",
+    "size_arcmin": 95.0,
+    "magnitude": 3.1,
+    "description": "Praesepe; = M44"
+  },
+  {
+    "id": "IC2391",
+    "type": "OC",
+    "ra": 8.67,
+    "dec": -53.06666666666667,
+    "constellation": "Vel",
+    "size_arcmin": 50.0,
+    "magnitude": 2.5,
+    "description": "Cl, co, incl *3.7 (o Vel)"
+  },
+  {
+    "id": "IC2395",
+    "type": "OC",
+    "ra": 8.685,
+    "dec": -48.2,
+    "constellation": "Vel",
+    "size_arcmin": 8.0,
+    "magnitude": 4.6,
+    "description": "Cl, co"
+  },
+  {
+    "id": "NGC2669",
+    "type": "OC",
+    "ra": 8.748333333333333,
+    "dec": -52.96666666666667,
+    "constellation": "Vel",
+    "size_arcmin": 12.0,
+    "magnitude": 6.1,
+    "description": "Cl, L, P, lC, st 10...13"
+  },
+  {
+    "id": "NGC2670",
+    "type": "OC",
+    "ra": 8.758333333333333,
+    "dec": -48.78333333333333,
+    "constellation": "Vel",
+    "size_arcmin": 9.0,
+    "magnitude": 7.8,
+    "description": "Cl, pL, P, lC, st 13..."
+  },
+  {
+    "id": "NGC2682",
+    "type": "OC",
+    "ra": 8.84,
+    "dec": 11.816666666666666,
+    "constellation": "Cnc",
+    "size_arcmin": 30.0,
+    "magnitude": 6.9,
+    "description": "! Cl, vB, vL, eRi, lC, st 10...15; = M67"
+  },
+  {
+    "id": "NGC2808",
+    "type": "Gb",
+    "ra": 9.2,
+    "dec": -64.86666666666666,
+    "constellation": "Car",
+    "size_arcmin": 13.8,
+    "magnitude": 6.3,
+    "description": "! glob. cl. , vL, eRi, vgeCM, 45s  d, st 13...15"
+  },
+  {
+    "id": "NGC2899",
+    "type": "Pl",
+    "ra": 9.45,
+    "dec": -56.1,
+    "constellation": "Vel",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "F, pL, R, gmbM, am 80 st"
+  },
+  {
+    "id": "IC2488",
+    "type": "OC",
+    "ra": 9.46,
+    "dec": -56.983333333333334,
+    "constellation": "Vel",
+    "size_arcmin": 15.0,
+    "magnitude": 7.0,
+    "description": "Cl, co"
+  },
+  {
+    "id": "IC2475",
+    "type": "Nb",
+    "ra": 9.465,
+    "dec": 29.8,
+    "constellation": "Leo",
+    "size_arcmin": 0.5,
+    "magnitude": 0,
+    "description": "F, vS, R, lbM"
+  },
+  {
+    "id": "IC2478",
+    "type": "Nb",
+    "ra": 9.465,
+    "dec": 30.016666666666666,
+    "constellation": "Leo",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, S, R, N"
+  },
+  {
+    "id": "IC2479",
+    "type": "Nb",
+    "ra": 9.468333333333334,
+    "dec": 30.0,
+    "constellation": "Leo",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "F, S, R, vlbM"
+  },
+  {
+    "id": "IC2480",
+    "type": "Nb",
+    "ra": 9.47,
+    "dec": 29.716666666666665,
+    "constellation": "Leo",
+    "size_arcmin": 0.2,
+    "magnitude": 0,
+    "description": "F, vS, lE pf, gbM, r"
+  },
+  {
+    "id": "NGC2910",
+    "type": "OC",
+    "ra": 9.506666666666666,
+    "dec": -52.9,
+    "constellation": "Vel",
+    "size_arcmin": 5.0,
+    "magnitude": 7.2,
+    "description": "Cl, cL, pRi, pC, st 10...14"
+  },
+  {
+    "id": "IC2490",
+    "type": "Nb",
+    "ra": 9.551666666666666,
+    "dec": 29.916666666666668,
+    "constellation": "Leo",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "F, S, gbM"
+  },
+  {
+    "id": "NGC2925",
+    "type": "OC",
+    "ra": 9.561666666666667,
+    "dec": -53.43333333333333,
+    "constellation": "Vel",
+    "size_arcmin": 12.0,
+    "magnitude": 8.0,
+    "description": "Cl, pRi, pC, D* taken"
+  },
+  {
+    "id": "NGC3031",
+    "type": "Gx",
+    "ra": 9.926666666666666,
+    "dec": 69.06666666666666,
+    "constellation": "UMa",
+    "size_arcmin": 25.7,
+    "magnitude": 6.9,
+    "description": "! eB, eL, E 156deg , gsvmbMBN; = M81"
+  },
+  {
+    "id": "NGC3114",
+    "type": "OC",
+    "ra": 10.045,
+    "dec": -60.11666666666667,
+    "constellation": "Car",
+    "size_arcmin": 35.0,
+    "magnitude": 4.2,
+    "description": "Cl, eL, lC, B, st 9...14"
+  },
+  {
+    "id": "NGC3132",
+    "type": "Pl",
+    "ra": 10.116666666666667,
+    "dec": -40.43333333333333,
+    "constellation": "Vel",
+    "size_arcmin": 0.8,
+    "magnitude": 8.0,
+    "description": "!! PN , vB, vL, lE *9 M, 4s  d"
+  },
+  {
+    "id": "NGC3195",
+    "type": "Pl",
+    "ra": 10.158333333333333,
+    "dec": -80.86666666666666,
+    "constellation": "Cha",
+    "size_arcmin": 0.6,
+    "magnitude": 0,
+    "description": "! PN , pB, S, lE, 13s  d, 3 S st nr"
+  },
+  {
+    "id": "NGC3199",
+    "type": "Nb",
+    "ra": 10.285,
+    "dec": -57.916666666666664,
+    "constellation": "Car",
+    "size_arcmin": 22.0,
+    "magnitude": 0,
+    "description": "! vB, vL, falcate, D* inv"
+  },
+  {
+    "id": "NGC3201",
+    "type": "Gb",
+    "ra": 10.293333333333333,
+    "dec": -46.416666666666664,
+    "constellation": "Vel",
+    "size_arcmin": 18.2,
+    "magnitude": 6.8,
+    "description": "glob. cl. , vL, iR, lCM, st 13...16"
+  },
+  {
+    "id": "NGC3228",
+    "type": "OC",
+    "ra": 10.363333333333333,
+    "dec": -51.71666666666667,
+    "constellation": "Vel",
+    "size_arcmin": 18.0,
+    "magnitude": 6.0,
+    "description": "Cl, 9 L and a few S st"
+  },
+  {
+    "id": "IC2581",
+    "type": "OC",
+    "ra": 10.456666666666667,
+    "dec": -57.63333333333333,
+    "constellation": "Car",
+    "size_arcmin": 8.0,
+    "magnitude": 4.3,
+    "description": "Cl, around *5.4m"
+  },
+  {
+    "id": "NGC3330",
+    "type": "OC",
+    "ra": 10.643333333333333,
+    "dec": -54.15,
+    "constellation": "Vel",
+    "size_arcmin": 7.0,
+    "magnitude": 7.4,
+    "description": "Cl, P, st 9..."
+  },
+  {
+    "id": "NGC3372",
+    "type": "Nb",
+    "ra": 10.73,
+    "dec": -59.86666666666667,
+    "constellation": "Car",
+    "size_arcmin": 120.0,
+    "magnitude": 0,
+    "description": "! great neb, eta Car"
+  },
+  {
+    "id": "IC655",
+    "type": "Nb",
+    "ra": 10.906666666666666,
+    "dec": -0.36666666666666664,
+    "constellation": "Leo",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "eF, iF"
+  },
+  {
+    "id": "IC2621",
+    "type": "Pl",
+    "ra": 11.005,
+    "dec": -65.25,
+    "constellation": "Car",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "PN , stell, 10.5m"
+  },
+  {
+    "id": "NGC3503",
+    "type": "Nb",
+    "ra": 11.021666666666667,
+    "dec": -59.85,
+    "constellation": "Car",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "3 S st 10 in vF neb"
+  },
+  {
+    "id": "NGC3532",
+    "type": "OC",
+    "ra": 11.106666666666667,
+    "dec": -58.666666666666664,
+    "constellation": "Car",
+    "size_arcmin": 55.0,
+    "magnitude": 3.0,
+    "description": "!!, Cl, eL, R, lC, st 8...12"
+  },
+  {
+    "id": "NGC3576",
+    "type": "Nb",
+    "ra": 11.196666666666667,
+    "dec": -61.38333333333333,
+    "constellation": "Car",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "F, lE, 1st of 6"
+  },
+  {
+    "id": "NGC3579",
+    "type": "Nb",
+    "ra": 11.198333333333334,
+    "dec": -61.233333333333334,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, lE, sbM, 2nd of 6"
+  },
+  {
+    "id": "NGC3581",
+    "type": "Nb",
+    "ra": 11.201666666666666,
+    "dec": -61.3,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "*12 with fan-shaped neb att, 3rd of 6"
+  },
+  {
+    "id": "NGC3582",
+    "type": "Nb",
+    "ra": 11.205,
+    "dec": -61.266666666666666,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "B, bM*, 4th of 6"
+  },
+  {
+    "id": "NGC3584",
+    "type": "Nb",
+    "ra": 11.206666666666667,
+    "dec": -61.2,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, L, E 0deg , bM, 5th of 6"
+  },
+  {
+    "id": "NGC3586",
+    "type": "Nb",
+    "ra": 11.21,
+    "dec": -61.35,
+    "constellation": "Car",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, S, E 160deg +/- , 6th of 6"
+  },
+  {
+    "id": "IC2714",
+    "type": "OC",
+    "ra": 11.298333333333334,
+    "dec": -62.7,
+    "constellation": "Car",
+    "size_arcmin": 12.0,
+    "magnitude": 8.0,
+    "description": "Cl, pC"
+  },
+  {
+    "id": "IC2752",
+    "type": "Nb",
+    "ra": 11.366666666666667,
+    "dec": 14.133333333333333,
+    "constellation": "Leo",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "F, S, R, bM"
+  },
+  {
+    "id": "IC2754",
+    "type": "Nb",
+    "ra": 11.366666666666667,
+    "dec": 14.15,
+    "constellation": "Leo",
+    "size_arcmin": 0.5,
+    "magnitude": 0,
+    "description": "F, S, iF, N, diffic"
+  },
+  {
+    "id": "IC2761",
+    "type": "Nb",
+    "ra": 11.371666666666666,
+    "dec": 14.183333333333334,
+    "constellation": "Leo",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, S, R, bM, diffic"
+  },
+  {
+    "id": "IC2765",
+    "type": "Nb",
+    "ra": 11.373333333333333,
+    "dec": 14.216666666666667,
+    "constellation": "Leo",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "vF, vS, iF, N"
+  },
+  {
+    "id": "IC2769",
+    "type": "Nb",
+    "ra": 11.373333333333333,
+    "dec": 14.2,
+    "constellation": "Leo",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, cS, R, bM"
+  },
+  {
+    "id": "IC2799",
+    "type": "Nb",
+    "ra": 11.406666666666666,
+    "dec": 13.85,
+    "constellation": "Leo",
+    "size_arcmin": 0.4,
+    "magnitude": 0,
+    "description": "F, S, iF, N"
+  },
+  {
+    "id": "NGC3680",
+    "type": "OC",
+    "ra": 11.428333333333333,
+    "dec": -43.25,
+    "constellation": "Cen",
+    "size_arcmin": 12.0,
+    "magnitude": 7.6,
+    "description": "Cl, cL, pRi, lC, st 10...14"
+  },
+  {
+    "id": "IC2810",
+    "type": "Nb",
+    "ra": 11.43,
+    "dec": 14.666666666666666,
+    "constellation": "Leo",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "pF, pS, R, bM, *14 sf"
+  },
+  {
+    "id": "NGC3699",
+    "type": "Pl",
+    "ra": 11.466666666666667,
+    "dec": -59.95,
+    "constellation": "Cen",
+    "size_arcmin": 1.1,
+    "magnitude": 0,
+    "description": "B, pL, iR, pgpmbM"
+  },
+  {
+    "id": "IC2872",
+    "type": "Nb",
+    "ra": 11.483333333333333,
+    "dec": -62.95,
+    "constellation": "Cen",
+    "size_arcmin": 12.0,
+    "magnitude": 0,
+    "description": "vL, mE, bM"
+  },
+  {
+    "id": "NGC3766",
+    "type": "OC",
+    "ra": 11.601666666666667,
+    "dec": -61.61666666666667,
+    "constellation": "Cen",
+    "size_arcmin": 12.0,
+    "magnitude": 5.3,
+    "description": "Cl, pL, pRi, pC, st 8...13"
+  },
+  {
+    "id": "IC2948",
+    "type": "Nb",
+    "ra": 11.646666666666667,
+    "dec": -63.53333333333333,
+    "constellation": "Cen",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "eeL"
+  },
+  {
+    "id": "NGC3918",
+    "type": "Pl",
+    "ra": 11.838333333333333,
+    "dec": -57.18333333333333,
+    "constellation": "Cen",
+    "size_arcmin": 0.2,
+    "magnitude": 8.0,
+    "description": "PN , !, S, R, blue, = *7, d = 1s .5"
+  },
+  {
+    "id": "IC2966",
+    "type": "Nb",
+    "ra": 11.84,
+    "dec": -64.9,
+    "constellation": "Mus",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "pL, bM"
+  },
+  {
+    "id": "NGC4071",
+    "type": "Pl",
+    "ra": 12.07,
+    "dec": -67.3,
+    "constellation": "Mus",
+    "size_arcmin": 1.3,
+    "magnitude": 0,
+    "description": "vF, vS, R, bM*, am st"
+  },
+  {
+    "id": "NGC4103",
+    "type": "OC",
+    "ra": 12.111666666666666,
+    "dec": -61.25,
+    "constellation": "Cru",
+    "size_arcmin": 7.0,
+    "magnitude": 7.0,
+    "description": "Cl, pL, pC, iR, st 10...14"
+  },
+  {
+    "id": "IC3065",
+    "type": "Nb",
+    "ra": 12.253333333333334,
+    "dec": 14.433333333333334,
+    "constellation": "Com",
+    "size_arcmin": 0.5,
+    "magnitude": 0,
+    "description": "R, PN ?, mag 14"
+  },
+  {
+    "id": "IC3077",
+    "type": "Nb",
+    "ra": 12.268333333333333,
+    "dec": 14.4,
+    "constellation": "Com",
+    "size_arcmin": 0.2,
+    "magnitude": 0,
+    "description": "bM, mag 15"
+  },
+  {
+    "id": "IC3080",
+    "type": "Nb",
+    "ra": 12.27,
+    "dec": 14.216666666666667,
+    "constellation": "Com",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "bM, mag 14"
+  },
+  {
+    "id": "IC3093",
+    "type": "Nb",
+    "ra": 12.278333333333332,
+    "dec": 14.283333333333333,
+    "constellation": "Com",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "bM, mag 14"
+  },
+  {
+    "id": "IC3096",
+    "type": "Nb",
+    "ra": 12.281666666666666,
+    "dec": 14.516666666666667,
+    "constellation": "Com",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "bM, mag 14.5"
+  },
+  {
+    "id": "IC3142",
+    "type": "Nb",
+    "ra": 12.318333333333333,
+    "dec": 13.983333333333333,
+    "constellation": "Com",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "R, bM, mag 14.5"
+  },
+  {
+    "id": "IC781",
+    "type": "Nb",
+    "ra": 12.335,
+    "dec": 14.966666666666667,
+    "constellation": "Com",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "vF, S, dif"
+  },
+  {
+    "id": "NGC4349",
+    "type": "OC",
+    "ra": 12.408333333333333,
+    "dec": -61.9,
+    "constellation": "Cru",
+    "size_arcmin": 16.0,
+    "magnitude": 7.4,
+    "description": "Cl, vB, vL, lC, st 12...14"
+  },
+  {
+    "id": "NGC4372",
+    "type": "Gb",
+    "ra": 12.43,
+    "dec": -72.66666666666667,
+    "constellation": "Mus",
+    "size_arcmin": 18.6,
+    "magnitude": 7.8,
+    "description": "glob. cl. , pF, L, R, st 12...16"
+  },
+  {
+    "id": "NGC4463",
+    "type": "OC",
+    "ra": 12.5,
+    "dec": -64.8,
+    "constellation": "Mus",
+    "size_arcmin": 5.0,
+    "magnitude": 7.2,
+    "description": "Cl, P, vlC"
+  },
+  {
+    "id": "IC802",
+    "type": "Nb",
+    "ra": 12.596666666666666,
+    "dec": 74.25,
+    "constellation": "Dra",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "vF, S, stellar"
+  },
+  {
+    "id": "NGC4609",
+    "type": "OC",
+    "ra": 12.705,
+    "dec": -62.96666666666667,
+    "constellation": "Cru",
+    "size_arcmin": 5.0,
+    "magnitude": 6.9,
+    "description": "Cl, pL, pC, cE, st 10"
+  },
+  {
+    "id": "NGC4755",
+    "type": "OC",
+    "ra": 12.893333333333333,
+    "dec": -60.333333333333336,
+    "constellation": "Cru",
+    "size_arcmin": 10.0,
+    "magnitude": 4.2,
+    "description": "Cl, vL, st vB (kappa Cru)"
+  },
+  {
+    "id": "NGC4833",
+    "type": "Gb",
+    "ra": 12.993333333333334,
+    "dec": -70.88333333333334,
+    "constellation": "Mus",
+    "size_arcmin": 13.5,
+    "magnitude": 7.4,
+    "description": "glob. cl. , B, L, R, g, vsbM, st 12"
+  },
+  {
+    "id": "IC4210",
+    "type": "Nb",
+    "ra": 13.18,
+    "dec": 29.7,
+    "constellation": "Com",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "eF, S, dif"
+  },
+  {
+    "id": "NGC5024",
+    "type": "Gb",
+    "ra": 13.215,
+    "dec": 18.166666666666668,
+    "constellation": "Com",
+    "size_arcmin": 12.6,
+    "magnitude": 7.7,
+    "description": "!, glob. cl. , B, vC, iR, vvmbM, st 12; = M53"
+  },
+  {
+    "id": "NGC5128",
+    "type": "Gx",
+    "ra": 13.425,
+    "dec": -43.016666666666666,
+    "constellation": "Cen",
+    "size_arcmin": 18.2,
+    "magnitude": 7.0,
+    "description": "!!, vB, vL, vmE 122deg , bifid"
+  },
+  {
+    "id": "NGC5139",
+    "type": "Gb",
+    "ra": 13.446666666666667,
+    "dec": -47.483333333333334,
+    "constellation": "Cen",
+    "size_arcmin": 36.3,
+    "magnitude": 3.7,
+    "description": "!!!, glob. cl. , omega Cen"
+  },
+  {
+    "id": "NGC5138",
+    "type": "OC",
+    "ra": 13.455,
+    "dec": -59.016666666666666,
+    "constellation": "Cen",
+    "size_arcmin": 8.0,
+    "magnitude": 7.6,
+    "description": "Cl, Ri, lC, st 11"
+  },
+  {
+    "id": "IC4274",
+    "type": "Pl",
+    "ra": 13.523333333333333,
+    "dec": -25.983333333333334,
+    "constellation": "Hya",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "PN , stellar"
+  },
+  {
+    "id": "NGC5236",
+    "type": "Gx",
+    "ra": 13.616666666666667,
+    "dec": -29.866666666666667,
+    "constellation": "Hya",
+    "size_arcmin": 11.2,
+    "magnitude": 7.6,
+    "description": "!! vB, vL, E 55deg , esbMN, 3-br spir; = M83"
+  },
+  {
+    "id": "IC903",
+    "type": "Nb",
+    "ra": 13.64,
+    "dec": -0.23333333333333334,
+    "constellation": "Vir",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "pB, lE ns, gbM N = 13m"
+  },
+  {
+    "id": "NGC5272",
+    "type": "Gb",
+    "ra": 13.703333333333333,
+    "dec": 28.383333333333333,
+    "constellation": "CVn",
+    "size_arcmin": 16.2,
+    "magnitude": 6.4,
+    "description": "!!, glob. cl. , eB, vL, vsmbM, st 11...; = M3"
+  },
+  {
+    "id": "IC922",
+    "type": "Nb",
+    "ra": 13.721666666666666,
+    "dec": 55.6,
+    "constellation": "UMa",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "vS, R, bM"
+  },
+  {
+    "id": "IC928",
+    "type": "Nb",
+    "ra": 13.728333333333333,
+    "dec": 55.61666666666667,
+    "constellation": "UMa",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, vS, R, gbM"
+  },
+  {
+    "id": "IC931",
+    "type": "Nb",
+    "ra": 13.73,
+    "dec": 55.61666666666667,
+    "constellation": "UMa",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, vS, R, gbM"
+  },
+  {
+    "id": "NGC5286",
+    "type": "Gb",
+    "ra": 13.773333333333333,
+    "dec": -51.36666666666667,
+    "constellation": "Cen",
+    "size_arcmin": 9.1,
+    "magnitude": 7.6,
+    "description": "glob. cl. , vB, pL, R, rrr, st 15"
+  },
+  {
+    "id": "NGC5281",
+    "type": "OC",
+    "ra": 13.776666666666667,
+    "dec": -62.9,
+    "constellation": "Cen",
+    "size_arcmin": 5.0,
+    "magnitude": 5.9,
+    "description": "Cl, B, S, pC, iR, st 10...12"
+  },
+  {
+    "id": "IC4334",
+    "type": "Pl",
+    "ra": 13.83,
+    "dec": 29.666666666666668,
+    "constellation": "CVn",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "F, vS, R, N"
+  },
+  {
+    "id": "NGC5316",
+    "type": "OC",
+    "ra": 13.898333333333333,
+    "dec": -61.86666666666667,
+    "constellation": "Cen",
+    "size_arcmin": 14.0,
+    "magnitude": 6.0,
+    "description": "Cl, pL, pC, st 11"
+  },
+  {
+    "id": "NGC5367",
+    "type": "Nb",
+    "ra": 13.961666666666666,
+    "dec": -39.983333333333334,
+    "constellation": "Cen",
+    "size_arcmin": 4.0,
+    "magnitude": 0,
+    "description": "!, vB, vL, vl, vsmbM **"
+  },
+  {
+    "id": "NGC5457",
+    "type": "Gx",
+    "ra": 14.053333333333333,
+    "dec": 54.35,
+    "constellation": "UMa",
+    "size_arcmin": 26.9,
+    "magnitude": 7.7,
+    "description": "pB, vL, iR, g, vsmbMBSN; = M101"
+  },
+  {
+    "id": "NGC5408",
+    "type": "Pl",
+    "ra": 14.055,
+    "dec": -41.38333333333333,
+    "constellation": "Cen",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, E bet 2 vS st"
+  },
+  {
+    "id": "NGC5460",
+    "type": "OC",
+    "ra": 14.126666666666667,
+    "dec": -48.31666666666667,
+    "constellation": "Cen",
+    "size_arcmin": 25.0,
+    "magnitude": 5.6,
+    "description": "Cl, vL, vlC, st 8..."
+  },
+  {
+    "id": "NGC5606",
+    "type": "OC",
+    "ra": 14.463333333333333,
+    "dec": -59.63333333333333,
+    "constellation": "Cen",
+    "size_arcmin": 3.0,
+    "magnitude": 7.7,
+    "description": "Cl, S, pC, st L & S"
+  },
+  {
+    "id": "NGC5617",
+    "type": "OC",
+    "ra": 14.496666666666666,
+    "dec": -60.71666666666667,
+    "constellation": "Cen",
+    "size_arcmin": 10.0,
+    "magnitude": 6.3,
+    "description": "Cl, L, pRi, pCM, st 8..."
+  },
+  {
+    "id": "NGC5662",
+    "type": "OC",
+    "ra": 14.586666666666666,
+    "dec": -56.55,
+    "constellation": "Cen",
+    "size_arcmin": 12.0,
+    "magnitude": 5.5,
+    "description": "Cl, L, pRi, lC, st 9..."
+  },
+  {
+    "id": "NGC5822",
+    "type": "OC",
+    "ra": 15.086666666666666,
+    "dec": -54.35,
+    "constellation": "Lup",
+    "size_arcmin": 40.0,
+    "magnitude": 7.0,
+    "description": "Cl, vL, Ri, lC, st 9...12"
+  },
+  {
+    "id": "NGC5823",
+    "type": "OC",
+    "ra": 15.095,
+    "dec": -55.6,
+    "constellation": "Cir",
+    "size_arcmin": 10.0,
+    "magnitude": 7.9,
+    "description": "Cl, cL, Ri, lCM, st 13...14"
+  },
+  {
+    "id": "NGC5904",
+    "type": "Gb",
+    "ra": 15.31,
+    "dec": 2.0833333333333335,
+    "constellation": "Ser",
+    "size_arcmin": 17.4,
+    "magnitude": 5.8,
+    "description": "!!, glob. cl. , vB, L, eCM, st 11...15; = M5"
+  },
+  {
+    "id": "IC4543",
+    "type": "Pl",
+    "ra": 15.41,
+    "dec": 13.483333333333333,
+    "constellation": "Ser",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF, pS, vF* nr np"
+  },
+  {
+    "id": "NGC5925",
+    "type": "OC",
+    "ra": 15.461666666666666,
+    "dec": -54.516666666666666,
+    "constellation": "Nor",
+    "size_arcmin": 15.0,
+    "magnitude": 8.0,
+    "description": "Cl, vL, vRi, lC, st 11...14"
+  },
+  {
+    "id": "NGC5986",
+    "type": "Gb",
+    "ra": 15.768333333333333,
+    "dec": -37.78333333333333,
+    "constellation": "Lup",
+    "size_arcmin": 9.8,
+    "magnitude": 7.1,
+    "description": "!, glob. cl. , vB, L, R, vgbM, st 13...15"
+  },
+  {
+    "id": "NGC5979",
+    "type": "Pl",
+    "ra": 15.795,
+    "dec": -61.21666666666667,
+    "constellation": "TrA",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "!, PN , pF, vS, R, r? am 150 st"
+  },
+  {
+    "id": "NGC6026",
+    "type": "Pl",
+    "ra": 16.023333333333333,
+    "dec": -34.53333333333333,
+    "constellation": "Lup",
+    "size_arcmin": 0.8,
+    "magnitude": 0,
+    "description": "F, S, R, gpmbM, triangle of st np"
+  },
+  {
+    "id": "NGC6025",
+    "type": "OC",
+    "ra": 16.061666666666667,
+    "dec": -60.5,
+    "constellation": "TrA",
+    "size_arcmin": 12.0,
+    "magnitude": 5.1,
+    "description": "Cl, B, vL, pRi, lC, st 7..."
+  },
+  {
+    "id": "IC4592",
+    "type": "Nb",
+    "ra": 16.2,
+    "dec": -19.466666666666665,
+    "constellation": "Sco",
+    "size_arcmin": 150.0,
+    "magnitude": 0,
+    "description": "vL, E, inv nu2 Sco"
+  },
+  {
+    "id": "NGC6067",
+    "type": "OC",
+    "ra": 16.22,
+    "dec": -54.21666666666667,
+    "constellation": "Nor",
+    "size_arcmin": 13.0,
+    "magnitude": 5.6,
+    "description": "Cl, vB, vL, vRi, lC, st 10..."
+  },
+  {
+    "id": "NGC6093",
+    "type": "Gb",
+    "ra": 16.283333333333335,
+    "dec": -22.983333333333334,
+    "constellation": "Sco",
+    "size_arcmin": 8.9,
+    "magnitude": 7.2,
+    "description": "!! glob. cl. , vB, L, vmbM (var*), rrr, st 14; = M80"
+  },
+  {
+    "id": "IC1209",
+    "type": "Nb",
+    "ra": 16.311666666666667,
+    "dec": 15.566666666666666,
+    "constellation": "Her",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "pF, vS, R, bM, r"
+  },
+  {
+    "id": "NGC6087",
+    "type": "OC",
+    "ra": 16.315,
+    "dec": -57.9,
+    "constellation": "Nor",
+    "size_arcmin": 12.0,
+    "magnitude": 5.4,
+    "description": "Cl, B, L, lC, st 7...10"
+  },
+  {
+    "id": "IC4601",
+    "type": "Nb",
+    "ra": 16.333333333333332,
+    "dec": -20.033333333333335,
+    "constellation": "Sco",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "2 st 8 in eL, dif neb, lE npsf"
+  },
+  {
+    "id": "NGC6121",
+    "type": "Gb",
+    "ra": 16.393333333333334,
+    "dec": -26.533333333333335,
+    "constellation": "Sco",
+    "size_arcmin": 26.3,
+    "magnitude": 5.9,
+    "description": "Cl, 8 or 10 B st line, with 5 st, rrr; = M4"
+  },
+  {
+    "id": "NGC6124",
+    "type": "OC",
+    "ra": 16.426666666666666,
+    "dec": -40.666666666666664,
+    "constellation": "Sco",
+    "size_arcmin": 29.0,
+    "magnitude": 5.8,
+    "description": "Cl, B, L, pRi, lCM, st 9...11"
+  },
+  {
+    "id": "IC4603",
+    "type": "Nb",
+    "ra": 16.426666666666666,
+    "dec": -24.466666666666665,
+    "constellation": "Oph",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "eF, vL, dif, st inv"
+  },
+  {
+    "id": "IC4604",
+    "type": "Nb",
+    "ra": 16.426666666666666,
+    "dec": -23.433333333333334,
+    "constellation": "Oph",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "rho Oph in eL neb"
+  },
+  {
+    "id": "NGC6134",
+    "type": "OC",
+    "ra": 16.461666666666666,
+    "dec": -49.15,
+    "constellation": "Nor",
+    "size_arcmin": 7.0,
+    "magnitude": 7.2,
+    "description": "Cl, cL, pRi, lCM, st 13...15"
+  },
+  {
+    "id": "IC4605",
+    "type": "Nb",
+    "ra": 16.503333333333334,
+    "dec": -25.1,
+    "constellation": "Sco",
+    "size_arcmin": 30.0,
+    "magnitude": 0,
+    "description": "*7 in eF, vL neb"
+  },
+  {
+    "id": "NGC6152",
+    "type": "OC",
+    "ra": 16.545,
+    "dec": -52.61666666666667,
+    "constellation": "Nor",
+    "size_arcmin": 30.0,
+    "magnitude": 8.0,
+    "description": "Cl, L, lC, st L"
+  },
+  {
+    "id": "NGC6164",
+    "type": "Pl",
+    "ra": 16.566666666666666,
+    "dec": -48.1,
+    "constellation": "Nor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "eF (strongly susp), D* f nr"
+  },
+  {
+    "id": "NGC6165",
+    "type": "Pl",
+    "ra": 16.566666666666666,
+    "dec": -48.1,
+    "constellation": "Nor",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, cS, lE, vglbM, D* p"
+  },
+  {
+    "id": "NGC6169",
+    "type": "OC",
+    "ra": 16.568333333333335,
+    "dec": -44.05,
+    "constellation": "Nor",
+    "size_arcmin": 7.0,
+    "magnitude": 7.0,
+    "description": "Cl, mu Nor inv"
+  },
+  {
+    "id": "NGC6167",
+    "type": "OC",
+    "ra": 16.573333333333334,
+    "dec": -49.6,
+    "constellation": "Nor",
+    "size_arcmin": 8.0,
+    "magnitude": 6.7,
+    "description": "Cl, L, lC, iF"
+  },
+  {
+    "id": "NGC6178",
+    "type": "OC",
+    "ra": 16.595,
+    "dec": -45.63333333333333,
+    "constellation": "Sco",
+    "size_arcmin": 4.0,
+    "magnitude": 7.2,
+    "description": "Cl, B, S, st pL"
+  },
+  {
+    "id": "NGC6188",
+    "type": "Nb",
+    "ra": 16.675,
+    "dec": -48.78333333333333,
+    "constellation": "Ara",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "! F, vL, viE, B* inv"
+  },
+  {
+    "id": "NGC6193",
+    "type": "OC",
+    "ra": 16.688333333333333,
+    "dec": -48.766666666666666,
+    "constellation": "Ara",
+    "size_arcmin": 15.0,
+    "magnitude": 5.2,
+    "description": "Cl, vL, lRi, lC, rrr, F neb inv"
+  },
+  {
+    "id": "NGC6205",
+    "type": "Gb",
+    "ra": 16.695,
+    "dec": 36.46666666666667,
+    "constellation": "Her",
+    "size_arcmin": 16.6,
+    "magnitude": 5.9,
+    "description": "!! glob. cl. , eB, vRi, vgeCM, st 11...; = M13"
+  },
+  {
+    "id": "NGC6200",
+    "type": "OC",
+    "ra": 16.736666666666668,
+    "dec": -47.483333333333334,
+    "constellation": "Ara",
+    "size_arcmin": 12.0,
+    "magnitude": 7.4,
+    "description": "Cl (in Milky Way)"
+  },
+  {
+    "id": "NGC6218",
+    "type": "Gb",
+    "ra": 16.786666666666665,
+    "dec": -1.95,
+    "constellation": "Oph",
+    "size_arcmin": 14.5,
+    "magnitude": 6.6,
+    "description": "!! glob. cl. , vB, vL, iR, gmbM, rrr, st 10...; = M12"
+  },
+  {
+    "id": "NGC6208",
+    "type": "OC",
+    "ra": 16.825,
+    "dec": -53.81666666666667,
+    "constellation": "Ara",
+    "size_arcmin": 16.0,
+    "magnitude": 7.2,
+    "description": "Cl, L, Ri, lCM, st 9...12"
+  },
+  {
+    "id": "NGC6242",
+    "type": "OC",
+    "ra": 16.926666666666666,
+    "dec": -39.5,
+    "constellation": "Sco",
+    "size_arcmin": 9.0,
+    "magnitude": 6.4,
+    "description": "Cl, B, L, Ri, st 8...11"
+  },
+  {
+    "id": "IC4628",
+    "type": "Nb",
+    "ra": 16.95,
+    "dec": -40.333333333333336,
+    "constellation": "Sco",
+    "size_arcmin": 90.0,
+    "magnitude": 0,
+    "description": "F, eL, E pf, dif"
+  },
+  {
+    "id": "NGC6254",
+    "type": "Gb",
+    "ra": 16.951666666666668,
+    "dec": -4.1,
+    "constellation": "Oph",
+    "size_arcmin": 15.1,
+    "magnitude": 6.6,
+    "description": "! glob. cl. , B, vL, R, gvmbM, rrr, st 10...15; = M10"
+  },
+  {
+    "id": "NGC6250",
+    "type": "OC",
+    "ra": 16.966666666666665,
+    "dec": -45.8,
+    "constellation": "Ara",
+    "size_arcmin": 8.0,
+    "magnitude": 5.9,
+    "description": "Cl, L, lRi, lC, st 8...12"
+  },
+  {
+    "id": "NGC6259",
+    "type": "OC",
+    "ra": 17.011666666666667,
+    "dec": -44.666666666666664,
+    "constellation": "Sco",
+    "size_arcmin": 10.0,
+    "magnitude": 8.0,
+    "description": "! Cl, B, vL, vRi, st 11..."
+  },
+  {
+    "id": "NGC6266",
+    "type": "Gb",
+    "ra": 17.02,
+    "dec": -30.116666666666667,
+    "constellation": "Oph",
+    "size_arcmin": 14.1,
+    "magnitude": 6.6,
+    "description": "! glob. cl. , vB, L, gmbM, rrr, st 14...16; = M62"
+  },
+  {
+    "id": "NGC6273",
+    "type": "Gb",
+    "ra": 17.043333333333333,
+    "dec": -26.266666666666666,
+    "constellation": "Oph",
+    "size_arcmin": 13.5,
+    "magnitude": 7.2,
+    "description": "glob. cl. , vB, L, R, vCM, rrr, st 16; = M19"
+  },
+  {
+    "id": "NGC6341",
+    "type": "Gb",
+    "ra": 17.285,
+    "dec": 43.13333333333333,
+    "constellation": "Her",
+    "size_arcmin": 11.2,
+    "magnitude": 6.5,
+    "description": "glob. cl. , vB, vL, eCM, rrr, st S; = M92"
+  },
+  {
+    "id": "NGC6322",
+    "type": "OC",
+    "ra": 17.308333333333334,
+    "dec": -42.95,
+    "constellation": "Sco",
+    "size_arcmin": 10.0,
+    "magnitude": 6.0,
+    "description": "Cl, vL, pRi, lC (place of * nf)"
+  },
+  {
+    "id": "NGC6333",
+    "type": "Gb",
+    "ra": 17.32,
+    "dec": -18.516666666666666,
+    "constellation": "Oph",
+    "size_arcmin": 9.3,
+    "magnitude": 7.9,
+    "description": "glob. cl. , B, L, R, eCM, rrr, st 14; = M9"
+  },
+  {
+    "id": "NGC6334",
+    "type": "Nb",
+    "ra": 17.341666666666665,
+    "dec": -35.71666666666667,
+    "constellation": "Sco",
+    "size_arcmin": 40.0,
+    "magnitude": 0,
+    "description": "cF, vL, icE, vglbf, *8 inv"
+  },
+  {
+    "id": "NGC6337",
+    "type": "Pl",
+    "ra": 17.371666666666666,
+    "dec": -38.483333333333334,
+    "constellation": "Sco",
+    "size_arcmin": 0.8,
+    "magnitude": 0,
+    "description": "!!! ring , eF, S, am st"
+  },
+  {
+    "id": "NGC6357",
+    "type": "Nb",
+    "ra": 17.41,
+    "dec": -34.166666666666664,
+    "constellation": "Sco",
+    "size_arcmin": 50.0,
+    "magnitude": 0,
+    "description": "F, L, E, vglbM, D* inv"
+  },
+  {
+    "id": "IC4651",
+    "type": "OC",
+    "ra": 17.411666666666665,
+    "dec": -49.95,
+    "constellation": "Ara",
+    "size_arcmin": 12.0,
+    "magnitude": 6.9,
+    "description": "Cl, pC"
+  },
+  {
+    "id": "NGC6388",
+    "type": "Gb",
+    "ra": 17.605,
+    "dec": -44.733333333333334,
+    "constellation": "Sco",
+    "size_arcmin": 8.7,
+    "magnitude": 6.9,
+    "description": "glob. cl. , vB, L, R, pg, psvmbM, rrr, st 17..."
+  },
+  {
+    "id": "NGC6402",
+    "type": "Gb",
+    "ra": 17.626666666666665,
+    "dec": -3.25,
+    "constellation": "Oph",
+    "size_arcmin": 11.7,
+    "magnitude": 7.6,
+    "description": "! glob. cl. , B, vL, R, eRi, vgmbM, rrr, st 15; = M14"
+  },
+  {
+    "id": "NGC6405",
+    "type": "OC",
+    "ra": 17.668333333333333,
+    "dec": -32.21666666666667,
+    "constellation": "Sco",
+    "size_arcmin": 15.0,
+    "magnitude": 4.2,
+    "description": "Cl, L, iR, lC, st 7, 10...; = M6"
+  },
+  {
+    "id": "NGC6397",
+    "type": "Gb",
+    "ra": 17.678333333333335,
+    "dec": -53.666666666666664,
+    "constellation": "Ara",
+    "size_arcmin": 25.7,
+    "magnitude": 5.7,
+    "description": "glob. cl. , B, vL, Ri, st 13"
+  },
+  {
+    "id": "NGC6416",
+    "type": "OC",
+    "ra": 17.74,
+    "dec": -32.35,
+    "constellation": "Sco",
+    "size_arcmin": 18.0,
+    "magnitude": 5.7,
+    "description": "Cl, vL, Ri, lC"
+  },
+  {
+    "id": "IC4665",
+    "type": "OC",
+    "ra": 17.77166666666667,
+    "dec": 5.716666666666667,
+    "constellation": "Oph",
+    "size_arcmin": 41.0,
+    "magnitude": 4.2,
+    "description": "Cl, co"
+  },
+  {
+    "id": "NGC6425",
+    "type": "OC",
+    "ra": 17.781666666666666,
+    "dec": -31.533333333333335,
+    "constellation": "Sco",
+    "size_arcmin": 8.0,
+    "magnitude": 7.2,
+    "description": "Cl, pS, lRi, lC, st 10...12"
+  },
+  {
+    "id": "NGC6441",
+    "type": "Gb",
+    "ra": 17.836666666666666,
+    "dec": -37.05,
+    "constellation": "Sco",
+    "size_arcmin": 7.8,
+    "magnitude": 7.4,
+    "description": "glob. cl. , vB, pL, R, vgmbM, rrr, st 18"
+  },
+  {
+    "id": "NGC6451",
+    "type": "OC",
+    "ra": 17.845,
+    "dec": -30.216666666666665,
+    "constellation": "Sco",
+    "size_arcmin": 8.0,
+    "magnitude": 8.0,
+    "description": "Cl, pL, pRi, bifid, st 12..."
+  },
+  {
+    "id": "NGC6469",
+    "type": "OC",
+    "ra": 17.881666666666668,
+    "dec": -22.35,
+    "constellation": "Sgr",
+    "size_arcmin": 12.0,
+    "magnitude": 8.0,
+    "description": "Cl, pRi (in Milky Way)"
+  },
+  {
+    "id": "NGC6475",
+    "type": "OC",
+    "ra": 17.898333333333333,
+    "dec": -34.81666666666667,
+    "constellation": "Sco",
+    "size_arcmin": 80.0,
+    "magnitude": 3.3,
+    "description": "Cl, vB, pRi, lC, st 7...12; = M7"
+  },
+  {
+    "id": "IC4670",
+    "type": "Nb",
+    "ra": 17.918333333333333,
+    "dec": -21.8,
+    "constellation": "Sgr",
+    "size_arcmin": 5.0,
+    "magnitude": 0,
+    "description": "stellar, 12.5 mag"
+  },
+  {
+    "id": "NGC6494",
+    "type": "OC",
+    "ra": 17.946666666666665,
+    "dec": -19.016666666666666,
+    "constellation": "Sgr",
+    "size_arcmin": 27.0,
+    "magnitude": 5.5,
+    "description": "Cl, B, vL, pRi, lC, st 10...; = M23"
+  },
+  {
+    "id": "NGC6526",
+    "type": "Nb",
+    "ra": 18.043333333333333,
+    "dec": -23.583333333333332,
+    "constellation": "Sgr",
+    "size_arcmin": 40.0,
+    "magnitude": 0,
+    "description": "F, L, cE"
+  },
+  {
+    "id": "IC4673",
+    "type": "Pl",
+    "ra": 18.055,
+    "dec": -27.1,
+    "constellation": "Sgr",
+    "size_arcmin": 0.3,
+    "magnitude": 0,
+    "description": "PN , 13 mag, *13 nf 33\""
+  },
+  {
+    "id": "NGC6520",
+    "type": "OC",
+    "ra": 18.05666666666667,
+    "dec": -27.9,
+    "constellation": "Sgr",
+    "size_arcmin": 6.0,
+    "magnitude": 8.0,
+    "description": "Cl, pS, Ri, lC, st 9...13"
+  },
+  {
+    "id": "NGC6523",
+    "type": "Nb",
+    "ra": 18.063333333333333,
+    "dec": -24.383333333333333,
+    "constellation": "Sgr",
+    "size_arcmin": 90.0,
+    "magnitude": 5.8,
+    "description": "!!! vB, eL, eiF, with L Cl; = M8"
+  },
+  {
+    "id": "NGC6531",
+    "type": "OC",
+    "ra": 18.076666666666668,
+    "dec": -22.5,
+    "constellation": "Sgr",
+    "size_arcmin": 13.0,
+    "magnitude": 5.9,
+    "description": "Cl, pRi, lC, st 9...12; = M21"
+  },
+  {
+    "id": "NGC6530",
+    "type": "OC",
+    "ra": 18.08,
+    "dec": -24.333333333333332,
+    "constellation": "Sgr",
+    "size_arcmin": 15.0,
+    "magnitude": 4.6,
+    "description": "Cl, B, L, pRi, f M8"
+  },
+  {
+    "id": "NGC6546",
+    "type": "OC",
+    "ra": 18.12,
+    "dec": -23.333333333333332,
+    "constellation": "Sgr",
+    "size_arcmin": 13.0,
+    "magnitude": 8.0,
+    "description": "Cl, vL, vRi"
+  },
+  {
+    "id": "NGC6541",
+    "type": "Gb",
+    "ra": 18.133333333333333,
+    "dec": -43.7,
+    "constellation": "CrA",
+    "size_arcmin": 13.1,
+    "magnitude": 6.6,
+    "description": "glob. cl. , B, R, eC, gbM, rrr, st 15...16"
+  },
+  {
+    "id": "IC4684",
+    "type": "Nb",
+    "ra": 18.151666666666667,
+    "dec": -23.416666666666668,
+    "constellation": "Sgr",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "S neb or neb*"
+  },
+  {
+    "id": "IC4685",
+    "type": "Nb",
+    "ra": 18.155,
+    "dec": -23.983333333333334,
+    "constellation": "Sgr",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "*7.5 in L, dif neb"
+  },
+  {
+    "id": "IC1274",
+    "type": "Nb",
+    "ra": 18.158333333333335,
+    "dec": -23.733333333333334,
+    "constellation": "Sgr",
+    "size_arcmin": 9.0,
+    "magnitude": 0,
+    "description": "3 st 8.5 to 9m in pL neb"
+  },
+  {
+    "id": "NGC6559",
+    "type": "Nb",
+    "ra": 18.166666666666668,
+    "dec": -24.1,
+    "constellation": "Sgr",
+    "size_arcmin": 8.0,
+    "magnitude": 0,
+    "description": "vF, vL, lE, **  inv"
+  },
+  {
+    "id": "IC1275",
+    "type": "Nb",
+    "ra": 18.166666666666668,
+    "dec": -23.833333333333332,
+    "constellation": "Sgr",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "2 st 8 & 8.5 in pL neb"
+  },
+  {
+    "id": "IC4701",
+    "type": "Nb",
+    "ra": 18.275,
+    "dec": -16.733333333333334,
+    "constellation": "Sgr",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "eL, conn with cloud IC 4715"
+  },
+  {
+    "id": "NGC6595",
+    "type": "OC",
+    "ra": 18.283333333333335,
+    "dec": -19.883333333333333,
+    "constellation": "Sgr",
+    "size_arcmin": 11.0,
+    "magnitude": 7.0,
+    "description": "F, pL, cE, **  inv; = IC 4700"
+  },
+  {
+    "id": "NGC6605",
+    "type": "OC",
+    "ra": 18.285,
+    "dec": -14.966666666666667,
+    "constellation": "Ser",
+    "size_arcmin": 0,
+    "magnitude": 6.0,
+    "description": "Cl, lRi, lC, st 10...12"
+  },
+  {
+    "id": "IC1283",
+    "type": "Nb",
+    "ra": 18.288333333333334,
+    "dec": -19.733333333333334,
+    "constellation": "Sgr",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "*9.3 nebulous"
+  },
+  {
+    "id": "IC1284",
+    "type": "Nb",
+    "ra": 18.295,
+    "dec": -19.666666666666668,
+    "constellation": "Sgr",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "*7.6 in neb, 15' diam"
+  },
+  {
+    "id": "NGC6613",
+    "type": "OC",
+    "ra": 18.331666666666667,
+    "dec": -17.133333333333333,
+    "constellation": "Sgr",
+    "size_arcmin": 9.0,
+    "magnitude": 6.9,
+    "description": "Cl, P, vlC; = M18"
+  },
+  {
+    "id": "NGC6626",
+    "type": "Gb",
+    "ra": 18.408333333333335,
+    "dec": -24.866666666666667,
+    "constellation": "Sgr",
+    "size_arcmin": 11.2,
+    "magnitude": 6.9,
+    "description": "!, glob. cl. , vB, L, R, geCM, rrr, st 14...16; = M28"
+  },
+  {
+    "id": "NGC6633",
+    "type": "OC",
+    "ra": 18.461666666666666,
+    "dec": 6.566666666666666,
+    "constellation": "Oph",
+    "size_arcmin": 27.0,
+    "magnitude": 4.6,
+    "description": "Cl, lC, st L"
+  },
+  {
+    "id": "IC1287",
+    "type": "Nb",
+    "ra": 18.52166666666667,
+    "dec": -10.833333333333334,
+    "constellation": "Sct",
+    "size_arcmin": 44.0,
+    "magnitude": 0,
+    "description": "*5.5 in L, E neb"
+  },
+  {
+    "id": "NGC6637",
+    "type": "Gb",
+    "ra": 18.523333333333333,
+    "dec": -32.35,
+    "constellation": "Sgr",
+    "size_arcmin": 7.1,
+    "magnitude": 7.7,
+    "description": "glob. cl. , B, L, R, rrr, st 14...16; = M69"
+  },
+  {
+    "id": "NGC6647",
+    "type": "OC",
+    "ra": 18.525,
+    "dec": -17.35,
+    "constellation": "Sgr",
+    "size_arcmin": 0,
+    "magnitude": 8.0,
+    "description": "Cl, L, Ri, lC, st vS"
+  },
+  {
+    "id": "IC4725",
+    "type": "OC",
+    "ra": 18.526666666666667,
+    "dec": -19.25,
+    "constellation": "Sgr",
+    "size_arcmin": 32.0,
+    "magnitude": 4.6,
+    "description": "Cl, pC; = M25"
+  },
+  {
+    "id": "NGC6656",
+    "type": "Gb",
+    "ra": 18.606666666666666,
+    "dec": -23.9,
+    "constellation": "Sgr",
+    "size_arcmin": 24.0,
+    "magnitude": 5.1,
+    "description": "!!, glob. cl. , vB, vL, R, vRi, vmC, st 11...15; =M22"
+  },
+  {
+    "id": "NGC6664",
+    "type": "OC",
+    "ra": 18.611666666666668,
+    "dec": -8.216666666666667,
+    "constellation": "Sct",
+    "size_arcmin": 16.0,
+    "magnitude": 7.8,
+    "description": "Cl, L, pRi, vlC"
+  },
+  {
+    "id": "IC4756",
+    "type": "OC",
+    "ra": 18.65,
+    "dec": 5.45,
+    "constellation": "Ser",
+    "size_arcmin": 52.0,
+    "magnitude": 5.0,
+    "description": "Cl, C"
+  },
+  {
+    "id": "NGC6694",
+    "type": "OC",
+    "ra": 18.753333333333334,
+    "dec": -9.4,
+    "constellation": "Sct",
+    "size_arcmin": 15.0,
+    "magnitude": 8.0,
+    "description": "Cl, cL, pRi, pC, st 12...15; = M26"
+  },
+  {
+    "id": "NGC6705",
+    "type": "OC",
+    "ra": 18.851666666666667,
+    "dec": -6.266666666666667,
+    "constellation": "Sct",
+    "size_arcmin": 14.0,
+    "magnitude": 5.8,
+    "description": "!, Cl, vB, L, iR, Ri, *9, st 11...; = M11"
+  },
+  {
+    "id": "NGC6709",
+    "type": "OC",
+    "ra": 18.858333333333334,
+    "dec": 10.35,
+    "constellation": "Aql",
+    "size_arcmin": 13.0,
+    "magnitude": 6.7,
+    "description": "Cl, pRi, lC, iF"
+  },
+  {
+    "id": "NGC6716",
+    "type": "OC",
+    "ra": 18.91,
+    "dec": -19.883333333333333,
+    "constellation": "Sgr",
+    "size_arcmin": 7.0,
+    "magnitude": 6.9,
+    "description": "Cl, pRi, st 9...13"
+  },
+  {
+    "id": "NGC6715",
+    "type": "Gb",
+    "ra": 18.918333333333333,
+    "dec": -30.483333333333334,
+    "constellation": "Sgr",
+    "size_arcmin": 9.1,
+    "magnitude": 7.7,
+    "description": "glob. cl. , vB, L, R, g, smbM, rrr, st 15; = M54"
+  },
+  {
+    "id": "NGC6723",
+    "type": "Gb",
+    "ra": 18.993333333333332,
+    "dec": -36.63333333333333,
+    "constellation": "Sgr",
+    "size_arcmin": 11.0,
+    "magnitude": 7.3,
+    "description": "glob. cl. , vL, vlE, vgbM, rrr, st 14...16"
+  },
+  {
+    "id": "IC4812",
+    "type": "Nb",
+    "ra": 19.018333333333334,
+    "dec": -37.06666666666667,
+    "constellation": "CrA",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "*7 inv in eL neb"
+  },
+  {
+    "id": "NGC6738",
+    "type": "OC",
+    "ra": 19.023333333333333,
+    "dec": 11.6,
+    "constellation": "Aql",
+    "size_arcmin": 15.0,
+    "magnitude": 8.0,
+    "description": "Cl, P, lC"
+  },
+  {
+    "id": "NGC6726",
+    "type": "Nb",
+    "ra": 19.028333333333332,
+    "dec": -36.88333333333333,
+    "constellation": "CrA",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "*6-7 in F, pL, neb"
+  },
+  {
+    "id": "NGC6727",
+    "type": "Nb",
+    "ra": 19.03,
+    "dec": -36.9,
+    "constellation": "CrA",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "*8 in F, pL neb"
+  },
+  {
+    "id": "NGC6729",
+    "type": "Nb",
+    "ra": 19.031666666666666,
+    "dec": -36.95,
+    "constellation": "CrA",
+    "size_arcmin": 1.0,
+    "magnitude": 0,
+    "description": "var* (11...) with neb!!"
+  },
+  {
+    "id": "NGC6755",
+    "type": "OC",
+    "ra": 19.13,
+    "dec": 4.233333333333333,
+    "constellation": "Aql",
+    "size_arcmin": 15.0,
+    "magnitude": 7.5,
+    "description": "Cl, vL, vRi, pC, st 12...14"
+  },
+  {
+    "id": "NGC6752",
+    "type": "Gb",
+    "ra": 19.18166666666667,
+    "dec": -59.983333333333334,
+    "constellation": "Pav",
+    "size_arcmin": 20.4,
+    "magnitude": 5.4,
+    "description": "glob. cl. , B, vL, iR, rrr, st 11...16"
+  },
+  {
+    "id": "NGC6765",
+    "type": "Pl",
+    "ra": 19.185,
+    "dec": 30.55,
+    "constellation": "Lyr",
+    "size_arcmin": 0.6,
+    "magnitude": 0,
+    "description": "F, S, E"
+  },
+  {
+    "id": "IC1297",
+    "type": "Pl",
+    "ra": 19.29,
+    "dec": -39.61666666666667,
+    "constellation": "CrA",
+    "size_arcmin": 0.1,
+    "magnitude": 0,
+    "description": "stellar (gaseous spectrum)"
+  },
+  {
+    "id": "NGC6811",
+    "type": "OC",
+    "ra": 19.636666666666667,
+    "dec": 46.56666666666667,
+    "constellation": "Cyg",
+    "size_arcmin": 13.0,
+    "magnitude": 6.8,
+    "description": "Cl, L, pRi, lC, st 11..14"
+  },
+  {
+    "id": "NGC6809",
+    "type": "Gb",
+    "ra": 19.666666666666668,
+    "dec": -30.966666666666665,
+    "constellation": "Sgr",
+    "size_arcmin": 19.0,
+    "magnitude": 7.0,
+    "description": "glob. cl. , pB, L, R, vRi, vgbM, st 12...15; = M55"
+  },
+  {
+    "id": "NGC6813",
+    "type": "Nb",
+    "ra": 19.673333333333332,
+    "dec": 27.3,
+    "constellation": "Vul",
+    "size_arcmin": 3.0,
+    "magnitude": 0,
+    "description": "**  in vF, S neb"
+  },
+  {
+    "id": "NGC6819",
+    "type": "OC",
+    "ra": 19.688333333333333,
+    "dec": 40.18333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 5.0,
+    "magnitude": 7.3,
+    "description": "Cl, vL, vRi, st 11...15"
+  },
+  {
+    "id": "NGC6820",
+    "type": "Nb",
+    "ra": 19.718333333333334,
+    "dec": 23.283333333333335,
+    "constellation": "Vul",
+    "size_arcmin": 40.0,
+    "magnitude": 0,
+    "description": "F, S, R, bM"
+  },
+  {
+    "id": "NGC6823",
+    "type": "OC",
+    "ra": 19.718333333333334,
+    "dec": 23.3,
+    "constellation": "Vul",
+    "size_arcmin": 12.0,
+    "magnitude": 7.1,
+    "description": "Cl, cRi, E, st 11...12"
+  },
+  {
+    "id": "IC4895",
+    "type": "Gx",
+    "ra": 19.75,
+    "dec": -14.8,
+    "constellation": "Sgr",
+    "size_arcmin": 10.0,
+    "magnitude": 8.0,
+    "description": "group of neb, 25' diam; = 6822"
+  },
+  {
+    "id": "NGC6830",
+    "type": "OC",
+    "ra": 19.85,
+    "dec": 23.066666666666666,
+    "constellation": "Vul",
+    "size_arcmin": 12.0,
+    "magnitude": 7.9,
+    "description": "Cl, L, pRi, pC, st 11...12"
+  },
+  {
+    "id": "NGC6834",
+    "type": "OC",
+    "ra": 19.87,
+    "dec": 29.416666666666668,
+    "constellation": "Cyg",
+    "size_arcmin": 5.0,
+    "magnitude": 7.8,
+    "description": "Cl, P, lC, st 11...12"
+  },
+  {
+    "id": "NGC6852",
+    "type": "Pl",
+    "ra": 20.01,
+    "dec": 1.7166666666666668,
+    "constellation": "Aql",
+    "size_arcmin": 0.5,
+    "magnitude": 0,
+    "description": "F neb, am st"
+  },
+  {
+    "id": "NGC6857",
+    "type": "Pl",
+    "ra": 20.031666666666666,
+    "dec": 33.516666666666666,
+    "constellation": "Cyg",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "F, am Milky Way st"
+  },
+  {
+    "id": "NGC6866",
+    "type": "OC",
+    "ra": 20.061666666666667,
+    "dec": 44.0,
+    "constellation": "Cyg",
+    "size_arcmin": 7.0,
+    "magnitude": 7.6,
+    "description": "Cl, L, vRi, cC"
+  },
+  {
+    "id": "IC4954",
+    "type": "Nb",
+    "ra": 20.08,
+    "dec": 29.25,
+    "constellation": "Vul",
+    "size_arcmin": 25.0,
+    "magnitude": 0,
+    "description": "D neb*, iF, *11 close"
+  },
+  {
+    "id": "NGC6871",
+    "type": "OC",
+    "ra": 20.098333333333333,
+    "dec": 35.78333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 20.0,
+    "magnitude": 5.2,
+    "description": "Cl, st L and S, **  inv"
+  },
+  {
+    "id": "NGC6883",
+    "type": "OC",
+    "ra": 20.188333333333333,
+    "dec": 35.85,
+    "constellation": "Cyg",
+    "size_arcmin": 15.0,
+    "magnitude": 8.0,
+    "description": "Cl, pRi, **  inv"
+  },
+  {
+    "id": "NGC6885",
+    "type": "OC",
+    "ra": 20.2,
+    "dec": 26.483333333333334,
+    "constellation": "Vul",
+    "size_arcmin": 7.0,
+    "magnitude": 6.0,
+    "description": "Cl, vB, vL, Ri, lC, st 6...11"
+  },
+  {
+    "id": "NGC6888",
+    "type": "Nb",
+    "ra": 20.2,
+    "dec": 38.35,
+    "constellation": "Cyg",
+    "size_arcmin": 20.0,
+    "magnitude": 0,
+    "description": "F, vL, vmE, **  att"
+  },
+  {
+    "id": "IC4996",
+    "type": "OC",
+    "ra": 20.275,
+    "dec": 37.63333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 6.0,
+    "magnitude": 7.3,
+    "description": "Cl, st 8...13"
+  },
+  {
+    "id": "NGC6910",
+    "type": "OC",
+    "ra": 20.385,
+    "dec": 40.78333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 8.0,
+    "magnitude": 7.4,
+    "description": "Cl, pB, pS, P, pC, st 10...12"
+  },
+  {
+    "id": "NGC6913",
+    "type": "OC",
+    "ra": 20.398333333333333,
+    "dec": 38.53333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 7.0,
+    "magnitude": 6.6,
+    "description": "Cl, P, lC, st L and S; = M29"
+  },
+  {
+    "id": "NGC6914",
+    "type": "Nb",
+    "ra": 20.411666666666665,
+    "dec": 42.483333333333334,
+    "constellation": "Cyg",
+    "size_arcmin": 13.0,
+    "magnitude": 0,
+    "description": "vF, vL, iR, dif, 2 st att p"
+  },
+  {
+    "id": "NGC6939",
+    "type": "OC",
+    "ra": 20.523333333333333,
+    "dec": 60.63333333333333,
+    "constellation": "Cep",
+    "size_arcmin": 8.0,
+    "magnitude": 7.8,
+    "description": "Cl, pL, eRi, pCM, st 11...16"
+  },
+  {
+    "id": "NGC6940",
+    "type": "OC",
+    "ra": 20.576666666666668,
+    "dec": 28.3,
+    "constellation": "Vul",
+    "size_arcmin": 31.0,
+    "magnitude": 6.3,
+    "description": "Cl, vB, vL, vRi, cC, st pL"
+  },
+  {
+    "id": "NGC6960",
+    "type": "Nb",
+    "ra": 20.761666666666667,
+    "dec": 30.716666666666665,
+    "constellation": "Cyg",
+    "size_arcmin": 70.0,
+    "magnitude": 0,
+    "description": "!! pB, cL, eiF, 52 Cyg inv"
+  },
+  {
+    "id": "NGC6974",
+    "type": "Nb",
+    "ra": 20.846666666666668,
+    "dec": 31.866666666666667,
+    "constellation": "Cyg",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "neb*, neby cE pf"
+  },
+  {
+    "id": "IC5068",
+    "type": "Nb",
+    "ra": 20.846666666666668,
+    "dec": 42.516666666666666,
+    "constellation": "Cyg",
+    "size_arcmin": 80.0,
+    "magnitude": 0,
+    "description": "vF"
+  },
+  {
+    "id": "IC5070",
+    "type": "Nb",
+    "ra": 20.846666666666668,
+    "dec": 44.35,
+    "constellation": "Cyg",
+    "size_arcmin": 80.0,
+    "magnitude": 0,
+    "description": "F, dif"
+  },
+  {
+    "id": "NGC6979",
+    "type": "Nb",
+    "ra": 20.85,
+    "dec": 32.15,
+    "constellation": "Cyg",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, S, iE, sev F st f nr"
+  },
+  {
+    "id": "IC5076",
+    "type": "Nb",
+    "ra": 20.931666666666665,
+    "dec": 47.416666666666664,
+    "constellation": "Cyg",
+    "size_arcmin": 9.0,
+    "magnitude": 0,
+    "description": "vF, vL, lE ns, st inv"
+  },
+  {
+    "id": "IC1340",
+    "type": "Nb",
+    "ra": 20.936666666666667,
+    "dec": 31.066666666666666,
+    "constellation": "Cyg",
+    "size_arcmin": 25.0,
+    "magnitude": 0,
+    "description": "possibly conn with 6995"
+  },
+  {
+    "id": "NGC6992",
+    "type": "Nb",
+    "ra": 20.94,
+    "dec": 31.716666666666665,
+    "constellation": "Cyg",
+    "size_arcmin": 60.0,
+    "magnitude": 0,
+    "description": "!!, eF, eL, eE, eiF, bifurcated"
+  },
+  {
+    "id": "NGC6995",
+    "type": "Nb",
+    "ra": 20.951666666666668,
+    "dec": 31.216666666666665,
+    "constellation": "Cyg",
+    "size_arcmin": 12.0,
+    "magnitude": 0,
+    "description": "F, eL, neb & st in groups"
+  },
+  {
+    "id": "NGC7000",
+    "type": "Nb",
+    "ra": 20.98,
+    "dec": 44.333333333333336,
+    "constellation": "Cyg",
+    "size_arcmin": 120.0,
+    "magnitude": 0,
+    "description": "F, eeL, dif nebulosity"
+  },
+  {
+    "id": "NGC7009",
+    "type": "Pl",
+    "ra": 21.07,
+    "dec": -11.366666666666667,
+    "constellation": "Aqr",
+    "size_arcmin": 1.7,
+    "magnitude": 8.0,
+    "description": "!!!, PN , vB, S, elliptic"
+  },
+  {
+    "id": "NGC7039",
+    "type": "OC",
+    "ra": 21.186666666666667,
+    "dec": 45.65,
+    "constellation": "Cyg",
+    "size_arcmin": 25.0,
+    "magnitude": 7.6,
+    "description": "Cl, vL, pRi, E, st 10..."
+  },
+  {
+    "id": "IC1369",
+    "type": "OC",
+    "ra": 21.201666666666668,
+    "dec": 47.733333333333334,
+    "constellation": "Cyg",
+    "size_arcmin": 4.0,
+    "magnitude": 6.8,
+    "description": "S neb Cl of st 13m"
+  },
+  {
+    "id": "NGC7063",
+    "type": "OC",
+    "ra": 21.406666666666666,
+    "dec": 36.5,
+    "constellation": "Cyg",
+    "size_arcmin": 8.0,
+    "magnitude": 7.0,
+    "description": "Cl, P, st 10..."
+  },
+  {
+    "id": "NGC7076",
+    "type": "Nb",
+    "ra": 21.438333333333333,
+    "dec": 62.88333333333333,
+    "constellation": "Cep",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "vF, er"
+  },
+  {
+    "id": "NGC7082",
+    "type": "OC",
+    "ra": 21.49,
+    "dec": 47.083333333333336,
+    "constellation": "Cyg",
+    "size_arcmin": 25.0,
+    "magnitude": 7.2,
+    "description": "Cl, L, cRi, lC, st 10...13"
+  },
+  {
+    "id": "NGC7078",
+    "type": "Gb",
+    "ra": 21.5,
+    "dec": 12.166666666666666,
+    "constellation": "Peg",
+    "size_arcmin": 12.3,
+    "magnitude": 6.4,
+    "description": "!, glob. cl. , vB, vL, iR, vsmbM, rrr, st vS; = M15"
+  },
+  {
+    "id": "NGC7092",
+    "type": "OC",
+    "ra": 21.536666666666665,
+    "dec": 48.43333333333333,
+    "constellation": "Cyg",
+    "size_arcmin": 32.0,
+    "magnitude": 4.6,
+    "description": "Cl, vL, vP, vlC, st 7...10; = M39"
+  },
+  {
+    "id": "NGC7089",
+    "type": "Gb",
+    "ra": 21.558333333333334,
+    "dec": -0.8166666666666667,
+    "constellation": "Aqr",
+    "size_arcmin": 12.9,
+    "magnitude": 6.5,
+    "description": "!!, glob. cl. , B, vL, gpmbM, rrr, st eS; = M2"
+  },
+  {
+    "id": "NGC7094",
+    "type": "Pl",
+    "ra": 21.615,
+    "dec": 12.783333333333333,
+    "constellation": "Peg",
+    "size_arcmin": 1.6,
+    "magnitude": 0,
+    "description": "* in eeF neby, v diffic"
+  },
+  {
+    "id": "NGC7099",
+    "type": "Gb",
+    "ra": 21.673333333333332,
+    "dec": -23.183333333333334,
+    "constellation": "Cap",
+    "size_arcmin": 11.0,
+    "magnitude": 7.5,
+    "description": "!, glob. cl. , B, L, lE, gpmbM, st 12...16; = M30"
+  },
+  {
+    "id": "NGC7133",
+    "type": "Nb",
+    "ra": 21.71,
+    "dec": 66.05,
+    "constellation": "Cep",
+    "size_arcmin": 0,
+    "magnitude": 0,
+    "description": "vF, pL"
+  },
+  {
+    "id": "NGC7139",
+    "type": "Pl",
+    "ra": 21.765,
+    "dec": 63.65,
+    "constellation": "Cep",
+    "size_arcmin": 1.3,
+    "magnitude": 0,
+    "description": "vF, cS, R, r"
+  },
+  {
+    "id": "NGC7160",
+    "type": "OC",
+    "ra": 21.895,
+    "dec": 62.6,
+    "constellation": "Cep",
+    "size_arcmin": 7.0,
+    "magnitude": 6.1,
+    "description": "Cl, P, vlC"
+  },
+  {
+    "id": "IC5148",
+    "type": "Pl",
+    "ra": 21.991666666666667,
+    "dec": -39.38333333333333,
+    "constellation": "Gru",
+    "size_arcmin": 2.0,
+    "magnitude": 0,
+    "description": "vF, L, lE, * att"
+  },
+  {
+    "id": "NGC7209",
+    "type": "OC",
+    "ra": 22.086666666666666,
+    "dec": 46.5,
+    "constellation": "Lac",
+    "size_arcmin": 25.0,
+    "magnitude": 6.7,
+    "description": "Cl, L, cRi, pC, st 9...12"
+  },
+  {
+    "id": "NGC7235",
+    "type": "OC",
+    "ra": 22.21,
+    "dec": 57.28333333333333,
+    "constellation": "Cep",
+    "size_arcmin": 4.0,
+    "magnitude": 7.7,
+    "description": "Cl, pC, has a ruby *10"
+  },
+  {
+    "id": "NGC7243",
+    "type": "OC",
+    "ra": 22.255,
+    "dec": 49.88333333333333,
+    "constellation": "Lac",
+    "size_arcmin": 21.0,
+    "magnitude": 6.4,
+    "description": "Cl, L, P, lC, st vL"
+  },
+  {
+    "id": "NGC7293",
+    "type": "Pl",
+    "ra": 22.493333333333332,
+    "dec": -20.8,
+    "constellation": "Aqr",
+    "size_arcmin": 12.8,
+    "magnitude": 0,
+    "description": "! pF, vL, E or biN"
+  },
+  {
+    "id": "IC1470",
+    "type": "Nb",
+    "ra": 23.086666666666666,
+    "dec": 60.25,
+    "constellation": "Cep",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "vF, vS, stellar N north edge"
+  },
+  {
+    "id": "NGC7510",
+    "type": "OC",
+    "ra": 23.191666666666666,
+    "dec": 60.56666666666667,
+    "constellation": "Cep",
+    "size_arcmin": 4.0,
+    "magnitude": 7.9,
+    "description": "Cl, pRi, pC, fan-sh, st pB"
+  },
+  {
+    "id": "NGC7538",
+    "type": "Nb",
+    "ra": 23.225,
+    "dec": 61.516666666666666,
+    "constellation": "Cep",
+    "size_arcmin": 10.0,
+    "magnitude": 0,
+    "description": "vF, L, 2 pB st inv"
+  },
+  {
+    "id": "NGC7635",
+    "type": "Nb",
+    "ra": 23.345,
+    "dec": 61.2,
+    "constellation": "Cas",
+    "size_arcmin": 15.0,
+    "magnitude": 0,
+    "description": "vF, *8 inv l excentric"
+  },
+  {
+    "id": "NGC7654",
+    "type": "OC",
+    "ra": 23.403333333333332,
+    "dec": 61.583333333333336,
+    "constellation": "Cas",
+    "size_arcmin": 13.0,
+    "magnitude": 6.9,
+    "description": "Cl, L, Ri, mCM, R, st 9...13; = M52"
+  },
+  {
+    "id": "NGC7686",
+    "type": "OC",
+    "ra": 23.503333333333334,
+    "dec": 49.13333333333333,
+    "constellation": "And",
+    "size_arcmin": 15.0,
+    "magnitude": 5.6,
+    "description": "Cl, P, lC, st 7...11"
+  },
+  {
+    "id": "NGC7789",
+    "type": "OC",
+    "ra": 23.95,
+    "dec": 56.733333333333334,
+    "constellation": "Cas",
+    "size_arcmin": 16.0,
+    "magnitude": 6.7,
+    "description": "Cl, vL, vRi, vmC, st 11...18"
+  }
+]

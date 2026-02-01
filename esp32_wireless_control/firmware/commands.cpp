@@ -1,0 +1,282 @@
+#include <freertos/FreeRTOS.h>
+
+#include <axis.h>
+#include <commands.h>
+#include <configs/config.h>
+#include <uart.h>
+
+SerialTerminal* _term;
+
+extern QueueHandle_t msgq;
+
+enum task_names : uint8_t
+{
+    UART_TASK,
+    CONSOLE_TASK,
+    INTERVALOMETER_TASK,
+    WEBSERVER_TASK,
+};
+
+static void cmdHelp()
+{
+    // Print usage
+    print_out_tbl(CMD_HELP_TITLE);
+    print_out_tbl(CMD_HELP_HELP);
+    print_out_tbl(CMD_HELP_STACK);
+    print_out_tbl(CMD_HELP_HEAP);
+    print_out_tbl(CMD_HELP_RESET);
+    print_out_tbl(CMD_GOTO_TARGET_RA);
+    print_out_tbl(CMD_HELP_PAN);
+}
+
+static uint16_t get_stack_high_water(const char* task_name)
+{
+    TaskHandle_t task = xTaskGetHandle(task_name);
+    uint16_t stack_size = 0;
+
+    if (task == NULL)
+        print_out_tbl(TSK_NOT_AVAIL);
+    else
+    {
+        configASSERT(task);
+        stack_size = uxTaskGetStackHighWaterMark(task);
+    }
+    return stack_size;
+}
+
+static void cmdStackAvailable()
+{
+    // Print available stack
+    int argIndex = 0;
+    char* arg;
+
+    // Print arguments
+    for (argIndex = 0; argIndex < 8; argIndex++)
+    {
+        arg = _term->getNext();
+        if (arg != NULL)
+        {
+            switch (atoi(arg))
+            {
+                case UART_TASK:
+                    print_out_tbl(CMD_STACK_HIGHWATER_UART);
+                    print_out("%d Bytes", get_stack_high_water("uart"));
+                    break;
+                case CONSOLE_TASK:
+                    print_out_tbl(CMD_STACK_HIGHWATER_CONSOLE);
+                    print_out("%d Bytes", get_stack_high_water("console"));
+                    break;
+                case INTERVALOMETER_TASK:
+                    print_out_tbl(CMD_STACK_HIGHWATER_INTERVALOMETER);
+                    print_out("%d Bytes", get_stack_high_water("intervalometer"));
+                    break;
+                case WEBSERVER_TASK:
+                    print_out_tbl(CMD_STACK_HIGHWATER_WEBSERVER);
+                    print_out("%d Bytes", get_stack_high_water("webserver"));
+                    break;
+                default:
+                    print_out("Task %d not found", atoi(arg));
+                    break;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+static void cmdHeapAvailable()
+{
+    // Print heap usage
+    char* arg;
+
+    arg = _term->getNext();
+
+    if (arg != NULL)
+    {
+        if (strcmp(arg, "all") == 0)
+        {
+            print_out_tbl(CMD_HEAP_MINIMUM_EVER_FREE);
+            print_out("%d", ESP.getMinFreeHeap());
+        }
+        else
+        {
+            print_out_tbl(CMD_UNKNOWN_ARGUMENT);
+            print_out("%s", arg);
+            print_out_tbl(CMD_HEAP_AVAILABLE_ARGS);
+        }
+    }
+    else
+    {
+        print_out_tbl(CMD_HEAP_FREE);
+        print_out("%d", ESP.getFreeHeap());
+    }
+}
+
+/**
+ * Software reset
+ */
+extern void(systemShutdown)(void);
+static void cmdReset()
+{
+    // Reset controller
+    systemShutdown();
+}
+
+static Position parsePositionFromArgs(SerialTerminal* term)
+{
+    int degrees = 0, minutes = 0;
+    float seconds = 0.0f;
+
+    const char* degreesStr = term->getNext();
+    if (degreesStr)
+        degrees = atoi(degreesStr);
+    else
+    {
+        print_out("Error: Missing degrees for position.");
+        return Position();
+    }
+
+    const char* minutesStr = term->getNext();
+    if (minutesStr)
+        minutes = atoi(minutesStr);
+    else
+    {
+        print_out("Error: Missing minutes for position.");
+        return Position();
+    }
+
+    const char* secondsStr = term->getNext();
+    if (secondsStr)
+        seconds = atof(secondsStr);
+    else
+    {
+        print_out("Error: Missing seconds for position.");
+        return Position();
+    }
+
+    return Position(degrees, minutes, seconds);
+}
+
+static void cmdGotoTargetRA()
+{
+    Position currentRA = parsePositionFromArgs(_term);
+    if (currentRA.arcseconds == 0 && _term->getNext() == NULL)
+    {
+        print_out_tbl(CMD_GOTO_TARGET_RA_ARGS);
+        return;
+    }
+
+    Position targetRA = parsePositionFromArgs(_term);
+    if (targetRA.arcseconds == 0 && _term->getNext() == NULL)
+    {
+        print_out_tbl(CMD_GOTO_TARGET_RA_ARGS);
+        return;
+    }
+
+    bool hemisphereDirection = ra_axis.direction.tracking;
+
+    print_out("GotoTargetRA called with:");
+    print_out("  Current Position: %lld arcseconds", currentRA.arcseconds);
+    print_out("  Target Position: %lld arcseconds", targetRA.arcseconds);
+    print_out("  Hemisphere direction: %d", hemisphereDirection);
+
+    ra_axis.gotoTarget(TRACKER_MOTOR_MICROSTEPPING / 2, (ra_axis.rate.tracking) / 50, currentRA,
+                       targetRA, hemisphereDirection);
+}
+
+static void cmdPan()
+{
+    const char* degreesStr = _term->getNext();
+    if (!degreesStr)
+    {
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    const char* speedStr = _term->getNext();
+    if (!speedStr)
+    {
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    const char* steppingStr = _term->getNext();
+
+    float degrees = atof(degreesStr);
+    int speed = atoi(speedStr);
+    if (speed < MIN_CUSTOM_SLEW_RATE || speed > MAX_CUSTOM_SLEW_RATE)
+    {
+        print_out("Error: Invalid speed '%s'. Must be between %d and %d.", speedStr,
+                  MIN_CUSTOM_SLEW_RATE, MAX_CUSTOM_SLEW_RATE);
+        print_out_tbl(CMD_PAN_ARGS);
+        return;
+    }
+
+    uint16_t microstep = TRACKER_MOTOR_MICROSTEPPING / 2;
+    if (steppingStr)
+    {
+        microstep = atoi(steppingStr);
+        if (microstep != 8 && microstep != 16 && microstep != 32 && microstep != 64)
+        {
+            print_out("Error: Invalid microstepping '%s'. Must be 8, 16, 32, or 64.", steppingStr);
+            print_out_tbl(CMD_PAN_ARGS);
+            return;
+        }
+    }
+
+    print_out("Pan command:");
+    print_out("  Angle: %.2f degrees (%s)", degrees, (degrees < 0) ? "left" : "right");
+    print_out("  Speed: %d", speed);
+    print_out("  Microstepping: %d", microstep);
+
+    bool success = ra_axis.panByDegrees(degrees, speed, microstep);
+
+    if (success)
+    {
+        print_out("Panning started successfully.");
+    }
+    else
+    {
+        if (ra_axis.slewActive || ra_axis.goToTarget)
+            print_out("Error: Mount is already slewing. Stop current slew first.");
+        else if (degrees == 0.0f)
+            print_out("Error: Degrees cannot be zero.");
+        else
+            print_out("Panning failed to start.");
+    }
+}
+
+static void unknownCommand(const char* command)
+{
+    // Print unknown command
+    print_out_tbl(CMD_UNKNOWN_COMMAND);
+    print_out("%s", command);
+}
+
+static void postCommandHandler()
+{
+    // Print '> ' for a primitive user UI
+    print_out_nonl("> ");
+}
+
+void setup_terminal(SerialTerminal* term)
+{
+    // Initialize terminal
+    _term = term;
+
+    // Set default handler for unknown commands
+    _term->setDefaultHandler(unknownCommand);
+    // Set handler to be run AFTER a command has been handled.
+    _term->setPostCommandHandler(postCommandHandler);
+    _term->setSerialEcho(true); // Enable Character Echoing
+    // Add command callback handlers
+    _term->addCommand("?", cmdHelp);
+    _term->addCommand("help", cmdHelp);
+    _term->addCommand("stack", cmdStackAvailable);
+    _term->addCommand("heap", cmdHeapAvailable);
+    _term->addCommand("reset", cmdReset);
+    _term->addCommand("gotoRA", cmdGotoTargetRA);
+    _term->addCommand("pan", cmdPan);
+}
