@@ -21,6 +21,9 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio esptool
 
+      - name: Build OGStarTracker Cache
+        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_compiledb
+
       - name: Build OGStarTracker
         run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_release
 
