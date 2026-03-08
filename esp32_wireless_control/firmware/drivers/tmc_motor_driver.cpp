@@ -17,6 +17,8 @@ TmcMotorDriver::TmcMotorDriver(HardwareSerial* serialPort, uint8_t addr, float r
     tmc_driver.mstep_reg_select(true); // Use MRES register for microstepping
     tmc_driver.VACTUAL(0);             // Enable stepping by step pin
 
+    tmc_driver.I_scale_analog(false); // Use internal current scaling and ignore potentiometer
+
     // Basic initialization only - advanced settings moved to setMicrosteps()
     tmc_driver.rms_current(1000, 0.6); // Higher initial current: 1000mA run, 600mA hold
     tmc_driver.push();                 // Push basic settings to driver
