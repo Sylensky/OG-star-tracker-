@@ -3,6 +3,7 @@
 #include <axis.h>
 #include <commands.h>
 #include <configs/config.h>
+#include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
 #include <uart.h>
 
@@ -36,6 +37,7 @@ static void cmdVersion()
     print_out("Software Version: %s", BUILD_VERSION);
     print_out("Build Date: %s %s", __DATE__, __TIME__);
     print_out("Hardware Version: %s", BoardVersion::getInstance().getVersionString());
+    print_out("Board Name: %s", BoardConfigManager::getInstance().getConfig().getBoardName());
     print_out("ADC Value: %d", BoardVersion::getInstance().getRawADC());
     print_out("Voltage: %d mV", BoardVersion::getInstance().getVoltage());
 }

@@ -1,10 +1,27 @@
 #include "hardwaretimer.h"
 
+HardwareTimer::HardwareTimer() : timer_pointer(NULL), ISR_Function(nullptr)
+{
+}
+
 HardwareTimer::HardwareTimer(uint64_t frequency)
 {
     timer_pointer = timerBegin(frequency);
 }
+
 HardwareTimer::HardwareTimer(uint64_t frequency, void (*functionToCall)())
+{
+    this->ISR_Function = functionToCall;
+    timer_pointer = timerBegin(frequency);
+    timerAttachInterrupt(timer_pointer, ISR_Function);
+}
+
+void HardwareTimer::init(uint64_t frequency)
+{
+    timer_pointer = timerBegin(frequency);
+}
+
+void HardwareTimer::init(uint64_t frequency, void (*functionToCall)())
 {
     this->ISR_Function = functionToCall;
     timer_pointer = timerBegin(frequency);

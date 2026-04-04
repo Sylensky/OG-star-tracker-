@@ -13,6 +13,7 @@
 #include "common_strings.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
+#include "functions/board_version/board_config.h"
 #include "functions/board_version/board_version.h"
 #include "functions/intervalometer/intervalometer.h"
 #include "functions/led/led.h"
@@ -291,14 +292,12 @@ void setup()
     else
         language = static_cast<Languages>(langNum);
 
-    // Initialize the pins
-    LED::getInstance().trigger.init(INTERV_PIN);
-    LED::getInstance().status.init(STATUS_LED);
-    pinMode(AXIS1_STEP, OUTPUT);
-    pinMode(AXIS1_DIR, OUTPUT);
-    pinMode(EN12_n, OUTPUT);
-    digitalWrite(AXIS1_STEP, LOW);
-    digitalWrite(EN12_n, LOW);
+    // Initialize LEDs
+    LED::getInstance().trigger.init(boardCfg().getIntervPin());
+    LED::getInstance().status.init(boardCfg().getStatusLed());
+
+    // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
+    initAxis();
     // handleExposureSettings();
 
     // Initialize Wifi and web server
@@ -363,7 +362,7 @@ void webserverTask(void* pvParameters)
 
 void intervalometerTask(void* pvParameters)
 {
-    intervalometer = new Intervalometer(INTERV_PIN);
+    intervalometer = new Intervalometer(boardCfg().getIntervPin());
     intervalometer->readPresetsFromEEPROM();
 
     for (;;)
