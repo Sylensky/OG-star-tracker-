@@ -28,9 +28,9 @@ class BoardConfig
     virtual uint8_t getSpread1() const = 0;
 
     // Stepper driver pins - DEC Axis
-    virtual uint8_t getAxis2Step() const = 0;
-    virtual uint8_t getAxis2Dir() const = 0;
-    virtual uint8_t getSpread2() const = 0;
+    // virtual uint8_t getAxis2Step() const = 0;
+    // virtual uint8_t getAxis2Dir() const = 0;
+    // virtual uint8_t getSpread2() const = 0;
 
     // Common stepper pins
     virtual uint8_t getRaMs1() const = 0;
@@ -51,7 +51,7 @@ class BoardConfig
     // TMC driver configuration
     virtual float getTmcRSense() const = 0;
     virtual uint8_t getAxis1Addr() const = 0;
-    virtual uint8_t getAxis2Addr() const = 0;
+    // virtual uint8_t getAxis2Addr() const = 0;
 
     // Board-specific features
     virtual const char* getBoardName() const = 0;
@@ -79,9 +79,9 @@ class BoardConfigV2 : public BoardConfig
     uint8_t getSpread1() const override { return 4; }
 
     // Stepper driver pins - DEC Axis
-    uint8_t getAxis2Step() const override { return 19; }
-    uint8_t getAxis2Dir() const override { return 18; }
-    uint8_t getSpread2() const override { return 21; }
+    // uint8_t getAxis2Step() const override { return 19; }
+    // uint8_t getAxis2Dir() const override { return 18; }
+    // uint8_t getSpread2() const override { return 21; }
 
     // Common stepper pins
     uint8_t getRaMs1() const override { return 23; }
@@ -102,7 +102,7 @@ class BoardConfigV2 : public BoardConfig
     // TMC driver configuration
     float getTmcRSense() const override { return 0.11f; }
     uint8_t getAxis1Addr() const override { return 0; }
-    uint8_t getAxis2Addr() const override { return 1; }
+    // uint8_t getAxis2Addr() const override { return 1; }
 
     // Board-specific features
     const char* getBoardName() const override { return "ESP32"; }
@@ -129,9 +129,9 @@ class BoardConfigV3 : public BoardConfig
     uint8_t getSpread1() const override { return 4; }
 
     // Stepper driver pins - DEC Axis
-    uint8_t getAxis2Step() const override { return 19; }
-    uint8_t getAxis2Dir() const override { return 18; }
-    uint8_t getSpread2() const override { return 21; }
+    // uint8_t getAxis2Step() const override { return 19; }
+    // uint8_t getAxis2Dir() const override { return 18; }
+    // uint8_t getSpread2() const override { return 21; }
 
     // Common stepper pins
     uint8_t getRaMs1() const override { return 23; }
@@ -152,7 +152,7 @@ class BoardConfigV3 : public BoardConfig
     // TMC driver configuration
     float getTmcRSense() const override { return 0.11f; }
     uint8_t getAxis1Addr() const override { return 0; }
-    uint8_t getAxis2Addr() const override { return 1; }
+    // uint8_t getAxis2Addr() const override { return 1; }
 
     // Board-specific features
     const char* getBoardName() const override { return "ESP32S3"; }
