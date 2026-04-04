@@ -293,13 +293,7 @@ void setup()
         language = static_cast<Languages>(langNum);
 
     // Initialize LEDs
-    LED::getInstance().trigger.init(boardCfg().getIntervPin());
-    bool result =
-        LED::getInstance().status.initPWM(boardCfg().getStatusLed(), LEDC_FREQ, LEDC_RESOLUTION);
-    if (!result)
-        print_out("Failed to attach LEDC to STATUS_LED pin");
-    else
-        LED::getInstance().status.setBrightness(STATUS_LED_BRIGHTNESS);
+    LED::getInstance().initAll();
 
     // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
     initAxis();
@@ -351,6 +345,8 @@ void loop()
             LED::getInstance().status.set(ra_axis.trackingActive ? HIGH : LOW);
             delay_ticks = 1000; // Delay for 1 second
         }
+
+        LED::getInstance().updateAll();
         ra_axis.print_status();
         vTaskDelay(delay_ticks);
     }
