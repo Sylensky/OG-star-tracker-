@@ -125,8 +125,8 @@ class BoardConfigV3 : public BoardConfig
     /* clang-format off */
     // Stepper driver pins - RA Axis
     uint8_t getAxis1Step() const override { return 5; }
-    uint8_t getAxis1Dir() const override { return 15; }
-    uint8_t getSpread1() const override { return 4; }
+    uint8_t getAxis1Dir() const override { return 4; }
+    uint8_t getSpread1() const override { return 17; }
 
     // Stepper driver pins - DEC Axis
     // uint8_t getAxis2Step() const override { return 19; }
@@ -134,17 +134,17 @@ class BoardConfigV3 : public BoardConfig
     // uint8_t getSpread2() const override { return 21; }
 
     // Common stepper pins
-    uint8_t getRaMs1() const override { return 23; }
-    uint8_t getRaMs2() const override { return 22; }
-    uint8_t getEn12() const override { return 17; }
+    uint8_t getRaMs1() const override { return 15; }
+    uint8_t getRaMs2() const override { return 7; }
+    uint8_t getEn12() const override { return 18; }
 
     // LED pins
-    uint8_t getIntervPin() const override { return 25; }
+    uint8_t getIntervPin() const override { return 21; } // FIXME: is not a LED
     uint8_t getStatusLed() const override { return 26; }
 
     // UART pins for TMC drivers
-    uint8_t getAxisRx() const override { return 16; }
-    uint8_t getAxisTx() const override { return 19; }
+    uint8_t getAxisRx() const override { return 6; }
+    uint8_t getAxisTx() const override { return 17; }
 
     // Board version pin
     uint8_t getBoardVersionPin() const override { return 2; }
