@@ -9,8 +9,11 @@ class HardwareTimer
     void (*ISR_Function)();
 
   public:
+    HardwareTimer();
     HardwareTimer(uint64_t frequency);
     HardwareTimer(uint64_t frequency, void (*functionToCall)());
+    void init(uint64_t frequency);
+    void init(uint64_t frequency, void (*functionToCall)());
     void attachInterupt(void (*functionToCall)());
     void start(uint64_t alarmValue, bool autoReload);
     void stop();

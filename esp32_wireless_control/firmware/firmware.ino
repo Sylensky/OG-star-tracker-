@@ -13,6 +13,7 @@
 #include "common_strings.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
+#include "functions/board_version/board_config.h"
 #include "functions/board_version/board_version.h"
 #include "functions/intervalometer/intervalometer.h"
 #include "functions/led/led.h"
@@ -291,19 +292,17 @@ void setup()
     else
         language = static_cast<Languages>(langNum);
 
-    // Initialize the pins
-    LED::getInstance().trigger.init(INTERV_PIN);
-    bool result = LED::getInstance().status.initPWM(STATUS_LED, LEDC_FREQ, LEDC_RESOLUTION);
+    // Initialize LEDs
+    LED::getInstance().trigger.init(boardCfg().getIntervPin());
+    bool result =
+        LED::getInstance().status.initPWM(boardCfg().getStatusLed(), LEDC_FREQ, LEDC_RESOLUTION);
     if (!result)
         print_out("Failed to attach LEDC to STATUS_LED pin");
     else
         LED::getInstance().status.setBrightness(STATUS_LED_BRIGHTNESS);
 
-    pinMode(AXIS1_STEP, OUTPUT);
-    pinMode(AXIS1_DIR, OUTPUT);
-    pinMode(EN12_n, OUTPUT);
-    digitalWrite(AXIS1_STEP, LOW);
-    digitalWrite(EN12_n, LOW);
+    // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
+    initAxis();
     // handleExposureSettings();
 
     // Initialize Wifi and web server
@@ -368,7 +367,7 @@ void webserverTask(void* pvParameters)
 
 void intervalometerTask(void* pvParameters)
 {
-    intervalometer = new Intervalometer(INTERV_PIN);
+    intervalometer = new Intervalometer(boardCfg().getIntervPin());
     intervalometer->readPresetsFromEEPROM();
 
     for (;;)

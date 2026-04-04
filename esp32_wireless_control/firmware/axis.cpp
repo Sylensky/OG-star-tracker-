@@ -1,19 +1,21 @@
 #include "soc/gpio_struct.h"
 
 #include "axis.h"
+#include "functions/board_version/board_config.h"
 #include "uart.h"
 
 #if MICROSTEPPING_MOTOR_DRIVER == USE_MSx_PINS_MICROSTEPPING
 #include "drivers/msx_motor_driver.h"
-MSxMotorDriver ra_driver(RA_MS1, RA_MS2, AXIS1_DIR);
 #elif MICROSTEPPING_MOTOR_DRIVER == USE_TMC_DRIVER_MICROSTEPPING
 #include "drivers/tmc_motor_driver.h"
-TmcMotorDriver ra_driver(&AXIS_SERIAL_PORT, AXIS1_ADDR, TMC_R_SENSE, AXIS_RX, AXIS_TX);
 #else
 #error Unknown Motor Driver
 #endif
 
-Axis ra_axis(1, &ra_driver, AXIS1_DIR, RA_INVERT_DIR_PIN);
+static MotorDriver* ra_driver = nullptr;
+Axis ra_axis;
+HardwareTimer slewTimeOut;
+static uint8_t axis1StepPin = 0;
 
 volatile bool ra_axis_step_phase = 0;
 
@@ -24,17 +26,17 @@ void IRAM_ATTR stepTimerRA_ISR()
     if (ra_axis_step_phase)
     {
 #ifdef BOARD_HAS_PIN_REMAP
-        digitalWrite(AXIS1_STEP, HIGH);
+        digitalWrite(axis1StepPin, HIGH);
 #else
-        GPIO.out_w1ts = (1 << AXIS1_STEP); // Set pin high
+        GPIO.out_w1ts = (1 << axis1StepPin); // Set pin high
 #endif
     }
     else
     {
 #ifdef BOARD_HAS_PIN_REMAP
-        digitalWrite(AXIS1_STEP, LOW);
+        digitalWrite(axis1StepPin, LOW);
 #else
-        GPIO.out_w1tc = (1 << AXIS1_STEP); // Set pin low
+        GPIO.out_w1tc = (1 << axis1StepPin); // Set pin low
 #endif
     }
 
@@ -80,7 +82,26 @@ void IRAM_ATTR slewTimeOutTimer_ISR()
     ra_axis.stopSlew();
 }
 
-HardwareTimer slewTimeOut(2000, &slewTimeOutTimer_ISR);
+void initAxis()
+{
+    const BoardConfig& cfg = boardCfg();
+    axis1StepPin = cfg.getAxis1Step();
+
+    pinMode(axis1StepPin, OUTPUT);
+    digitalWrite(axis1StepPin, LOW);
+    pinMode(cfg.getEn12(), OUTPUT);
+    digitalWrite(cfg.getEn12(), LOW);
+
+#if MICROSTEPPING_MOTOR_DRIVER == USE_MSx_PINS_MICROSTEPPING
+    ra_driver = new MSxMotorDriver(cfg.getRaMs1(), cfg.getRaMs2(), cfg.getAxis1Dir());
+#elif MICROSTEPPING_MOTOR_DRIVER == USE_TMC_DRIVER_MICROSTEPPING
+    ra_driver = new TmcMotorDriver(&Serial2, cfg.getAxis1Addr(), cfg.getTmcRSense(),
+                                   cfg.getAxisRx(), cfg.getAxisTx());
+#endif
+
+    ra_axis.init(1, ra_driver, cfg.getAxis1Dir(), RA_INVERT_DIR_PIN);
+    slewTimeOut.init(2000, &slewTimeOutTimer_ISR);
+}
 
 // Position class implementation
 Position::Position(int degrees, int minutes, float seconds)
@@ -111,6 +132,14 @@ void axisTask(void* parameter)
     }
 }
 
+Axis::Axis()
+    : axisCountValue(0), targetCount(0), goToTarget(false), slewActive(false),
+      trackingActive(false), direction(), counterActive(false), rate(), position(0), stepTimer(),
+      microStep(0), stepPin(0), dirPin(0), axisNumber(0), invertDirectionPin(false),
+      driver(nullptr), startRequested(false)
+{
+}
+
 Axis::Axis(uint8_t axis, MotorDriver* motorDriver, uint8_t dirPinforAxis, bool invertDirPin)
     : stepTimer(TIMER_APB_CLK_FREQ), startRequested(false)
 {
@@ -123,6 +152,26 @@ Axis::Axis(uint8_t axis, MotorDriver* motorDriver, uint8_t dirPinforAxis, bool i
 
     pinMode(dirPin, OUTPUT);
 
+    switch (axisNumber)
+    {
+        case 1:
+            stepTimer.attachInterupt(&stepTimerRA_ISR);
+            break;
+    }
+}
+
+void Axis::init(uint8_t axis, MotorDriver* motorDriver, uint8_t dirPinforAxis, bool invertDirPin)
+{
+    driver = motorDriver;
+    axisNumber = axis;
+    direction.tracking = c_DIRECTION;
+    dirPin = dirPinforAxis;
+    invertDirectionPin = invertDirPin;
+    rate.tracking = trackingRates.getRate();
+
+    pinMode(dirPin, OUTPUT);
+
+    stepTimer.init(TIMER_APB_CLK_FREQ);
     switch (axisNumber)
     {
         case 1:

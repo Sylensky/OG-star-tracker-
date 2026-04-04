@@ -38,7 +38,9 @@ class Rate
 class Axis
 {
   public:
+    Axis();
     Axis(uint8_t axisNumber, MotorDriver* driver, uint8_t dirPinforAxis, bool invertDirPin);
+    void init(uint8_t axisNumber, MotorDriver* driver, uint8_t dirPinforAxis, bool invertDirPin);
 
     void setAxisTargetCount(int64_t count);
     int64_t getAxisTargetCount();
@@ -121,5 +123,6 @@ class Axis
 };
 
 extern Axis ra_axis;
+extern void initAxis();
 
 #endif
