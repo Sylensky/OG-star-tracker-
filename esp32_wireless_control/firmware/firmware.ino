@@ -14,6 +14,7 @@
 #include "configs/config.h"
 #include "eeprom_manager.h"
 #include "functions/intervalometer/intervalometer.h"
+#include "functions/led/led.h"
 #include "functions/ota/ota_handler.h"
 #include "hardwaretimer.h"
 #include "tracking_rates.h"
@@ -285,8 +286,8 @@ void setup()
         language = static_cast<Languages>(langNum);
 
     // Initialize the pins
-    pinMode(INTERV_PIN, OUTPUT);
-    pinMode(STATUS_LED, OUTPUT);
+    LED::getInstance().trigger.init(INTERV_PIN);
+    LED::getInstance().status.init(STATUS_LED);
     pinMode(AXIS1_STEP, OUTPUT);
     pinMode(AXIS1_DIR, OUTPUT);
     pinMode(EN12_n, OUTPUT);
@@ -331,13 +332,13 @@ void loop()
         if (ra_axis.slewActive)
         {
             // Blink status LED if mount is in slew mode
-            digitalWrite(STATUS_LED, !digitalRead(STATUS_LED));
+            LED::getInstance().status.toggle();
             delay_ticks = 150; // Delay for 150 ms
         }
         else
         {
             // Turn on status LED if sidereal tracking is ON
-            digitalWrite(STATUS_LED, ra_axis.trackingActive ? HIGH : LOW);
+            LED::getInstance().status.set(ra_axis.trackingActive ? HIGH : LOW);
             delay_ticks = 1000; // Delay for 1 second
         }
         ra_axis.print_status();

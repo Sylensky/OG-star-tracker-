@@ -6,6 +6,7 @@
 
 #include "axis.h"
 #include "configs/config.h"
+#include "functions/led/led.h"
 #include "hardwaretimer.h"
 
 IntervalometerMode::IntervalometerMode(uint8_t triggerPin, const Settings& settings)
@@ -14,8 +15,6 @@ IntervalometerMode::IntervalometerMode(uint8_t triggerPin, const Settings& setti
       currentExposure(0), previousDitherDirection(0), startCaptureTickCount(0),
       captureDurationTickCount(0), taskHandle(nullptr)
 {
-    pinMode(triggerPin, OUTPUT);
-    digitalWrite(triggerPin, LOW);
 }
 
 IntervalometerMode::~IntervalometerMode()
@@ -95,7 +94,7 @@ void IntervalometerMode::cleanup()
     print_out("Cleaning up %s", getModeName());
 
     // Ensure trigger is off
-    digitalWrite(triggerPin, LOW);
+    LED::getInstance().trigger.off();
 
     // Stop any axis movement
     ra_axis.stopSlew();
@@ -141,13 +140,13 @@ void IntervalometerMode::performPreDelay()
 
 void IntervalometerMode::triggerOn()
 {
-    digitalWrite(triggerPin, HIGH);
+    LED::getInstance().trigger.on();
     print_out("Trigger ON");
 }
 
 void IntervalometerMode::triggerOff()
 {
-    digitalWrite(triggerPin, LOW);
+    LED::getInstance().trigger.off();
     print_out("Trigger OFF");
 }
 
