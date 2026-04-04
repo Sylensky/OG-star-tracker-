@@ -13,6 +13,7 @@
 #include "common_strings.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
+#include "functions/board_version/board_version.h"
 #include "functions/intervalometer/intervalometer.h"
 #include "functions/led/led.h"
 #include "functions/ota/ota_handler.h"
@@ -274,6 +275,9 @@ void setup()
     print_out("***     Dual Core Setup: ISR Core 0    ***");
     print_out("***     Application Tasks on Core 1    ***");
     print_out_tbl(HEAD_LINE_VERSION);
+    BoardVersion::getInstance().init(BOARD_VERSION_PIN);
+    print_out("*** Hardware Version: %s ***", BoardVersion::getInstance().getVersionString());
+    print_out_tbl(HEAD_LINE);
 
     // Initialize EEPROM manager
     EepromManager::begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
