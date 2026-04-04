@@ -28,6 +28,7 @@ static const char cmd_stack_highwater_webserver[] PROGMEM = "Webserver stack hig
 
 static const char cmd_help_title[] PROGMEM = "Serial terminal usage:\r\n";
 static const char cmd_help_help[] PROGMEM = "  help or ?                      Print this usage\r\n";
+static const char cmd_help_version[] PROGMEM = "  version                        Show software and hardware version\r\n";
 static const char cmd_help_stack[] PROGMEM = "  stack <0..N task>              Print available stack\r\n";
 static const char cmd_help_heap[] PROGMEM = "  heap <all>                     Print free heap\r\n";
 static const char cmd_help_reset[] PROGMEM = "  reset                          Reset the controller\r\n";
@@ -74,6 +75,7 @@ static const char* const string_table[] = {
 
     cmd_help_title,
     cmd_help_help,
+    cmd_help_version,
     cmd_help_stack,
     cmd_help_heap,
     cmd_help_reset,
@@ -121,6 +123,7 @@ enum pgm_table_index_t
 
     CMD_HELP_TITLE,
     CMD_HELP_HELP,
+    CMD_HELP_VERSION,
     CMD_HELP_STACK,
     CMD_HELP_HEAP,
     CMD_HELP_RESET,
