@@ -39,7 +39,7 @@ class BoardConfig
 
     // LED pins
     virtual uint8_t getIntervPin() const = 0;
-    virtual uint8_t getStatusLed() const = 0;
+    virtual uint8_t getStatusLed() const { return 0; }
 
     // UART pins for TMC drivers
     virtual uint8_t getAxisRx() const = 0;
@@ -56,6 +56,17 @@ class BoardConfig
     // Board-specific features
     virtual const char* getBoardName() const = 0;
     virtual bool hasTmcDriverSupport() const = 0;
+
+    // NeoPixel LED hardware features
+    virtual bool hasNeoPixelLeds() const { return false; }
+    virtual uint8_t getNeoPixelPin() const { return 0; }
+    virtual uint8_t getNeoPixelCount() const { return 0; }
+    virtual uint32_t getNeoPixelType() const { return 0x01; }
+
+    // NeoPixel LED indices
+    virtual uint8_t getNeoPixelStatusIndex() const { return 0; }
+    virtual uint8_t getNeoPixelCameraIndex() const { return 1; }
+    virtual uint8_t getNeoPixelPowerIndex() const { return 2; }
 
   protected:
     BoardConfig() = default;
@@ -140,7 +151,7 @@ class BoardConfigV2_2 : public BoardConfig
 
     // LED pins
     uint8_t getIntervPin() const override { return 21; } // FIXME: is not a LED
-    uint8_t getStatusLed() const override { return 26; }
+    // getStatusLed() not needed - uses NeoPixels on GPIO 45
 
     // UART pins for TMC drivers
     uint8_t getAxisRx() const override { return 6; }
@@ -157,6 +168,17 @@ class BoardConfigV2_2 : public BoardConfig
     // Board-specific features
     const char* getBoardName() const override { return "ESP32S3"; }
     bool hasTmcDriverSupport() const override { return true; }
+
+    // NeoPixel LED hardware - 3x WS2812 on GPIO 45
+    bool hasNeoPixelLeds() const override { return true; }
+    uint8_t getNeoPixelPin() const override { return 45; }
+    uint8_t getNeoPixelCount() const override { return 3; }
+    uint32_t getNeoPixelType() const override { return 0x52; } // NEO_GRB + NEO_KHZ800
+
+    // NeoPixel indices: [0]=Camera, [1]=Status, [2]=Power
+    uint8_t getNeoPixelStatusIndex() const override { return 1; }
+    uint8_t getNeoPixelCameraIndex() const override { return 0; }
+    uint8_t getNeoPixelPowerIndex() const override { return 2; }
     /* clang-format on */
 };
 

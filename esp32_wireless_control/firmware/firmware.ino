@@ -293,8 +293,7 @@ void setup()
         language = static_cast<Languages>(langNum);
 
     // Initialize LEDs
-    LED::getInstance().trigger.init(boardCfg().getIntervPin());
-    LED::getInstance().status.init(boardCfg().getStatusLed());
+    LED::getInstance().initAll();
 
     // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
     initAxis();
@@ -346,6 +345,8 @@ void loop()
             LED::getInstance().status.set(ra_axis.trackingActive ? HIGH : LOW);
             delay_ticks = 1000; // Delay for 1 second
         }
+
+        LED::getInstance().updateAll();
         ra_axis.print_status();
         vTaskDelay(delay_ticks);
     }

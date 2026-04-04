@@ -11,6 +11,10 @@
 
 #include <Arduino.h>
 
+// Forward declarations
+class BoardConfig;
+class NeoPixelManager;
+
 /**
  * @brief Base LED control class
  *
@@ -22,7 +26,6 @@ class LEDBase
   public:
     LEDBase();
     virtual ~LEDBase() = default;
-
 
     virtual void init(uint8_t pin);
     virtual void toggle();
@@ -36,6 +39,14 @@ class LEDBase
     virtual void set(uint8_t state);
 
     /**
+     * @brief Set LED color (NeoPixel only, ignored on regular LEDs)
+     * @param r Red value (0-255)
+     * @param g Green value (0-255)
+     * @param b Blue value (0-255)
+     */
+    virtual void setColor(uint8_t r, uint8_t g, uint8_t b);
+
+    /**
      * @brief Get the current LED state
      * @return Current state (HIGH or LOW)
      */
@@ -47,9 +58,15 @@ class LEDBase
     bool isInitialized() const;
 
   protected:
+    friend class LED;
+
     uint8_t _pin;
     uint8_t _state;
     bool _initialized;
+    bool _isNeoPixel;
+    uint8_t _neoPixelIndex;
+
+    void setNeoPixelMode(uint8_t index, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
 };
 
 /**
@@ -77,6 +94,30 @@ class TriggerLED : public LEDBase
 };
 
 /**
+ * @brief Camera LED class
+ *
+ * Used for camera-related visual indication (v2.2 NeoPixel only).
+ */
+class CameraLED : public LEDBase
+{
+  public:
+    CameraLED() = default;
+    ~CameraLED() override = default;
+};
+
+/**
+ * @brief Power LED class
+ *
+ * Used for power status indication (v2.2 NeoPixel only).
+ */
+class PowerLED : public LEDBase
+{
+  public:
+    PowerLED() = default;
+    ~PowerLED() override = default;
+};
+
+/**
  * @brief LED Manager Singleton
  *
  * Centralized manager for all LED instances in the system.
@@ -93,6 +134,19 @@ class LED
 
     StatusLED status;
     TriggerLED trigger;
+    CameraLED camera; // NeoPixel on v2.2, unused on v1.x
+    PowerLED power;   // NeoPixel on v2.2, unused on v1.x
+
+    /**
+     * @brief Initialize all LEDs based on board configuration
+     */
+    void initAll();
+
+    /**
+     * @brief Update all NeoPixel LEDs to reflect their current states
+     * Call this periodically from main loop to apply state changes
+     */
+    void updateAll();
 
   private:
     LED();                               // Private constructor
