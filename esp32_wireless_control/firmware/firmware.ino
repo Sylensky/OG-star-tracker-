@@ -275,8 +275,10 @@ void setup()
     print_out("***     Dual Core Setup: ISR Core 0    ***");
     print_out("***     Application Tasks on Core 1    ***");
     print_out_tbl(HEAD_LINE_VERSION);
-    BoardVersion::getInstance().init(BOARD_VERSION_PIN);
-    print_out("*** Hardware Version: %s ***", BoardVersion::getInstance().getVersionString());
+    BoardConfigManager::getInstance().init(BOARD_VERSION_PIN);
+    print_out("***     Hardware Version: %s         ***",
+              BoardVersion::getInstance().getVersionString());
+    print_out("***     Board: %s    ***", boardCfg().getBoardName());
     print_out_tbl(HEAD_LINE);
 
     // Initialize EEPROM manager
