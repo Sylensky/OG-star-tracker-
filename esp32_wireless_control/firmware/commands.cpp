@@ -3,6 +3,7 @@
 #include <axis.h>
 #include <commands.h>
 #include <configs/config.h>
+#include <functions/board_version/board_version.h>
 #include <uart.h>
 
 SerialTerminal* _term;
@@ -22,11 +23,21 @@ static void cmdHelp()
     // Print usage
     print_out_tbl(CMD_HELP_TITLE);
     print_out_tbl(CMD_HELP_HELP);
+    print_out_tbl(CMD_HELP_VERSION);
     print_out_tbl(CMD_HELP_STACK);
     print_out_tbl(CMD_HELP_HEAP);
     print_out_tbl(CMD_HELP_RESET);
     print_out_tbl(CMD_GOTO_TARGET_RA);
     print_out_tbl(CMD_HELP_PAN);
+}
+
+static void cmdVersion()
+{
+    print_out("Software Version: %s", BUILD_VERSION);
+    print_out("Build Date: %s %s", __DATE__, __TIME__);
+    print_out("Hardware Version: %s", BoardVersion::getInstance().getVersionString());
+    print_out("ADC Value: %d", BoardVersion::getInstance().getRawADC());
+    print_out("Voltage: %d mV", BoardVersion::getInstance().getVoltage());
 }
 
 static uint16_t get_stack_high_water(const char* task_name)
@@ -274,6 +285,7 @@ void setup_terminal(SerialTerminal* term)
     // Add command callback handlers
     _term->addCommand("?", cmdHelp);
     _term->addCommand("help", cmdHelp);
+    _term->addCommand("version", cmdVersion);
     _term->addCommand("stack", cmdStackAvailable);
     _term->addCommand("heap", cmdHeapAvailable);
     _term->addCommand("reset", cmdReset);
