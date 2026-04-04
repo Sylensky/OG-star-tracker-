@@ -115,4 +115,7 @@
 #define RA_MS2 22
 #define EN12_n 17
 
+// Board Version
+#define BOARD_VERSION_PIN 2
+
 #endif
