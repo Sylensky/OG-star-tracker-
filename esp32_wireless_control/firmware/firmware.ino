@@ -14,6 +14,7 @@
 #include "configs/config.h"
 #include "eeprom_manager.h"
 #include "functions/intervalometer/intervalometer.h"
+#include "functions/led/led.h"
 #include "functions/ota/ota_handler.h"
 #include "hardwaretimer.h"
 #include "tracking_rates.h"
@@ -285,12 +286,13 @@ void setup()
         language = static_cast<Languages>(langNum);
 
     // Initialize the pins
-    bool result = ledcAttach(STATUS_LED, LEDC_FREQ, LEDC_RESOLUTION);
+    LED::getInstance().trigger.init(INTERV_PIN);
+    bool result = LED::getInstance().status.initPWM(STATUS_LED, LEDC_FREQ, LEDC_RESOLUTION);
     if (!result)
-    {
         print_out("Failed to attach LEDC to STATUS_LED pin");
-    }
-    pinMode(INTERV_PIN, OUTPUT);
+    else
+        LED::getInstance().status.setBrightness(STATUS_LED_BRIGHTNESS);
+
     pinMode(AXIS1_STEP, OUTPUT);
     pinMode(AXIS1_DIR, OUTPUT);
     pinMode(EN12_n, OUTPUT);
@@ -322,7 +324,6 @@ void setup()
 
 void loop()
 {
-    static bool led_blink = false;
     int delay_ticks = 0;
     trackingRates.readTrackingRatePresetsFromEEPROM();
 
@@ -336,14 +337,13 @@ void loop()
         if (ra_axis.slewActive)
         {
             // Blink status LED if mount is in slew mode
-            ledcWrite(STATUS_LED, led_blink ? 0 : STATUS_LED_BRIGHTNESS);
-            led_blink = !led_blink;
+            LED::getInstance().status.toggle();
             delay_ticks = 150; // Delay for 150 ms
         }
         else
         {
             // Turn on status LED if sidereal tracking is ON
-            ledcWrite(STATUS_LED, ra_axis.trackingActive ? STATUS_LED_BRIGHTNESS : 0);
+            LED::getInstance().status.set(ra_axis.trackingActive ? HIGH : LOW);
             delay_ticks = 1000; // Delay for 1 second
         }
         ra_axis.print_status();
