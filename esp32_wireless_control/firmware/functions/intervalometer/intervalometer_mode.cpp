@@ -1,6 +1,7 @@
 
 #include <Arduino.h>
 
+#include "functions/board_version/board_config.h"
 #include "intervalometer_mode.h"
 #include "uart.h"
 
@@ -140,12 +141,16 @@ void IntervalometerMode::performPreDelay()
 
 void IntervalometerMode::triggerOn()
 {
+    if (BoardConfigManager::getInstance().getConfig().hasNeoPixelLeds())
+        LED::getInstance().camera.on();
     LED::getInstance().trigger.on();
     print_out("Trigger ON");
 }
 
 void IntervalometerMode::triggerOff()
 {
+    if (BoardConfigManager::getInstance().getConfig().hasNeoPixelLeds())
+        LED::getInstance().camera.off();
     LED::getInstance().trigger.off();
     print_out("Trigger OFF");
 }
