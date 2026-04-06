@@ -316,6 +316,12 @@
         if (data.error) {
           showUpdateMessage("Error: " + data.error, "error");
         } else if (data.latestVersion) {
+
+          // Show warning if no compatible firmware found
+          if (data.warning) {
+            showUpdateMessage(data.warning, "error");
+          }
+
           // Show available release (let user decide if they want it)
           document.getElementById("latestVersion").textContent = data.latestVersion;
 
@@ -351,7 +357,11 @@
           manualBtn.onclick = () => window.open(data.releaseUrl, "_blank");
 
           updateInfo.style.display = "block";
-          showUpdateMessage("Latest available: " + data.latestVersion + " (Current: " + data.currentVersion + ")", "success");
+
+          // Only show success message if there's no warning
+          if (!data.warning) {
+            showUpdateMessage("Latest available: " + data.latestVersion + " (Current: " + data.currentVersion + ")", "success");
+          }
         } else {
           showUpdateMessage("Could not retrieve release information", "error");
         }
