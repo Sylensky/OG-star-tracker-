@@ -107,6 +107,7 @@ class OTAHandler
     String getCurrentBuildDate();
     String sanitizeString(const String& input, size_t maxLen = 500);
     String extractJsonValue(const String& json, const char* key);
+    bool isFirmwareCompatible(const String& filename);
     void resetOTAState();
     void rebootWithDelay(int delaySeconds = 5);
 };

@@ -6,6 +6,7 @@
 #include <uart.h>
 
 #include "../../configs/config.h"
+#include "../../functions/board_version/board_config.h"
 #include "../../website/website_strings.h"
 #include "freertos/idf_additions.h"
 #include "ota_handler.h"
@@ -81,6 +82,28 @@ String OTAHandler::extractJsonValue(const String& json, const char* key)
     return (end != -1) ? json.substring(start, end) : "";
 }
 
+bool OTAHandler::isFirmwareCompatible(const String& filename)
+{
+    const BoardConfig& cfg = BoardConfigManager::getInstance().getConfig();
+    String boardName = String(cfg.getBoardName());
+
+    // Convert to lowercase for case-insensitive comparison
+    String filenameLower = filename;
+    filenameLower.toLowerCase();
+    String boardNameLower = boardName;
+    boardNameLower.toLowerCase();
+
+    bool compatible = filenameLower.indexOf(boardNameLower) != -1;
+
+    if (!compatible)
+    {
+        print_out("Firmware incompatible: file='%s' does not match current board='%s'",
+                  filename.c_str(), boardName.c_str());
+    }
+
+    return compatible;
+}
+
 void OTAHandler::handleOTAPage()
 {
     if (!_server)
@@ -98,6 +121,18 @@ void OTAHandler::handleOTAUpload()
     if (upload.status == UPLOAD_FILE_START)
     {
         print_out("OTA Update Start: %s", upload.filename.c_str());
+
+        // Check board compatibility
+        if (!isFirmwareCompatible(upload.filename))
+        {
+            const BoardConfig& cfg = BoardConfigManager::getInstance().getConfig();
+            print_out("OTA Error: Firmware incompatible with %s board", cfg.getBoardName());
+            _updating = false;
+            otaActive = false;
+            otaError = true;
+            return;
+        }
+
         _updating = true;
         _updateProgress = 0;
         resetOTAState();
@@ -213,8 +248,9 @@ void OTAHandler::handleCheckVersion()
             doc["latestVersion"] = latestVersion;
             doc["releaseUrl"] = extractJsonValue(payload, "html_url");
 
-            // Find .bin download URL
+            // Find compatible .bin download URL
             int start = payload.indexOf("\"browser_download_url\":\"");
+            bool foundCompatible = false;
             while (start != -1)
             {
                 start += 24;
@@ -222,10 +258,26 @@ void OTAHandler::handleCheckVersion()
                 String url = payload.substring(start, end);
                 if (url.endsWith(".bin"))
                 {
-                    doc["downloadUrl"] = url;
-                    break;
+                    // Extract filename and check compatibility
+                    int lastSlash = url.lastIndexOf('/');
+                    String filename = lastSlash != -1 ? url.substring(lastSlash + 1) : url;
+
+                    if (isFirmwareCompatible(filename))
+                    {
+                        doc["downloadUrl"] = url;
+                        foundCompatible = true;
+                        break;
+                    }
                 }
                 start = payload.indexOf("\"browser_download_url\":\"", end);
+            }
+
+            // Warn if no compatible firmware was found
+            if (!foundCompatible)
+            {
+                const BoardConfig& cfg = BoardConfigManager::getInstance().getConfig();
+                doc["warning"] =
+                    String("No compatible firmware found for ") + cfg.getBoardName() + " board";
             }
 
             // Parse and clean release notes
@@ -266,6 +318,21 @@ void OTAHandler::handleDownloadUpdate()
     }
 
     String firmwareUrl = _server->arg("url");
+
+    // Extract filename from URL and check compatibility
+    int lastSlash = firmwareUrl.lastIndexOf('/');
+    String filename = lastSlash != -1 ? firmwareUrl.substring(lastSlash + 1) : firmwareUrl;
+
+    if (!isFirmwareCompatible(filename))
+    {
+        const BoardConfig& cfg = BoardConfigManager::getInstance().getConfig();
+        String errorMsg = String("Firmware incompatible: This firmware is not for ") +
+                          cfg.getBoardName() + " boards. Please select the correct firmware file.";
+        _server->send(400, MIME_TYPE_TEXT, errorMsg);
+        print_out("%s", errorMsg.c_str());
+        return;
+    }
+
     _server->send(200, MIME_TYPE_TEXT, "Starting download...");
     resetOTAState();
 
