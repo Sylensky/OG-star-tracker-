@@ -5,6 +5,8 @@
 #include <configs/config.h>
 #include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
+#include <functions/led/led.h>
+#include <functions/led/neopixel_manager.h>
 #include <uart.h>
 
 SerialTerminal* _term;
@@ -30,6 +32,7 @@ static void cmdHelp()
     print_out_tbl(CMD_HELP_RESET);
     print_out_tbl(CMD_GOTO_TARGET_RA);
     print_out_tbl(CMD_HELP_PAN);
+    print_out_tbl(CMD_HELP_LED);
 }
 
 static void cmdVersion()
@@ -261,6 +264,67 @@ static void cmdPan()
     }
 }
 
+static void cmdLed()
+{
+    const char* indexStr = _term->getNext();
+    if (!indexStr)
+    {
+        print_out_tbl(CMD_LED_ARGS);
+        return;
+    }
+
+    const char* stateStr = _term->getNext();
+    if (!stateStr)
+    {
+        print_out_tbl(CMD_LED_ARGS);
+        return;
+    }
+
+    int index = atoi(indexStr);
+
+    bool turnOn = false;
+    if (strcmp(stateStr, "on") == 0 || strcmp(stateStr, "1") == 0)
+    {
+        turnOn = true;
+    }
+    else if (strcmp(stateStr, "off") == 0 || strcmp(stateStr, "0") == 0)
+    {
+        turnOn = false;
+    }
+    else
+    {
+        print_out("Error: Invalid state '%s'. Must be 'on' or 'off'.", stateStr);
+        print_out_tbl(CMD_LED_ARGS);
+        return;
+    }
+
+    const BoardConfig& cfg = BoardConfigManager::getInstance().getConfig();
+    if (!cfg.hasNeoPixelLeds())
+    {
+        print_out("Error: NeoPixel LEDs not available on this board.");
+        return;
+    }
+
+    NeoPixelManager& npm = NeoPixelManager::getInstance();
+    if (!npm.isAvailable())
+    {
+        print_out("Error: NeoPixel manager not initialized.");
+        return;
+    }
+
+    if (turnOn)
+    {
+        npm.turnOnPixel(index);
+        print_out("LED %d turned ON", index);
+    }
+    else
+    {
+        npm.clearPixel(index);
+        print_out("LED %d turned OFF", index);
+    }
+    npm.show();
+}
+
 static void unknownCommand(const char* command)
 {
     // Print unknown command
@@ -293,4 +357,5 @@ void setup_terminal(SerialTerminal* term)
     _term->addCommand("reset", cmdReset);
     _term->addCommand("gotoRA", cmdGotoTargetRA);
     _term->addCommand("pan", cmdPan);
+    _term->addCommand("led", cmdLed);
 }
