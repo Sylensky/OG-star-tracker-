@@ -23,25 +23,25 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio esptool
 
-      - name: Build OGStarTracker
-        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_release
+      - name: Build OGStarTracker ESP32
+        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_esp32_release
 
       - name: Build OGStarTracker ESP32-S3
         run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_esp32s3_release
 
-      - name: Bundle OGStarTracker Combined Binary
+      - name: Bundle OGStarTracker ESP32 Combined Binary
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
-          cd esp32_wireless_control/firmware/.pio/build/ogstartracker_release
+          cd esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release
           produced_bin=$(ls ogstartracker_*.bin | head -n1)
-          cp "$produced_bin" ogstartracker_${COMMIT_SHA}.bin
+          cp "$produced_bin" ogstartracker_esp32_${COMMIT_SHA}.bin
           python -m esptool --chip esp32 merge-bin \
-            -o ogstartracker_${COMMIT_SHA}_combined.bin \
+            -o ogstartracker_esp32_${COMMIT_SHA}_combined.bin \
             --flash-size 4MB \
             0x1000 bootloader.bin \
             0x8000 partitions.bin \
-            0x10000 ogstartracker_${COMMIT_SHA}.bin
+            0x10000 ogstartracker_esp32_${COMMIT_SHA}.bin
 
       - name: Bundle OGStarTracker ESP32-S3 Combined Binary
         env:
@@ -64,7 +64,7 @@ jobs:
         with:
           name: binaries
           path: |
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker_${{ github.sha }}.bin
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_release/ogstartracker_${{ github.sha }}_combined.bin
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release/ogstartracker_esp32_${{ github.sha }}.bin
+            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release/ogstartracker_esp32_${{ github.sha }}_combined.bin
             esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32s3_release/ogstartracker_esp32s3_${{ github.sha }}.bin
             esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32s3_release/ogstartracker_esp32s3_${{ github.sha }}_combined.bin
