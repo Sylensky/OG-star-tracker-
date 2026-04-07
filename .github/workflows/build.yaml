@@ -23,18 +23,18 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio esptool
 
+      - name: Create artifacts directory
+        run: mkdir -p artifacts
+
       - name: Build OGStarTracker ESP32
         run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_esp32_release
-
-      - name: Build OGStarTracker ESP32-S3
-        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_esp32s3_release
 
       - name: Bundle OGStarTracker ESP32 Combined Binary
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           cd esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release
-          produced_bin=$(ls ogstartracker_*.bin | head -n1)
+          produced_bin=$(ls ogstartracker_esp32_*.bin | head -n1)
           cp "$produced_bin" ogstartracker_esp32_${COMMIT_SHA}.bin
           python -m esptool --chip esp32 merge-bin \
             -o ogstartracker_esp32_${COMMIT_SHA}_combined.bin \
@@ -42,13 +42,17 @@ jobs:
             0x1000 bootloader.bin \
             0x8000 partitions.bin \
             0x10000 ogstartracker_esp32_${COMMIT_SHA}.bin
+          cp ogstartracker_esp32_${COMMIT_SHA}.bin ogstartracker_esp32_${COMMIT_SHA}_combined.bin $GITHUB_WORKSPACE/artifacts/
+
+      - name: Build OGStarTracker ESP32-S3
+        run: pio run --project-dir esp32_wireless_control/firmware -e ogstartracker_esp32s3_release
 
       - name: Bundle OGStarTracker ESP32-S3 Combined Binary
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           cd esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32s3_release
-          produced_bin=$(ls ogstartracker_*.bin | head -n1)
+          produced_bin=$(ls ogstartracker_esp32s3_*.bin | head -n1)
           cp "$produced_bin" ogstartracker_esp32s3_${COMMIT_SHA}.bin
           python -m esptool --chip esp32s3 merge-bin \
             -o ogstartracker_esp32s3_${COMMIT_SHA}_combined.bin \
@@ -57,14 +61,11 @@ jobs:
             0x1000 bootloader.bin \
             0x8000 partitions.bin \
             0x10000 ogstartracker_esp32s3_${COMMIT_SHA}.bin
+          cp ogstartracker_esp32s3_${COMMIT_SHA}.bin ogstartracker_esp32s3_${COMMIT_SHA}_combined.bin $GITHUB_WORKSPACE/artifacts/
 
       - name: Upload Build Artifact
         if: ${{ success() }}
         uses: actions/upload-artifact@v4
         with:
           name: binaries
-          path: |
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release/ogstartracker_esp32_${{ github.sha }}.bin
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32_release/ogstartracker_esp32_${{ github.sha }}_combined.bin
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32s3_release/ogstartracker_esp32s3_${{ github.sha }}.bin
-            esp32_wireless_control/firmware/.pio/build/ogstartracker_esp32s3_release/ogstartracker_esp32s3_${{ github.sha }}_combined.bin
+          path: artifacts/*
