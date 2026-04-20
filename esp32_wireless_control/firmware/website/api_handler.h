@@ -184,6 +184,16 @@ class ApiHandler
     void handleAccessoriesRequest();
 
     /**
+     * @endpoint GET /laser
+     * @brief Get or set laser pointer state.
+     * @param state - Optional: "on" | "off" | "toggle". Omit to read current state.
+     * @response 200 OK with JSON: {"laser":{"state":true|false}}
+     * @response 400 Bad Request if state param value is unrecognised.
+     * @response 503 Service Unavailable if laser is not supported on this board.
+     */
+    void handleLaserRequest();
+
+    /**
      * @endpoint GET /version
      * @brief Get firmware version
      * @response 200 OK with JSON: {"version": "<version>", "buildDate": "<date>"}

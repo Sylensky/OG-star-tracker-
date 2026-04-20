@@ -241,7 +241,18 @@ class BoardConfigV3 : public BoardConfig
     uint8_t getNeoPixelPowerIndex() const override { return 2; }
 
     // Accessory pins (V3 / ESP32-S3 hardware only)
-    // Laser:   IO46 – GPIO output, active HIGH
+    //
+    // Laser:   IO46 – GPIO output, active HIGH.
+    //          ⚠  IO46 is an ESP32-S3 strapping pin. Driving it HIGH while the
+    //          board is reset (RST button or power cycle) may cause the next boot
+    //          to sample a non-default strapping state. LaserAccessory::init()
+    //          always drives the pin LOW at startup, so a clean power-on is safe.
+    //          The risk is limited to a physical RST press while the laser is
+    //          actively on. If a future PCB revision allows it, IO47 or IO48
+    //          (non-strapping output-capable pins) would eliminate this constraint.
+    //          Release posture: accepted with documentation. Physical pull-down on
+    //          IO46 on the V3 PCB would close the risk entirely without a pin change.
+    //
     // Battery: IO9  – ADC input, 100k/100k divider, V_adc = V_batt/2
     // Light:   IO10 – ADC input, 10k pull-up to 3.3V + GL5516 to GND
     uint8_t getLaserPin()      const override { return 46; }

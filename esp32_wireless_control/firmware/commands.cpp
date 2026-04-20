@@ -4,6 +4,7 @@
 #include <commands.h>
 #include <configs/config.h>
 #include <functions/accessories/accessory_registry.h>
+#include <functions/accessories/laser_accessory.h>
 #include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
 #include <functions/led/led.h>
@@ -35,6 +36,7 @@ static void cmdHelp()
     print_out_tbl(CMD_HELP_PAN);
     print_out_tbl(CMD_HELP_LED);
     print_out_tbl(CMD_HELP_ACCESSORY);
+    print_out_tbl(CMD_HELP_LASER);
 }
 
 static void cmdVersion()
@@ -329,16 +331,44 @@ static void cmdLed()
 
 static void cmdAccessory()
 {
-    // With no arguments: print the full accessory snapshot to UART.
-    // Concrete sub-commands (laser on/off, battery, light) are added by
-    // their respective feature plans (Epics 0.5.2-0.5.4).
     const char* nameArg = _term->getNext();
     if (nameArg == nullptr)
     {
         AccessoryRegistry::getInstance().printSnapshot();
         return;
     }
-    // Sub-command dispatch will be added by per-accessory plans.
+
+    if (strcmp(nameArg, "laser") == 0)
+    {
+        if (!LaserAccessory::getInstance().isSupported())
+        {
+            print_out("laser: not supported on this board");
+            return;
+        }
+        const char* action = _term->getNext();
+        if (action == nullptr)
+        {
+            AccessorySnapshot snap = LaserAccessory::getInstance().getSnapshot();
+            print_out("laser: %s", snap.state ? "on" : "off");
+            return;
+        }
+        bool on;
+        if (strcmp(action, "on") == 0)
+            on = true;
+        else if (strcmp(action, "off") == 0)
+            on = false;
+        else if (strcmp(action, "toggle") == 0)
+            on = !LaserAccessory::getInstance().getState();
+        else
+        {
+            print_out_tbl(CMD_LASER_ARGS);
+            return;
+        }
+        LaserAccessory::getInstance().setState(on);
+        print_out("laser: %s", on ? "on" : "off");
+        return;
+    }
+
     print_out_tbl(CMD_ACCESSORY_ARGS);
 }
 

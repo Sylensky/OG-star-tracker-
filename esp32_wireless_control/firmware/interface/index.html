@@ -861,11 +861,41 @@
             }
         }
 
+        function updateLaserLabel(state) {
+            const label = document.getElementById('laser-state-label');
+            if (label) label.textContent = state ? 'ON' : 'OFF';
+        }
+
+        function sendLaserRequest(state) {
+            fetch('/laser?state=' + state)
+                .then(r => {
+                    if (!r.ok) return;
+                    return r.json();
+                })
+                .then(data => { if (data) updateLaserLabel(data.laser.state); })
+                .catch(err => console.error('Laser request failed:', err));
+        }
+
+        function initLaserCard() {
+            fetch('/laser')
+                .then(r => {
+                    if (!r.ok) return; // 503 = not supported on this board
+                    return r.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    document.getElementById('laser-card').style.display = 'block';
+                    updateLaserLabel(data.laser.state);
+                })
+                .catch(() => { }); // silently hide the card on unsupported boards
+        }
+
         function handleLoad() {
             requestFirmwareVersion();
             changeMode();
             handleCatalogChange();
             loadTrackingRate(0);
+            initLaserCard();
 
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -1767,6 +1797,19 @@
                 </div>
             </div>
         </div>
+        <div class="card" id="laser-card" style="display:none;">
+            <h2>Laser</h2>
+            <div class="grid">
+                <h3>State:</h3>
+                <span id="laser-state-label" style="font-size:1.1em;">–</span>
+                <div style="width:100%; display:flex; gap:8px; justify-content:center; margin-top:8px;">
+                    <button type="button" onclick="sendLaserRequest('on')">ON</button>
+                    <button type="button" onclick="sendLaserRequest('off')">OFF</button>
+                    <button type="button" onclick="sendLaserRequest('toggle')">Toggle</button>
+                </div>
+            </div>
+        </div>
+
         <div id='status'>%STR_STATUS_MSG%</div>
 
         <div class="language-selector">

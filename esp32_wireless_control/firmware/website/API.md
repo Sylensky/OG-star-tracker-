@@ -383,6 +383,48 @@ GET http://192.168.4.1/accessories
 
 ---
 
+### Control Laser Pointer
+**Endpoint:** `GET /laser`  
+**Description:** Get or set the laser pointer state. Omit the `state` parameter to read current state.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `state` | string | No | `on` \| `off` \| `toggle` |
+
+**Response:** `200 OK` – JSON object
+```json
+{"laser":{"state":false}}
+```
+
+**Response codes:**
+| Code | Meaning |
+|------|---------|
+| 200 | Success – JSON with current state |
+| 400 | `state` parameter value not recognised |
+| 503 | Laser not supported on this board |
+
+**Examples:**
+```
+GET http://192.168.4.1/laser              → current state
+GET http://192.168.4.1/laser?state=on     → turn on
+GET http://192.168.4.1/laser?state=off    → turn off
+GET http://192.168.4.1/laser?state=toggle → toggle
+```
+
+**Notes:**
+- Laser is always initialised OFF at boot; state does not persist across resets.
+- Returns `503` on hardware boards that do not declare a laser pin (e.g. V2.x).
+- Hardware pin IO46 (V3 board); sourced from `BoardConfig`.
+- ⚠ **GPIO46 reset caveat (V3 board):** IO46 is an ESP32-S3 strapping pin. If the
+  RST button is pressed while the laser is on, the bootloader may sample the pin
+  HIGH and boot into an alternate mode. Normal power-on is always safe because
+  `LaserAccessory::init()` drives the pin LOW on startup. Avoid pressing RST while
+  the laser is actively on. An external pull-down resistor on IO46 on the PCB would
+  mitigate this risk entirely.
+
+---
+
 ## Catalog Search
 
 ### Search Star/Object Catalog

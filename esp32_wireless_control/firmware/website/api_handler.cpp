@@ -6,6 +6,7 @@
 #include "../eeprom_manager.h"
 #include "../error.h"
 #include "../functions/accessories/accessory_registry.h"
+#include "../functions/accessories/laser_accessory.h"
 #include "../functions/intervalometer/intervalometer.h"
 #include "../functions/ota/ota_handler.h"
 #include "../tools/heap_monitor.h"
@@ -104,6 +105,7 @@ void ApiHandler::registerEndpoints()
     _server->on("/status", HTTP_GET, [api]() { api->handleStatusRequest(); });
     _server->on("/version", HTTP_GET, [api]() { api->handleVersion(); });
     _server->on("/accessories", HTTP_GET, [api]() { api->handleAccessoriesRequest(); });
+    _server->on("/laser", HTTP_GET, [api]() { api->handleLaserRequest(); });
 
     // Catalog search
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
@@ -764,5 +766,45 @@ void ApiHandler::handleAccessoriesRequest()
         _server->send(500, MIME_TYPE_TEXT, "Snapshot buffer overflow");
         return;
     }
+    _server->send(200, MIME_APPLICATION_JSON, buf);
+}
+
+void ApiHandler::handleLaserRequest()
+{
+    if (!LaserAccessory::getInstance().isSupported())
+    {
+        _server->send(503, MIME_TYPE_TEXT, "Laser not supported on this board");
+        return;
+    }
+
+    String stateArg = _server->arg("state");
+
+    if (stateArg.length() == 0)
+    {
+        // No argument: return current state
+        char buf[48];
+        snprintf(buf, sizeof(buf), "{\"laser\":{\"state\":%s}}",
+                 LaserAccessory::getInstance().getState() ? "true" : "false");
+        _server->send(200, MIME_APPLICATION_JSON, buf);
+        return;
+    }
+
+    bool on;
+    if (stateArg == "on")
+        on = true;
+    else if (stateArg == "off")
+        on = false;
+    else if (stateArg == "toggle")
+        on = !LaserAccessory::getInstance().getState();
+    else
+    {
+        _server->send(400, MIME_TYPE_TEXT, "Invalid state. Use: on | off | toggle");
+        return;
+    }
+
+    LaserAccessory::getInstance().setState(on);
+
+    char buf[48];
+    snprintf(buf, sizeof(buf), "{\"laser\":{\"state\":%s}}", on ? "true" : "false");
     _server->send(200, MIME_APPLICATION_JSON, buf);
 }
