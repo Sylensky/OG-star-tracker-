@@ -173,6 +173,17 @@ class ApiHandler
     void handleStatusRequest();
 
     /**
+     * @endpoint GET /accessories
+     * @brief Get consolidated accessory status snapshot
+     * @response 200 OK with JSON object keyed by accessory name.
+     *   Each entry contains at minimum: supported, initialized.
+     *   Actuators (e.g. laser) add: state (bool).
+     *   Sensors (e.g. battery, light) add: rawAdc and type-specific value fields.
+     *   Returns {} when no accessories are registered.
+     */
+    void handleAccessoriesRequest();
+
+    /**
      * @endpoint GET /version
      * @brief Get firmware version
      * @response 200 OK with JSON: {"version": "<version>", "buildDate": "<date>"}

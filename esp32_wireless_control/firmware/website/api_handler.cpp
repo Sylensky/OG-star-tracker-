@@ -5,6 +5,7 @@
 #include "../configs/consts.h"
 #include "../eeprom_manager.h"
 #include "../error.h"
+#include "../functions/accessories/accessory_registry.h"
 #include "../functions/intervalometer/intervalometer.h"
 #include "../functions/ota/ota_handler.h"
 #include "../tools/heap_monitor.h"
@@ -102,6 +103,7 @@ void ApiHandler::registerEndpoints()
     // Status & info
     _server->on("/status", HTTP_GET, [api]() { api->handleStatusRequest(); });
     _server->on("/version", HTTP_GET, [api]() { api->handleVersion(); });
+    _server->on("/accessories", HTTP_GET, [api]() { api->handleAccessoriesRequest(); });
 
     // Catalog search
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
@@ -751,4 +753,16 @@ void ApiHandler::handleCatalogSearch()
 #endif
         _server->send(404, "text/plain", "Object not found");
     }
+}
+
+void ApiHandler::handleAccessoriesRequest()
+{
+    char buf[AccessoryRegistry::SNAPSHOT_BUFFER_SIZE];
+    size_t written = AccessoryRegistry::getInstance().buildSnapshotJson(buf, sizeof(buf));
+    if (written == 0)
+    {
+        _server->send(500, MIME_TYPE_TEXT, "Snapshot buffer overflow");
+        return;
+    }
+    _server->send(200, MIME_APPLICATION_JSON, buf);
 }

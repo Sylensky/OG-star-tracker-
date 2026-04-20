@@ -16,8 +16,9 @@ The OG Star Tracker provides a REST API over HTTP for remote control and monitor
 5. [Intervalometer Control](#intervalometer-control)
 6. [Tracking Rates](#tracking-rates)
 7. [Status & Info](#status--info)
-8. [Catalog Search](#catalog-search)
-9. [Settings](#settings)
+8. [Accessories](#accessories)
+9. [Catalog Search](#catalog-search)
+10. [Settings](#settings)
 10. [OTA Firmware Update](#ota-firmware-update)
 
 ---
@@ -337,6 +338,48 @@ GET http://192.168.4.1/version
 - `buildDate` format: "MMM DD YYYY HH:MM:SS" (e.g., "Nov 22 2025 10:30:00")
 - `internalVersion` is a numeric value for programmatic version comparison
 - Same data returned by `/checkversion` endpoint in OTA section
+
+---
+
+## Accessories
+
+### Get Accessory Status Snapshot
+**Endpoint:** `GET /accessories`
+**Description:** Get consolidated JSON status snapshot of all registered accessories.
+Returns `{}` when no accessories are registered or the board does not support any.
+Each accessory entry contains at minimum `supported` and `initialized`.
+
+**Response:** `200 OK` – JSON object
+```json
+{
+  "laser":   { "supported": true,  "initialized": true,  "state": false },
+  "battery": { "supported": true,  "initialized": true,  "rawAdc": 1862,
+               "voltage_mv": 3700, "percent": 58 },
+  "light":   { "supported": true,  "initialized": true,  "rawAdc": 1024,
+               "percent": 25 }
+}
+```
+
+**Field Reference:**
+| Field | Type | Present when | Description |
+|-------|------|--------------|-------------|
+| `supported` | boolean | always | Board config supplies a valid pin for this accessory |
+| `initialized` | boolean | always | `init()` succeeded after startup |
+| `state` | boolean | actuators (laser) | Current on/off state |
+| `rawAdc` | integer | sensors (battery, light) | Latest averaged 12-bit ADC reading |
+| `voltage_mv` | integer | battery only | Reconstructed battery voltage in mV |
+| `percent` | integer | battery, light | Charge level (battery) or normalized light level; **approximate** |
+
+**Example:**
+```
+GET http://192.168.4.1/accessories
+```
+
+**Notes:**
+- Returns `{}` on boards that declare no accessory pins (e.g. V2.x).
+- Sensor values are cached; the device refreshes them at a bounded background cadence (default 2 s).
+- `percent` for battery is a heuristic derived from a 3.0 V (0 %) – 4.2 V (100 %) linear model and should be treated as an estimate.
+- Laser and other actuator state can be changed via their dedicated control endpoints (added in Epics 0.5.2–0.5.4).
 
 ---
 

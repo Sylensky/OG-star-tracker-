@@ -3,6 +3,7 @@
 #include <axis.h>
 #include <commands.h>
 #include <configs/config.h>
+#include <functions/accessories/accessory_registry.h>
 #include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
 #include <functions/led/led.h>
@@ -33,6 +34,7 @@ static void cmdHelp()
     print_out_tbl(CMD_GOTO_TARGET_RA);
     print_out_tbl(CMD_HELP_PAN);
     print_out_tbl(CMD_HELP_LED);
+    print_out_tbl(CMD_HELP_ACCESSORY);
 }
 
 static void cmdVersion()
@@ -325,7 +327,22 @@ static void cmdLed()
     npm.show();
 }
 
-static void unknownCommand(const char* command)
+static void cmdAccessory()
+{
+    // With no arguments: print the full accessory snapshot to UART.
+    // Concrete sub-commands (laser on/off, battery, light) are added by
+    // their respective feature plans (Epics 0.5.2-0.5.4).
+    const char* nameArg = _term->getNext();
+    if (nameArg == nullptr)
+    {
+        AccessoryRegistry::getInstance().printSnapshot();
+        return;
+    }
+    // Sub-command dispatch will be added by per-accessory plans.
+    print_out_tbl(CMD_ACCESSORY_ARGS);
+}
+
+static void cmdUnknownCommand(const char* command)
 {
     // Print unknown command
     print_out_tbl(CMD_UNKNOWN_COMMAND);
@@ -344,7 +361,7 @@ void setup_terminal(SerialTerminal* term)
     _term = term;
 
     // Set default handler for unknown commands
-    _term->setDefaultHandler(unknownCommand);
+    _term->setDefaultHandler(cmdUnknownCommand);
     // Set handler to be run AFTER a command has been handled.
     _term->setPostCommandHandler(postCommandHandler);
     _term->setSerialEcho(true); // Enable Character Echoing
@@ -358,4 +375,5 @@ void setup_terminal(SerialTerminal* term)
     _term->addCommand("gotoRA", cmdGotoTargetRA);
     _term->addCommand("pan", cmdPan);
     _term->addCommand("led", cmdLed);
+    _term->addCommand("accessory", cmdAccessory);
 }

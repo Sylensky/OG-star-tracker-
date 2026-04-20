@@ -13,6 +13,7 @@
 #include "common_strings.h"
 #include "configs/config.h"
 #include "eeprom_manager.h"
+#include "functions/accessories/accessory_registry.h"
 #include "functions/board_version/board_config.h"
 #include "functions/board_version/board_version.h"
 #include "functions/intervalometer/intervalometer.h"
@@ -282,6 +283,9 @@ void setup()
     print_out("***     Board: %s    ***", boardCfg().getBoardName());
     print_out_tbl(HEAD_LINE);
 
+    // Initialize Accessory Registry (must follow board config)
+    AccessoryRegistry::getInstance().initAll();
+
     // Initialize EEPROM manager
     EepromManager::begin(512); // SIZE = 5 x presets = 5 x 32 bytes = 160 bytes
     uint8_t langNum = 0;
@@ -348,6 +352,7 @@ void loop()
 
         LED::getInstance().updateAll();
         ra_axis.print_status();
+        AccessoryRegistry::getInstance().refreshSensors();
         vTaskDelay(delay_ticks);
     }
 }
