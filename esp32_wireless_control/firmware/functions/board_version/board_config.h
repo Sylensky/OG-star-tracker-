@@ -39,7 +39,10 @@ class BoardConfig
 
     // LED pins
     virtual uint8_t getIntervPin() const = 0;
-    virtual uint8_t getStatusLed() const { return 0; }
+    virtual uint8_t getStatusLed() const
+    {
+        return 0;
+    }
 
     // UART pins for TMC drivers
     virtual uint8_t getAxisRx() const = 0;
@@ -58,15 +61,72 @@ class BoardConfig
     virtual bool hasTmcDriverSupport() const = 0;
 
     // NeoPixel LED hardware features
-    virtual bool hasNeoPixelLeds() const { return false; }
-    virtual uint8_t getNeoPixelPin() const { return 0; }
-    virtual uint8_t getNeoPixelCount() const { return 0; }
-    virtual uint32_t getNeoPixelType() const { return 0x01; }
+    virtual bool hasNeoPixelLeds() const
+    {
+        return false;
+    }
+    virtual uint8_t getNeoPixelPin() const
+    {
+        return 0;
+    }
+    virtual uint8_t getNeoPixelCount() const
+    {
+        return 0;
+    }
+    virtual uint32_t getNeoPixelType() const
+    {
+        return 0x01;
+    }
 
     // NeoPixel LED indices
-    virtual uint8_t getNeoPixelStatusIndex() const { return 0; }
-    virtual uint8_t getNeoPixelCameraIndex() const { return 1; }
-    virtual uint8_t getNeoPixelPowerIndex() const { return 2; }
+    virtual uint8_t getNeoPixelStatusIndex() const
+    {
+        return 0;
+    }
+    virtual uint8_t getNeoPixelCameraIndex() const
+    {
+        return 1;
+    }
+    virtual uint8_t getNeoPixelPowerIndex() const
+    {
+        return 2;
+    }
+
+    // -----------------------------------------------------------------------
+    // Accessory subsystem – pin mapping and capability flags
+    // 0xFF = pin not available / accessory not supported on this board.
+    // -----------------------------------------------------------------------
+
+    /** @brief GPIO output pin for laser pointer control (active HIGH). */
+    virtual uint8_t getLaserPin() const
+    {
+        return 0xFF;
+    }
+
+    /** @brief ADC input pin for battery voltage divider (100k/100k on V_batt). */
+    virtual uint8_t getBatteryAdcPin() const
+    {
+        return 0xFF;
+    }
+
+    /** @brief ADC input pin for ambient light LDR voltage divider (10k + GL5516). */
+    virtual uint8_t getLightAdcPin() const
+    {
+        return 0xFF;
+    }
+
+    virtual bool hasLaser() const
+    {
+        return getLaserPin() != 0xFF;
+    }
+    virtual bool hasBatteryMonitor() const
+    {
+        return getBatteryAdcPin() != 0xFF;
+    }
+    virtual bool hasLightSensor() const
+    {
+        return getLightAdcPin() != 0xFF;
+    }
 
   protected:
     BoardConfig() = default;
@@ -179,6 +239,14 @@ class BoardConfigV3 : public BoardConfig
     uint8_t getNeoPixelStatusIndex() const override { return 1; }
     uint8_t getNeoPixelCameraIndex() const override { return 0; }
     uint8_t getNeoPixelPowerIndex() const override { return 2; }
+
+    // Accessory pins (V3 / ESP32-S3 hardware only)
+    // Laser:   IO46 – GPIO output, active HIGH
+    // Battery: IO9  – ADC input, 100k/100k divider, V_adc = V_batt/2
+    // Light:   IO10 – ADC input, 10k pull-up to 3.3V + GL5516 to GND
+    uint8_t getLaserPin()      const override { return 46; }
+    uint8_t getBatteryAdcPin() const override { return 9;  }
+    uint8_t getLightAdcPin()   const override { return 10; }
     /* clang-format on */
 };
 
