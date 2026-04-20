@@ -194,6 +194,15 @@ class ApiHandler
     void handleLaserRequest();
 
     /**
+     * @endpoint GET /battery
+     * @brief Get current battery voltage and estimated charge level.
+     * @response 200 OK with JSON: {"battery":{"rawAdc":<n>,"voltage_mv":<n>,"percent":<n>}}
+     * @response 503 Service Unavailable if battery monitor is not supported on this board.
+     * @note percent is a heuristic estimate (3.0 V = 0 %, 4.2 V = 100 %); label it approximate.
+     */
+    void handleBatteryRequest();
+
+    /**
      * @endpoint GET /version
      * @brief Get firmware version
      * @response 200 OK with JSON: {"version": "<version>", "buildDate": "<date>"}

@@ -890,12 +890,42 @@
                 .catch(() => { }); // silently hide the card on unsupported boards
         }
 
+        function updateBatteryDisplay(data) {
+            const voltV = (data.battery.voltage_mv / 1000).toFixed(2);
+            document.getElementById('battery-voltage-label').textContent = voltV + ' V';
+            document.getElementById('battery-percent-label').textContent =
+                data.battery.percent + '% (approx)';
+        }
+
+        function refreshBattery() {
+            fetch('/battery')
+                .then(r => { if (!r.ok) return; return r.json(); })
+                .then(data => { if (data) updateBatteryDisplay(data); })
+                .catch(() => { });
+        }
+
+        function initBatteryCard() {
+            fetch('/battery')
+                .then(r => {
+                    if (!r.ok) return; // 503 = not supported on this board
+                    return r.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    document.getElementById('battery-card').style.display = 'block';
+                    updateBatteryDisplay(data);
+                    setInterval(refreshBattery, 10000); // refresh every 10 s
+                })
+                .catch(() => { });
+        }
+
         function handleLoad() {
             requestFirmwareVersion();
             changeMode();
             handleCatalogChange();
             loadTrackingRate(0);
             initLaserCard();
+            initBatteryCard();
 
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -1807,6 +1837,16 @@
                     <button type="button" onclick="sendLaserRequest('off')">OFF</button>
                     <button type="button" onclick="sendLaserRequest('toggle')">Toggle</button>
                 </div>
+            </div>
+        </div>
+
+        <div class="card" id="battery-card" style="display:none;">
+            <h2>Battery</h2>
+            <div class="grid">
+                <h3>Voltage:</h3>
+                <span id="battery-voltage-label" style="font-size:1.1em;">–</span>
+                <h3>Level:</h3>
+                <span id="battery-percent-label" style="font-size:1.1em;">–</span>
             </div>
         </div>
 

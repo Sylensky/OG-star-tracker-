@@ -425,6 +425,41 @@ GET http://192.168.4.1/laser?state=toggle → toggle
 
 ---
 
+### Read Battery Telemetry
+**Endpoint:** `GET /battery`  
+**Description:** Return the cached battery voltage and estimated charge level. The sample is refreshed in the background every 2 seconds; HTTP handlers never block on ADC reads.
+
+**Response:** `200 OK` – JSON object
+```json
+{"battery":{"rawAdc":1861,"voltage_mv":2999,"percent":0}}
+```
+
+**Response codes:**
+| Code | Meaning |
+|------|---------|
+| 200 | Success – JSON with current battery telemetry |
+| 503 | Battery monitor not supported on this board |
+
+**Field descriptions:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `rawAdc` | integer | Latest averaged 12-bit ADC reading (10-sample mean) |
+| `voltage_mv` | integer | Reconstructed battery voltage in mV: `rawAdc × 6600 / 4095` |
+| `percent` | integer | **Approximate** charge estimate. Li-ion heuristic: 3.0 V = 0 %, 4.2 V = 100 %, linear, clamped |
+
+**Example:**
+```
+GET http://192.168.4.1/battery
+```
+
+**Notes:**
+- `percent` is a heuristic derived from a 3.0 V (0 %) – 4.2 V (100 %) linear model and must be treated as an estimate only.
+- Voltage divider: 100k/100k on V_batt; ADC pin IO9 (V3 board), sourced from `BoardConfig`.
+- Returns `503` on hardware boards that do not declare a battery ADC pin (e.g. V2.x).
+- ADC configured with 11 dB attenuation (0 – ~3.1 V input range); max V_adc ≈ 2.1 V at 4.2 V battery.
+
+---
+
 ## Catalog Search
 
 ### Search Star/Object Catalog

@@ -6,6 +6,7 @@
 #include "../eeprom_manager.h"
 #include "../error.h"
 #include "../functions/accessories/accessory_registry.h"
+#include "../functions/accessories/battery_accessory.h"
 #include "../functions/accessories/laser_accessory.h"
 #include "../functions/intervalometer/intervalometer.h"
 #include "../functions/ota/ota_handler.h"
@@ -106,6 +107,7 @@ void ApiHandler::registerEndpoints()
     _server->on("/version", HTTP_GET, [api]() { api->handleVersion(); });
     _server->on("/accessories", HTTP_GET, [api]() { api->handleAccessoriesRequest(); });
     _server->on("/laser", HTTP_GET, [api]() { api->handleLaserRequest(); });
+    _server->on("/battery", HTTP_GET, [api]() { api->handleBatteryRequest(); });
 
     // Catalog search
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
@@ -806,5 +808,21 @@ void ApiHandler::handleLaserRequest()
 
     char buf[48];
     snprintf(buf, sizeof(buf), "{\"laser\":{\"state\":%s}}", on ? "true" : "false");
+    _server->send(200, MIME_APPLICATION_JSON, buf);
+}
+
+void ApiHandler::handleBatteryRequest()
+{
+    if (!BatteryAccessory::getInstance().isSupported())
+    {
+        _server->send(503, MIME_TYPE_TEXT, "Battery monitor not supported on this board");
+        return;
+    }
+
+    AccessorySnapshot snap = BatteryAccessory::getInstance().getSnapshot();
+    char buf[80];
+    snprintf(buf, sizeof(buf), "{\"battery\":{\"rawAdc\":%u,\"voltage_mv\":%lu,\"percent\":%lu}}",
+             (unsigned) snap.rawAdc, (unsigned long) snap.primaryValue,
+             (unsigned long) snap.secondaryValue);
     _server->send(200, MIME_APPLICATION_JSON, buf);
 }
