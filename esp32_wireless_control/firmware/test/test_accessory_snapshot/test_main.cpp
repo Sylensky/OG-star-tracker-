@@ -10,6 +10,13 @@
 // intentionally causes a compile failure until Milestone 1 is implemented.
 #include "functions/accessories/accessory.h"
 
+void setUp(void)
+{
+}
+void tearDown(void)
+{
+}
+
 void test_empty_snapshot_returns_empty_json_object()
 {
     char buf[256] = {};

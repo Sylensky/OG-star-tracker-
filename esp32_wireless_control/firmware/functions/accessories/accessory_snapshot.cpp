@@ -18,6 +18,7 @@ size_t serializeAccessorySnapshots(const AccessorySnapshot* snapshots, uint8_t c
         return 0;
 
     ArduinoJson::JsonDocument doc;
+    doc.to<ArduinoJson::JsonObject>(); // ensure object type even when count == 0
 
     for (uint8_t i = 0; i < count; i++)
     {
