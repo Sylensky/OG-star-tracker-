@@ -4,6 +4,7 @@
 #include <commands.h>
 #include <configs/config.h>
 #include <functions/accessories/accessory_registry.h>
+#include <functions/accessories/battery_accessory.h>
 #include <functions/accessories/laser_accessory.h>
 #include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
@@ -37,6 +38,7 @@ static void cmdHelp()
     print_out_tbl(CMD_HELP_LED);
     print_out_tbl(CMD_HELP_ACCESSORY);
     print_out_tbl(CMD_HELP_LASER);
+    print_out_tbl(CMD_HELP_BATTERY);
 }
 
 static void cmdVersion()
@@ -366,6 +368,21 @@ static void cmdAccessory()
         }
         LaserAccessory::getInstance().setState(on);
         print_out("laser: %s", on ? "on" : "off");
+        return;
+    }
+
+    if (strcmp(nameArg, "battery") == 0)
+    {
+        if (!BatteryAccessory::getInstance().isSupported())
+        {
+            print_out("battery: not supported on this board");
+            return;
+        }
+        AccessorySnapshot snap = BatteryAccessory::getInstance().getSnapshot();
+        uint32_t vAdc_mv = (uint32_t) snap.rawAdc * 3300u / 4095u;
+        print_out("battery: rawAdc=%u  pin=%lu mV  voltage=%lu mV  ~%u%% (approx)",
+                  (unsigned) snap.rawAdc, (unsigned long) vAdc_mv,
+                  (unsigned long) snap.primaryValue, (unsigned) snap.secondaryValue);
         return;
     }
 
