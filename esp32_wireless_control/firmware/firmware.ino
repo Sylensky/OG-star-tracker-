@@ -295,8 +295,6 @@ void setup()
     // Initialize LEDs
     LED::getInstance().initAll();
 
-    // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
-    initAxis();
     // handleExposureSettings();
 
     // Initialize Wifi and web server
@@ -316,7 +314,9 @@ void setup()
 
     // Give tasks time to fully initialize before starting axis
     vTaskDelay(100);
-    print_out("Initializing axis with TMC driver...");
+
+    // Initialize axis (creates driver, sets up step/dir/enable pins, timers)
+    initAxis();
 
     ra_axis.begin();
 }
