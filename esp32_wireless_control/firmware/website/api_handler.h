@@ -203,6 +203,15 @@ class ApiHandler
     void handleBatteryRequest();
 
     /**
+     * @endpoint GET /light
+     * @brief Get current ambient light level as a normalized percent.
+     * @response 200 OK with JSON: {"light":{"rawAdc":<n>,"percent":<n>}}
+     * @response 503 Service Unavailable if light sensor is not supported on this board.
+     * @note percent is normalized: 0% = dark, 100% = brightest. Lux conversion not in scope.
+     */
+    void handleLightRequest();
+
+    /**
      * @endpoint GET /version
      * @brief Get firmware version
      * @response 200 OK with JSON: {"version": "<version>", "buildDate": "<date>"}

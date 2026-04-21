@@ -919,6 +919,33 @@
                 .catch(() => { });
         }
 
+        function updateLightDisplay(data) {
+            document.getElementById('light-percent-label').textContent =
+                data.light.percent + '% (normalized)';
+        }
+
+        function refreshLight() {
+            fetch('/light')
+                .then(r => { if (!r.ok) return; return r.json(); })
+                .then(data => { if (data) updateLightDisplay(data); })
+                .catch(() => { });
+        }
+
+        function initLightCard() {
+            fetch('/light')
+                .then(r => {
+                    if (!r.ok) return; // 503 = not supported on this board
+                    return r.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    document.getElementById('light-card').style.display = 'block';
+                    updateLightDisplay(data);
+                    setInterval(refreshLight, 10000); // refresh every 10 s
+                })
+                .catch(() => { });
+        }
+
         function handleLoad() {
             requestFirmwareVersion();
             changeMode();
@@ -926,6 +953,7 @@
             loadTrackingRate(0);
             initLaserCard();
             initBatteryCard();
+            initLightCard();
 
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -1847,6 +1875,14 @@
                 <span id="battery-voltage-label" style="font-size:1.1em;">–</span>
                 <h3>Level:</h3>
                 <span id="battery-percent-label" style="font-size:1.1em;">–</span>
+            </div>
+        </div>
+
+        <div class="card" id="light-card" style="display:none;">
+            <h2>Ambient Light</h2>
+            <div class="grid">
+                <h3>Level:</h3>
+                <span id="light-percent-label" style="font-size:1.1em;">–</span>
             </div>
         </div>
 

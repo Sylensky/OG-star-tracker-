@@ -8,6 +8,7 @@
 #include "../functions/accessories/accessory_registry.h"
 #include "../functions/accessories/battery_accessory.h"
 #include "../functions/accessories/laser_accessory.h"
+#include "../functions/accessories/light_accessory.h"
 #include "../functions/intervalometer/intervalometer.h"
 #include "../functions/ota/ota_handler.h"
 #include "../tools/heap_monitor.h"
@@ -108,6 +109,7 @@ void ApiHandler::registerEndpoints()
     _server->on("/accessories", HTTP_GET, [api]() { api->handleAccessoriesRequest(); });
     _server->on("/laser", HTTP_GET, [api]() { api->handleLaserRequest(); });
     _server->on("/battery", HTTP_GET, [api]() { api->handleBatteryRequest(); });
+    _server->on("/light", HTTP_GET, [api]() { api->handleLightRequest(); });
 
     // Catalog search
     _server->on("/starSearch", HTTP_GET, [api]() { api->handleCatalogSearch(); });
@@ -824,5 +826,20 @@ void ApiHandler::handleBatteryRequest()
     snprintf(buf, sizeof(buf), "{\"battery\":{\"rawAdc\":%u,\"voltage_mv\":%lu,\"percent\":%lu}}",
              (unsigned) snap.rawAdc, (unsigned long) snap.primaryValue,
              (unsigned long) snap.secondaryValue);
+    _server->send(200, MIME_APPLICATION_JSON, buf);
+}
+
+void ApiHandler::handleLightRequest()
+{
+    if (!LightAccessory::getInstance().isSupported())
+    {
+        _server->send(503, MIME_TYPE_TEXT, "Light sensor not supported on this board");
+        return;
+    }
+
+    AccessorySnapshot snap = LightAccessory::getInstance().getSnapshot();
+    char buf[56];
+    snprintf(buf, sizeof(buf), "{\"light\":{\"rawAdc\":%u,\"percent\":%lu}}",
+             (unsigned) snap.rawAdc, (unsigned long) snap.primaryValue);
     _server->send(200, MIME_APPLICATION_JSON, buf);
 }

@@ -460,6 +460,41 @@ GET http://192.168.4.1/battery
 
 ---
 
+### Read Ambient Light Level
+**Endpoint:** `GET /light`  
+**Description:** Return the cached ambient light level as a normalized percent. The sample is refreshed in the background every 2 seconds; HTTP handlers never block on ADC reads.
+
+**Response:** `200 OK` – JSON object
+```json
+{"light":{"rawAdc":2048,"percent":50}}
+```
+
+**Response codes:**
+| Code | Meaning |
+|------|---------|
+| 200 | Success – JSON with current light level |
+| 503 | Light sensor not supported on this board |
+
+**Field descriptions:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `rawAdc` | integer | Latest averaged 12-bit ADC reading (10-sample mean) |
+| `percent` | integer | Normalized light level: 0 % = fully dark, 100 % = brightest detectable |
+
+**Example:**
+```
+GET http://192.168.4.1/light
+```
+
+**Notes:**
+- `percent` is normalized only; absolute lux conversion is not in scope (requires calibration data).
+- Circuit: 10 kΩ pull-up to 3.3 V + GL5516 LDR to GND; higher `rawAdc` = brighter.
+- ADC pin IO10 (V3 board), sourced from `BoardConfig`.
+- Returns `503` on boards that do not declare a light ADC pin (e.g. V2.x).
+- ADC configured with 11 dB attenuation (0 – ~3.1 V input range); max V_adc ≈ 3.27 V in dark.
+
+---
+
 ## Catalog Search
 
 ### Search Star/Object Catalog
