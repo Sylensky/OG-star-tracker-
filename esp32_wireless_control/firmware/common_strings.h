@@ -24,6 +24,7 @@ static const char cmd_led_args[] PROGMEM = "Usage: led <index> <on|off>  (index:
 static const char cmd_accessory_args[] PROGMEM = "Usage: accessory [<name> <command> [args]]  (no args = print snapshot)\r\n";
 static const char cmd_laser_args[] PROGMEM = "Usage: accessory laser <on|off|toggle>\r\n";
 static const char cmd_battery_args[] PROGMEM = "Usage: accessory battery\r\n";
+static const char cmd_light_args[] PROGMEM = "Usage: accessory light\r\n";
 
 static const char cmd_stack_highwater_uart[] PROGMEM = "Uart stack highwater: ";
 static const char cmd_stack_highwater_console[] PROGMEM = "Console stack highwater: ";
@@ -42,6 +43,7 @@ static const char cmd_help_led[] PROGMEM = "  led <index> <on|off>           Con
 static const char cmd_help_accessory[] PROGMEM = "  accessory [<name> <cmd>]        Print or control accessory status\r\n";
 static const char cmd_help_laser[] PROGMEM = "  accessory laser <on|off|toggle> Control laser pointer\r\n";
 static const char cmd_help_battery[] PROGMEM = "  accessory battery               Print battery voltage and charge level (approx)\r\n";
+static const char cmd_help_light[] PROGMEM = "  accessory light                 Print ambient light level (normalized %)\r\n";
 
 // task related
 static const char tsk_not_avail[] PROGMEM = "task not available\r\n";
@@ -79,6 +81,7 @@ static const char* const string_table[] = {
     cmd_accessory_args,
     cmd_laser_args,
     cmd_battery_args,
+    cmd_light_args,
 
     cmd_stack_highwater_uart,
     cmd_stack_highwater_console,
@@ -97,6 +100,7 @@ static const char* const string_table[] = {
     cmd_help_accessory,
     cmd_help_laser,
     cmd_help_battery,
+    cmd_help_light,
 
     // task related
     tsk_not_avail,
@@ -135,6 +139,7 @@ enum pgm_table_index_t
     CMD_ACCESSORY_ARGS,
     CMD_LASER_ARGS,
     CMD_BATTERY_ARGS,
+    CMD_LIGHT_ARGS,
 
     CMD_STACK_HIGHWATER_UART,
     CMD_STACK_HIGHWATER_CONSOLE,
@@ -153,6 +158,7 @@ enum pgm_table_index_t
     CMD_HELP_ACCESSORY,
     CMD_HELP_LASER,
     CMD_HELP_BATTERY,
+    CMD_HELP_LIGHT,
 
     TSK_NOT_AVAIL,
     TSK_CLEAR_SCREEN,
