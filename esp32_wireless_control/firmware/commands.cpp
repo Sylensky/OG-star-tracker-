@@ -5,8 +5,8 @@
 #include <configs/config.h>
 #include <functions/accessories/accessory_registry.h>
 #include <functions/accessories/battery_accessory.h>
-#include <functions/accessories/light_accessory.h>
 #include <functions/accessories/laser_accessory.h>
+#include <functions/accessories/light_accessory.h>
 #include <functions/board_version/board_config.h>
 #include <functions/board_version/board_version.h>
 #include <functions/led/led.h>
@@ -396,8 +396,8 @@ static void cmdAccessory()
             return;
         }
         AccessorySnapshot snap = LightAccessory::getInstance().getSnapshot();
-        print_out("light: rawAdc=%u  ~%u%% (normalized)",
-                  (unsigned) snap.rawAdc, (unsigned) snap.primaryValue);
+        print_out("light: rawAdc=%u  ~%u%% (normalized)", (unsigned) snap.rawAdc,
+                  (unsigned) snap.primaryValue);
         return;
     }
 
