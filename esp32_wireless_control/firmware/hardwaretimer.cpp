@@ -49,3 +49,8 @@ void HardwareTimer::setCountValue(uint64_t countValue)
 {
     timerWrite(timer_pointer, countValue);
 }
+
+void HardwareTimer::setAlarm(uint64_t alarmValue)
+{
+    timerAlarm(timer_pointer, alarmValue, true, 0);
+}

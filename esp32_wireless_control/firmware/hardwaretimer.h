@@ -18,6 +18,7 @@ class HardwareTimer
     void start(uint64_t alarmValue, bool autoReload);
     void stop();
     void setCountValue(uint64_t countValue);
+    void setAlarm(uint64_t alarmValue);
 };
 
 #endif

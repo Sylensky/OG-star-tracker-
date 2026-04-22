@@ -1,5 +1,7 @@
 #include "soc/gpio_struct.h"
 
+#include <cmath>
+
 #include "axis.h"
 #include "functions/board_version/board_config.h"
 #include "uart.h"
@@ -128,6 +130,12 @@ void axisTask(void* parameter)
         {
             axis->startTracking(axis->rate.requested, axis->direction.requested);
         }
+#if SLEW_RAMP_ENABLE
+        if (axis->rampActive)
+        {
+            axis->updateSlewRamp();
+        }
+#endif
         vTaskDelay(1);
     }
 }
@@ -137,6 +145,11 @@ Axis::Axis()
       trackingActive(false), direction(), counterActive(false), rate(), position(0), stepTimer(),
       microStep(0), stepPin(0), dirPin(0), axisNumber(0), invertDirectionPin(false),
       driver(nullptr), startRequested(false)
+#if SLEW_RAMP_ENABLE
+      ,
+      rampActive(false), rampStartRate(0), rampTargetRate(0), rampCurrentRate(0), rampStep(0),
+      rampTotalSteps(0), rampingDown(false), rampLastUpdateMs(0)
+#endif
 {
 }
 
@@ -344,18 +357,33 @@ bool Axis::stopPanByDegrees()
     return false;
 }
 
-void Axis::startSlew(uint64_t rate, bool directionArg)
+void Axis::startSlew(uint64_t targetRate, bool directionArg)
 {
     stepTimer.stop();
     setDirection(directionArg);
     slewActive = true;
     setMicrostep(TRACKER_MOTOR_MICROSTEPPING / 2);
     slewTimeOut.start(12000, true);
-    stepTimer.start(rate, true);
+#if SLEW_RAMP_ENABLE
+    rampStartRate = targetRate * SLEW_RAMP_START_DIVISOR;
+    rampTargetRate = targetRate;
+    rampCurrentRate = rampStartRate;
+    rampStep = 0;
+    rampTotalSteps = SLEW_RAMP_STEPS;
+    rampingDown = false;
+    rampLastUpdateMs = millis();
+    rampActive = true;
+    stepTimer.start(rampStartRate, true);
+#else
+    stepTimer.start(targetRate, true);
+#endif
 }
 
 void Axis::stopSlew()
 {
+#if SLEW_RAMP_ENABLE
+    rampActive = false;
+#endif
     slewActive = false;
     stepTimer.stop();
     slewTimeOut.stop();
@@ -364,6 +392,82 @@ void Axis::stopSlew()
         requestTracking(rate.tracking, direction.tracking);
     }
 }
+
+#if SLEW_RAMP_ENABLE
+void Axis::initiateSlewStop()
+{
+    if (!slewActive)
+        return;
+    if (rampActive && rampingDown)
+        return; // Already ramping down
+
+    // Start ramp-down from current actual speed
+    // If ramp-up already finished, current speed == original target rate
+    uint64_t currentSpeed = rampActive ? rampCurrentRate : rampTargetRate;
+    rampStartRate = currentSpeed;
+    rampTargetRate = currentSpeed * SLEW_RAMP_START_DIVISOR;
+    rampCurrentRate = currentSpeed;
+    rampStep = 0;
+    rampTotalSteps = SLEW_RAMP_STOP_STEPS;
+    rampingDown = true;
+    rampLastUpdateMs = millis();
+    rampActive = true;
+}
+
+void Axis::updateSlewRamp()
+{
+    if (!rampActive || !slewActive)
+        return;
+
+    uint32_t now = millis();
+    if ((now - rampLastUpdateMs) < (uint32_t) SLEW_RAMP_INTERVAL_MS)
+        return;
+    rampLastUpdateMs = now;
+
+    rampStep++;
+
+    if (!rampingDown)
+    {
+        // Ramp-up: decrease alarm value (increase speed) toward rampTargetRate
+        if (rampStep >= rampTotalSteps)
+        {
+            rampCurrentRate = rampTargetRate;
+            stepTimer.setAlarm(rampTargetRate);
+            rampActive = false;
+        }
+        else
+        {
+            float ratio = logf((float) rampTargetRate / (float) rampStartRate);
+            float t = (float) rampStep / (float) rampTotalSteps;
+            uint64_t newRate = (uint64_t) ((float) rampStartRate * expf(ratio * t) + 0.5f);
+            // Clamp to target (avoid overshooting due to float rounding)
+            if (newRate < rampTargetRate)
+                newRate = rampTargetRate;
+            rampCurrentRate = newRate;
+            stepTimer.setAlarm(newRate);
+        }
+    }
+    else
+    {
+        // Ramp-down: increase alarm value (decrease speed) then stop
+        if (rampStep >= rampTotalSteps)
+        {
+            stopSlew();
+        }
+        else
+        {
+            float ratio = logf((float) rampTargetRate / (float) rampStartRate);
+            float t = (float) rampStep / (float) rampTotalSteps;
+            uint64_t newRate = (uint64_t) ((float) rampStartRate * expf(ratio * t) + 0.5f);
+            // Clamp to maximum (avoid overshooting)
+            if (newRate > rampTargetRate)
+                newRate = rampTargetRate;
+            rampCurrentRate = newRate;
+            stepTimer.setAlarm(newRate);
+        }
+    }
+}
+#endif
 
 void Axis::setAxisTargetCount(int64_t count)
 {

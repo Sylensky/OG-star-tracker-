@@ -24,6 +24,23 @@
 #define MAX_CUSTOM_SLEW_RATE 400     // Set max custom slew rate to X tracking rate
 #define MIN_CUSTOM_SLEW_RATE 2       // Set min custom slew rate to X tracking rate
 
+// Slew ramping (soft start/stop) - override via build flags or platformio.ini
+#ifndef SLEW_RAMP_ENABLE
+#define SLEW_RAMP_ENABLE 0 // 0 = disabled, 1 = enabled
+#endif
+#ifndef SLEW_RAMP_STEPS
+#define SLEW_RAMP_STEPS 20 // steps to ramp up from initial to full speed
+#endif
+#ifndef SLEW_RAMP_STOP_STEPS
+#define SLEW_RAMP_STOP_STEPS 10 // steps to ramp down to stop (more aggressive)
+#endif
+#ifndef SLEW_RAMP_INTERVAL_MS
+#define SLEW_RAMP_INTERVAL_MS 50 // ms between each ramp step
+#endif
+#ifndef SLEW_RAMP_START_DIVISOR
+#define SLEW_RAMP_START_DIVISOR 8 // start at 1/N of full speed (e.g. 8 = 12.5% speed)
+#endif
+
 #ifndef TRACKING_RATE
 // Available tracking rates:
 // TRACKING_SIDEREAL

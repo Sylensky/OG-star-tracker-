@@ -53,6 +53,20 @@ class Axis
     void startSlew(uint64_t rate, bool directionArg);
     void stopSlew();
 
+#if SLEW_RAMP_ENABLE
+    void initiateSlewStop();
+    void updateSlewRamp();
+
+    volatile bool rampActive;
+    volatile uint64_t rampStartRate;
+    volatile uint64_t rampTargetRate;
+    volatile uint64_t rampCurrentRate;
+    volatile int rampStep;
+    volatile int rampTotalSteps;
+    volatile bool rampingDown;
+    volatile uint32_t rampLastUpdateMs;
+#endif
+
     void gotoTarget(uint16_t microstep, uint64_t rate, const Position& current,
                     const Position& target, bool hemisphereDirection);
     void stopGotoTarget();

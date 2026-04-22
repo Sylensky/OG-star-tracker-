@@ -196,7 +196,11 @@ void ApiHandler::handleSlewOff()
 {
     if (ra_axis.slewActive)
     { // if slew is active needed for ipad (passes multiple touchoff events)
+#if SLEW_RAMP_ENABLE
+        ra_axis.initiateSlewStop();
+#else
         ra_axis.stopSlew();
+#endif
     }
     _server->send(200, MIME_TYPE_TEXT, languageMessageStrings[language][MSG_SLEW_CANCELLED]);
 }
