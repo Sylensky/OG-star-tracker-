@@ -40,9 +40,9 @@ void TmcMotorDriver::setMicrosteps(uint16_t microsteps)
     tmc_driver.push();
 
     uint16_t actual_microsteps = tmc_driver.microsteps();
-    uint16_t actual_rms_current = tmc_driver.rms_current();
 
 #if DEBUG == 1
+    uint16_t actual_rms_current = tmc_driver.rms_current();
     print_out("Microsteps set:");
     print_out("  Requested: %d, Actual: %d", microsteps, actual_microsteps);
     print_out("  RMS Current: %d mA", actual_rms_current);
